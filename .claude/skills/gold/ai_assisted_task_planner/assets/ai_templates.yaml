@@ -1,0 +1,667 @@
+# AI Asset Templates for Task Planning
+
+## Overview
+This document contains templates for various AI-powered components used in the AI Assisted Task Planner. These templates include AI prompts, scoring rules, and task prediction models that drive intelligent recommendations for task allocation, sequencing, and deadline setting.
+
+## Template 1: Task Allocation AI Prompt
+
+### Description
+A prompt template for AI to recommend optimal task assignments based on team member skills, workload, and task requirements.
+
+### Prompt Template
+```yaml
+ai_prompt_templates:
+  task_allocation:
+    name: "Optimal Task Assignment Generator"
+    version: "1.0.0"
+    model: "gpt-4-turbo"
+    system_prompt: |
+      You are an expert project manager with extensive knowledge in resource allocation and team optimization.
+      Your goal is to recommend the best assignment of tasks to team members based on skills, workload, and project requirements.
+    user_prompt_template: |
+      Given the following project context, recommend optimal task assignments:
+
+      PROJECT CONTEXT:
+      - Project Type: {project_type}
+      - Project Priority: {project_priority}
+      - Deadline: {deadline}
+      - Team Members: {team_members}
+      - Available Tasks: {tasks}
+
+      TEAM MEMBER PROFILES:
+      {team_member_profiles}
+
+      TASK REQUIREMENTS:
+      {task_requirements}
+
+      ASSIGNMENT CONSTRAINTS:
+      - Maximum workload per member: {max_workload_percent}%
+      - Required skill overlap: {min_skill_overlap}%
+      - Preferred collaboration patterns: {collaboration_prefs}
+      - Geographic considerations: {location_constraints}
+
+      Please provide:
+      1. Recommended task assignments with reasoning
+      2. Estimated completion times for each assigned task
+      3. Potential risks with the proposed assignments
+      4. Alternative assignments if primary recommendations aren't feasible
+
+      Format your response as a structured JSON with the following schema:
+      {
+        "assignments": [
+          {
+            "task_id": "string",
+            "assigned_to": "string",
+            "confidence": "number between 0 and 1",
+            "estimated_duration": "string (e.g., '5 days')",
+            "reasoning": "string"
+          }
+        ],
+        "risks": [
+          {
+            "risk_type": "string",
+            "affected_assignments": ["task_ids"],
+            "severity": "low|medium|high",
+            "mitigation": "string"
+          }
+        ],
+        "alternatives": [
+          {
+            "assignment_id": "string",
+            "alternative_assignments": [{"task_id": "string", "assigned_to": "string"}],
+            "tradeoffs": "string"
+          }
+        ]
+      }
+    parameters:
+      temperature: 0.3
+      max_tokens: 2000
+      top_p: 0.9
+    validation_rules:
+      - "$.assignments[*].task_id must be in provided task list"
+      - "$.assignments[*].assigned_to must be in provided team list"
+      - "$.assignments[*].confidence must be between 0 and 1"
+      - "$.assignments must have unique task_ids"
+```
+
+### Usage Notes
+- Adjust temperature for creativity vs. consistency balance
+- Customize team_member_profiles and task_requirements structure based on your data
+- Modify constraints based on organizational policies
+- The low temperature (0.3) ensures more consistent, deterministic outputs
+
+## Template 2: Task Sequencing AI Prompt
+
+### Description
+A prompt template for AI to recommend optimal task sequencing based on dependencies, resource availability, and project objectives.
+
+### Prompt Template
+```yaml
+ai_prompt_templates:
+  task_sequencing:
+    name: "Optimal Task Sequencing Advisor"
+    version: "1.0.0"
+    model: "gpt-4-turbo"
+    system_prompt: |
+      You are an expert in project scheduling and critical path analysis. Your goal is to recommend 
+      the optimal sequence of tasks to achieve project objectives while respecting constraints and 
+      optimizing for the specified criteria.
+    user_prompt_template: |
+      Based on the following project information, recommend the optimal task sequence:
+
+      PROJECT INFORMATION:
+      - Project Name: {project_name}
+      - Objective: {project_objective}
+      - Deadline: {project_deadline}
+      - Optimization Goal: {optimization_goal} (minimize duration | minimize resources | minimize risk)
+      - Available Resources: {available_resources}
+
+      TASK LIST WITH DETAILS:
+      {task_details}
+
+      DEPENDENCIES:
+      {task_dependencies}
+
+      RESOURCE CONSTRAINTS:
+      - Concurrent task limits: {concurrent_task_limits}
+      - Shared resource conflicts: {resource_conflicts}
+      - Working hours: {working_hours}
+      - Holiday schedules: {holiday_schedules}
+
+      RISK FACTORS:
+      - High uncertainty tasks: {uncertain_tasks}
+      - External dependencies: {external_deps}
+      - Critical success factors: {critical_factors}
+
+      Please provide:
+      1. Recommended task sequence with start/end dates
+      2. Critical path identification
+      3. Resource allocation plan
+      4. Risk mitigation strategies
+      5. Alternative sequencing options with trade-offs
+
+      Format your response as structured JSON:
+      {
+        "sequence": [
+          {
+            "task_id": "string",
+            "start_date": "ISO 8601 date",
+            "end_date": "ISO 8601 date",
+            "resources_assigned": ["string"],
+            "predecessors": ["string"],
+            "successors": ["string"]
+          }
+        ],
+        "critical_path": ["string (task_ids)"],
+        "resource_plan": {
+          "daily_allocations": [
+            {
+              "date": "ISO 8601 date",
+              "allocations": [
+                {
+                  "resource_id": "string",
+                  "task_id": "string",
+                  "allocation_percentage": "number"
+                }
+              ]
+            }
+          ]
+        },
+        "risks": [
+          {
+            "risk_type": "string",
+            "likelihood": "low|medium|high",
+            "impact": "low|medium|high",
+            "mitigation_strategy": "string"
+          }
+        ],
+        "alternatives": [
+          {
+            "option_id": "string",
+            "sequence": ["task_ids in order"],
+            "tradeoffs": "string",
+            "benefits": "string",
+            "drawbacks": "string"
+          }
+        ]
+      }
+    parameters:
+      temperature: 0.2
+      max_tokens: 2500
+      top_p: 0.85
+    validation_rules:
+      - "$.sequence[*].task_id must be in provided task list"
+      - "$.sequence[*].start_date must be before $.sequence[*].end_date"
+      - "$.critical_path items must be in $.sequence"
+      - "$.resource_plan.daily_allocations[*].allocations[*].allocation_percentage must be <= 100"
+```
+
+### Usage Notes
+- Use lower temperature for more consistent scheduling outputs
+- The optimization_goal parameter allows for different scheduling objectives
+- Critical path identification helps identify project bottlenecks
+- Resource allocation plan ensures realistic scheduling
+
+## Template 3: Deadline Prediction AI Prompt
+
+### Description
+A prompt template for AI to predict realistic task deadlines based on complexity, resources, and historical data.
+
+### Prompt Template
+```yaml
+ai_prompt_templates:
+  deadline_prediction:
+    name: "Realistic Deadline Predictor"
+    version: "1.0.0"
+    model: "gpt-4-turbo"
+    system_prompt: |
+      You are an expert in project estimation and deadline forecasting. Your goal is to provide realistic 
+      deadline predictions for tasks based on their complexity, requirements, and available resources.
+    user_prompt_template: |
+      Based on the following task information, predict realistic deadlines with confidence intervals:
+
+      TASK INFORMATION:
+      - Task ID: {task_id}
+      - Task Title: {task_title}
+      - Task Description: {task_description}
+      - Complexity Level: {complexity_level}
+      - Effort Estimate: {effort_estimate}
+      - Assigned Team Member(s): {assigned_members}
+
+      HISTORICAL CONTEXT:
+      - Team Velocity: {team_velocity}
+      - Similar Task Performance: {similar_task_performance}
+      - Current Workload: {current_workload}
+      - Resource Availability: {resource_availability}
+
+      EXTERNAL FACTORS:
+      - Project Priority: {project_priority}
+      - Dependencies: {dependencies}
+      - Risk Level: {risk_level}
+      - External Stakeholder Involvement: {stakeholder_involvement}
+
+      Please provide:
+      1. Predicted completion date with confidence level
+      2. Multiple scenario estimates (optimistic, realistic, pessimistic)
+      3. Key factors influencing the prediction
+      4. Recommended buffers for uncertainty
+      5. Milestones for tracking progress
+
+      Format your response as structured JSON:
+      {
+        "predictions": {
+          "optimistic": {
+            "date": "ISO 8601 date",
+            "probability": "number",
+            "conditions": "string"
+          },
+          "realistic": {
+            "date": "ISO 8601 date",
+            "probability": "number",
+            "conditions": "string"
+          },
+          "pessimistic": {
+            "date": "ISO 8601 date",
+            "probability": "number",
+            "conditions": "string"
+          }
+        },
+        "confidence_interval": {
+          "lower_bound": "ISO 8601 date",
+          "upper_bound": "ISO 8601 date",
+          "confidence_level": "number"
+        },
+        "factors": [
+          {
+            "factor_type": "complexity|resources|risk|dependencies",
+            "impact": "positive|negative|neutral",
+            "significance": "low|medium|high",
+            "details": "string"
+          }
+        ],
+        "recommended_buffers": [
+          {
+            "buffer_type": "complexity|external_deps|resource_availability",
+            "duration": "string (e.g., '2 days')",
+            "justification": "string"
+          }
+        ],
+        "milestones": [
+          {
+            "name": "string",
+            "target_date": "ISO 8601 date",
+            "criteria": "string",
+            "importance": "high|medium|low"
+          }
+        ]
+      }
+    parameters:
+      temperature: 0.25
+      max_tokens: 1500
+      top_p: 0.9
+    validation_rules:
+      - "$.predictions.realistic.date must be between $.predictions.optimistic.date and $.predictions.pessimistic.date"
+      - "$.confidence_interval.lower_bound must be before $.confidence_interval.upper_bound"
+      - "$.milestones[*].target_date must be before $.predictions.pessimistic.date"
+```
+
+### Usage Notes
+- Provides probabilistic estimates rather than fixed deadlines
+- Includes confidence intervals for risk assessment
+- Recommends buffers based on uncertainty factors
+- Defines milestones for progress tracking
+
+## Template 4: Scoring Rules for Task Prioritization
+
+### Description
+Scoring rules to evaluate and rank tasks based on multiple criteria using AI-assisted analysis.
+
+### Configuration Template
+```yaml
+scoring_rules:
+  task_prioritization:
+    version: "1.0.0"
+    factors:
+      business_impact:
+        weight: 0.25
+        calculation: "categorical_mapping"
+        categories:
+          critical: 1.0
+          high: 0.7
+          medium: 0.4
+          low: 0.1
+        description: "Impact on business objectives if task is completed successfully"
+      
+      deadline_urgency:
+        weight: 0.30
+        calculation: "sigmoid_based"
+        parameters:
+          steepness: 5.0
+          midpoint_days: 14.0
+        description: "How soon the task needs to be completed based on deadline"
+      
+      effort_complexity:
+        weight: 0.15
+        calculation: "inverse_logarithmic"
+        parameters:
+          base_effort: 8.0  # hours
+          max_effort: 160.0  # hours
+        description: "Lower priority for more complex tasks (to avoid procrastination)"
+      
+      dependency_criticality:
+        weight: 0.20
+        calculation: "network_analysis"
+        parameters:
+          blocking_multiplier: 0.4
+          blocked_penalty: -0.1
+          critical_path_bonus: 0.3
+        description: "Priority boost for tasks that block many others or are on critical path"
+      
+      resource_availability:
+        weight: 0.10
+        calculation: "capacity_based"
+        parameters:
+          max_utilization: 0.85
+          availability_bonus: 0.15
+        description: "Priority adjustment based on resource availability"
+
+    normalization:
+      method: "min_max_scaling"
+      range: [0, 1]
+    
+    ai_enhancement:
+      use_llm_for_weight_adjustment: true
+      context_aware_weights: true
+      learning_enabled: true
+
+    validation_rules:
+      - "Sum of factor weights must equal 1.0"
+      - "All scores must be between 0 and 1 after normalization"
+      - "Priority score = weighted sum of all factor scores"
+```
+
+### Usage Notes
+- Adjust weights based on organizational priorities
+- The effort_complexity factor prevents complex tasks from being perpetually delayed
+- Dependency criticality ensures blocking tasks receive appropriate priority
+- AI enhancement allows for context-aware weight adjustments
+
+## Template 5: Task Prediction Model Configuration
+
+### Description
+Configuration for AI models that predict task outcomes, duration, and resource needs.
+
+### Configuration Template
+```yaml
+prediction_models:
+  task_outcomes:
+    duration_prediction:
+      model_type: "ensemble"
+      base_models:
+        - name: "historical_average"
+          algorithm: "weighted_moving_average"
+          parameters:
+            window_size: 10
+            weight_decay: 0.9
+            min_samples: 3
+        - name: "complexity_regression"
+          algorithm: "random_forest"
+          parameters:
+            n_estimators: 100
+            max_depth: 10
+            min_samples_split: 5
+        - name: "similarity_based"
+          algorithm: "knn"
+          parameters:
+            k_neighbors: 5
+            similarity_metric: "cosine"
+            feature_weights:
+              complexity: 0.3
+              domain: 0.25
+              team_member: 0.2
+              dependencies: 0.15
+              effort_estimate: 0.1
+      ensemble_method: "weighted_average"
+      ensemble_weights:
+        historical_average: 0.2
+        complexity_regression: 0.4
+        similarity_based: 0.4
+      confidence_estimation: true
+      confidence_method: "quantile_regression"
+    
+    resource_prediction:
+      model_type: "neural_network"
+      architecture:
+        layers: [64, 32, 16, 1]
+        activation: "relu"
+        dropout_rate: 0.2
+      input_features:
+        - name: "task_complexity"
+          type: "numerical"
+          range: [1, 10]
+        - name: "team_experience"
+          type: "numerical"
+          range: [0, 1]
+        - name: "domain_familiarity"
+          type: "numerical"
+          range: [0, 1]
+        - name: "resource_skills_match"
+          type: "numerical"
+          range: [0, 1]
+        - name: "dependency_complexity"
+          type: "numerical"
+          range: [1, 10]
+        - name: "external_dependencies"
+          type: "numerical"
+          range: [0, 5]
+      preprocessing:
+        scaling_method: "standard"
+        outlier_detection: true
+        outlier_threshold: 3.0  # standard deviations
+      
+    success_probability:
+      model_type: "gradient_boosting"
+      algorithm: "xgboost"
+      parameters:
+        n_estimators: 200
+        max_depth: 6
+        learning_rate: 0.1
+        subsample: 0.8
+        colsample_bytree: 0.8
+      features:
+        - name: "complexity"
+          weight: 0.25
+        - name: "resource_skills_match"
+          weight: 0.20
+        - name: "team_availability"
+          weight: 0.15
+        - name: "dependency_stability"
+          weight: 0.15
+        - name: "requirement_clarity"
+          weight: 0.15
+        - name: "historical_success_rate"
+          weight: 0.10
+      output_transformation: "sigmoid"  # to ensure probability output
+      calibration_required: true
+    
+    model_validation:
+      cross_validation:
+        method: "time_series_split"
+        folds: 5
+        test_size: 0.2
+      metrics:
+        duration_prediction:
+          - name: "mean_absolute_error"
+            threshold: 2.0  # days
+          - name: "mean_percentage_error"
+            threshold: 0.15  # 15%
+          - name: "confidence_coverage"
+            threshold: 0.8  # 80% of actuals within confidence interval
+        resource_prediction:
+          - name: "mean_squared_error"
+            threshold: 0.05
+          - name: "r_squared"
+            threshold: 0.7
+        success_probability:
+          - name: "auc_roc"
+            threshold: 0.8
+          - name: "brier_score"
+            threshold: 0.2
+          - name: "calibration_error"
+            threshold: 0.05
+    
+    retraining_schedule:
+      duration_model: "weekly"
+      resource_model: "bi-weekly"
+      success_model: "monthly"
+      trigger_metrics:
+        - name: "prediction_drift"
+          threshold: 0.1
+          action: "immediate_retrain"
+        - name: "accuracy_degradation"
+          threshold: 0.15
+          action: "immediate_retrain"
+```
+
+### Usage Notes
+- Ensemble models provide robustness against individual model weaknesses
+- Time-series aware cross-validation prevents data leakage
+- Regular retraining keeps models aligned with current conditions
+- Multiple validation metrics ensure model reliability across different aspects
+
+## Template 6: AI Validation and Fairness Checks
+
+### Description
+Templates for validating AI recommendations and ensuring fairness in task planning.
+
+### Configuration Template
+```yaml
+validation_and_fairness:
+  ai_recommendation_validation:
+    resource_allocation:
+      checks:
+        - name: "capacity_constraint"
+          description: "Verify resource allocation doesn't exceed availability"
+          rule: "assignment.workload <= resource.capacity * 0.95"
+          severity: "error"
+        - name: "skill_requirement"
+          description: "Verify assigned resource has required skills"
+          rule: "all(required_skills in resource.skills)"
+          severity: "error"
+        - name: "workload_balance"
+          description: "Check for equitable workload distribution"
+          rule: "abs(resource.workload - team.avg_workload) <= 0.2 * team.avg_workload"
+          severity: "warning"
+        - name: "schedule_conflict"
+          description: "Verify no overlapping assignments for same resource"
+          rule: "no_overlapping_assignments(resource.assignments, assignment.timeframe)"
+          severity: "error"
+    
+    task_sequencing:
+      checks:
+        - name: "dependency_compliance"
+          description: "Ensure all dependencies are respected"
+          rule: "all(predecessor.end_date <= task.start_date for predecessor in task.dependencies)"
+          severity: "error"
+        - name: "resource_availability"
+          description: "Verify resources are available during scheduled timeframe"
+          rule: "resource.availability.contains(task.timeframe)"
+          severity: "error"
+        - name: "deadline_feasibility"
+          description: "Check if sequence allows meeting project deadline"
+          rule: "project_predicted_end_date <= required_deadline"
+          severity: "error"
+        - name: "logical_consistency"
+          description: "Verify sequence doesn't contain circular dependencies"
+          rule: "not has_circular_dependencies(sequence)"
+          severity: "error"
+    
+    deadline_prediction:
+      checks:
+        - name: "historical_consistency"
+          description: "Verify prediction aligns with historical performance"
+          rule: "predicted_duration <= avg_historical_duration * 2.0"
+          severity: "warning"
+        - name: "complexity_alignment"
+          description: "Check if deadline aligns with task complexity"
+          rule: "predicted_duration >= min_complexity_based_duration"
+          severity: "warning"
+        - name: "resource_realism"
+          description: "Ensure deadline is achievable with available resources"
+          rule: "required_resources_available_for_duration"
+          severity: "error"
+        - name: "confidence_threshold"
+          description: "Verify prediction confidence is above threshold"
+          rule: "prediction.confidence >= 0.7"
+          severity: "warning"
+
+  fairness_checks:
+    resource_bias:
+      detection:
+        - name: "assignment_frequency"
+          description: "Detect if certain individuals are systematically favored"
+          metric: "assignment_frequency_variance"
+          threshold: 0.15
+        - name: "skill_utilization"
+          description: "Ensure all skills are utilized fairly"
+          metric: "skill_utilization_equality"
+          threshold: 0.2
+        - name: "growth_opportunity"
+          description: "Ensure equitable access to challenging tasks"
+          metric: "challenging_task_distribution"
+          threshold: 0.25
+      remediation:
+        - name: "redistribution_algorithm"
+          description: "Algorithm to redistribute assignments more equitably"
+          method: "maximin_fairness"
+        - name: "preference_weighting"
+          description: "Adjust for individual preferences in fair manner"
+          method: "rank_correlation"
+    
+    scheduling_bias:
+      detection:
+        - name: "timeline_equity"
+          description: "Ensure equitable timeline pressure across team"
+          metric: "deadline_pressure_variance"
+          threshold: 0.3
+        - name: "sequence_fairness"
+          description: "Ensure no group systematically gets difficult sequences"
+          metric: "sequence_difficulty_variance"
+          threshold: 0.25
+      remediation:
+        - name: "buffer_adjustment"
+          description: "Add appropriate buffers to ensure fairness"
+          method: "equity_aware_scheduling"
+    
+  override_recommendations:
+    when_to_override:
+      - condition: "fairness_violation_detected"
+        action: "mandatory_review"
+      - condition: "confidence_below_threshold(0.6)"
+        action: "human_review_required"
+      - condition: "significant_deviation_from_historical_norms"
+        action: "validate_with_expert"
+      - condition: "high_impact_decision"
+        action: "recommendation_only_mode"
+    
+    feedback_loop:
+      collection:
+        - source: "human_acceptance_rejection"
+          frequency: "per_assignment"
+        - source: "outcome_tracking"
+          frequency: "post_completion"
+        - source: "fairness_monitoring"
+          frequency: "daily"
+      incorporation:
+        - method: "online_learning"
+          model: "duration_prediction"
+        - method: "batch_retraining"
+          model: "all_models"
+          schedule: "weekly"
+```
+
+### Usage Notes
+- Validation checks prevent obviously problematic recommendations
+- Fairness checks help identify and correct potential bias
+- Override recommendations ensure human oversight for critical decisions
+- Feedback loops enable continuous improvement of AI models

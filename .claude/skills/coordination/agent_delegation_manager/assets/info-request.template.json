@@ -1,0 +1,22 @@
+{
+  "signal_type": "info_request",
+  "task_id": "{{TASK_ID}}",
+  "from_agent": "cex",
+  "to_agent": "lex",
+  "created_at": "{{TIMESTAMP_ISO}}",
+  "timeout_at": "{{TIMEOUT_TIMESTAMP}}",
+  "request": {
+    "info_type": "{{INFO_TYPE}}",
+    "query": "{{QUERY_DESCRIPTION}}",
+    "required_for": "{{REASONING}}",
+    "alternatives": [
+      "{{ALTERNATIVE_1}}",
+      "{{ALTERNATIVE_2}}"
+    ]
+  },
+  "metadata": {
+    "request_id": "{{REQUEST_ID}}",
+    "priority": "{{PRIORITY}}",
+    "blocking": "{{IS_BLOCKING}}"
+  }
+}

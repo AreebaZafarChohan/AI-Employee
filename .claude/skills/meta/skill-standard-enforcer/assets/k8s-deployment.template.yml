@@ -1,0 +1,217 @@
+# IMPACT NOTES:
+# - All secrets referenced from external Secret objects
+# - ConfigMap for non-sensitive configuration
+# - Resource limits set to prevent noisy neighbor issues
+# - Health checks use separate liveness/readiness endpoints
+# - Rolling update strategy with max surge/unavailability
+# - SecurityContext enforces non-root user
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{APP_NAME}}-config
+data:
+  NODE_ENV: "{{NODE_ENV}}"
+  PORT: "{{PORT}}"
+  LOG_LEVEL: "{{LOG_LEVEL}}"
+  DATABASE_HOST: "{{DATABASE_SERVICE_NAME}}"
+  DATABASE_PORT: "{{DATABASE_PORT}}"
+  DATABASE_NAME: "{{DATABASE_NAME}}"
+  DATABASE_USER: "{{DATABASE_USER}}"
+  CACHE_HOST: "{{CACHE_SERVICE_NAME}}"
+  CACHE_PORT: "{{CACHE_PORT}}"
+  CORS_ALLOWED_ORIGINS: "{{CORS_ALLOWED_ORIGINS}}"
+  CORS_ALLOW_CREDENTIALS: "{{CORS_ALLOW_CREDENTIALS}}"
+  ENABLE_METRICS: "{{ENABLE_METRICS}}"
+  METRICS_PORT: "{{METRICS_PORT}}"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{APP_NAME}}-secrets
+type: Opaque
+data:
+  # Base64 encoded secrets - NEVER commit plaintext
+  # Generate with: echo -n "secret" | base64
+  database-password: {{SECRET_DATABASE_PASSWORD_BASE64}}
+  jwt-secret: {{SECRET_JWT_SECRET_BASE64}}
+  # api-key: {{SECRET_API_KEY_BASE64}}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{APP_NAME}}-deployment
+  labels:
+    app: {{APP_NAME}}
+spec:
+  replicas: {{REPLICA_COUNT}}
+  selector:
+    matchLabels:
+      app: {{APP_NAME}}
+  template:
+    metadata:
+      labels:
+        app: {{APP_NAME}}
+    spec:
+      # Security - non-root user
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: {{CONTAINER_USER_ID}}
+        runAsGroup: {{CONTAINER_GROUP_ID}}
+        fsGroup: {{CONTAINER_GROUP_ID}}
+      containers:
+      - name: {{APP_NAME}}
+        image: {{IMAGE_REPOSITORY}}:{{IMAGE_TAG}}
+        ports:
+        - containerPort: {{PORT}}
+          name: http
+        - containerPort: {{METRICS_PORT}}
+          name: metrics
+        envFrom:
+        - configMapRef:
+            name: {{APP_NAME}}-config
+        env:
+        # Secrets from Secret object
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{APP_NAME}}-secrets
+              key: database-password
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{APP_NAME}}-secrets
+              key: jwt-secret
+        resources:
+          requests:
+            memory: "{{MEMORY_REQUEST}}"
+            cpu: "{{CPU_REQUEST}}"
+          limits:
+            memory: "{{MEMORY_LIMIT}}"
+            cpu: "{{CPU_LIMIT}}"
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: {{PORT}}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: {{PORT}}
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health/ready
+            port: {{PORT}}
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 30  # Allow 2.5 minutes for startup
+      # Optional: Init container for migrations
+      initContainers:
+      - name: db-migrate
+        image: {{IMAGE_REPOSITORY}}:{{IMAGE_TAG}}
+        command: ['npm', 'run', 'db:migrate']
+        envFrom:
+        - configMapRef:
+            name: {{APP_NAME}}-config
+        env:
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{APP_NAME}}-secrets
+              key: database-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{APP_NAME}}-service
+  labels:
+    app: {{APP_NAME}}
+spec:
+  selector:
+    app: {{APP_NAME}}
+  ports:
+  - name: http
+    port: 80
+    targetPort: {{PORT}}
+    protocol: TCP
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{APP_NAME}}-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    # CORS configuration
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "{{CORS_ALLOWED_ORIGINS}}"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "{{CORS_ALLOW_CREDENTIALS}}"
+    # SSL redirect
+    nginx.ingress.kubernetes.io/ssl-redirect: "{{SSL_REDIRECT}}"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - {{APP_DOMAIN}}
+    secretName: {{APP_NAME}}-tls
+  rules:
+  - host: {{APP_DOMAIN}}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{APP_NAME}}-service
+            port:
+              number: 80
+
+---
+# Optional: Horizontal Pod Autoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{APP_NAME}}-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{APP_NAME}}-deployment
+  minReplicas: {{MIN_REPLICAS}}
+  maxReplicas: {{MAX_REPLICAS}}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{CPU_TARGET_PERCENTAGE}}
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: {{MEMORY_TARGET_PERCENTAGE}}
+
+---
+# PodDisruptionBudget for high availability
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{APP_NAME}}-pdb
+spec:
+  minAvailable: {{MIN_AVAILABLE_PODS}}
+  selector:
+    matchLabels:
+      app: {{APP_NAME}}

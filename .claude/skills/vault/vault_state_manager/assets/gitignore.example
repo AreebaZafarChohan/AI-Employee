@@ -1,0 +1,104 @@
+# Vault State Manager - Git Ignore Rules
+
+# ===========================
+# Temporary Files
+# ===========================
+*.tmp
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ===========================
+# Logs (append-only, large)
+# ===========================
+Logs/*.json
+Logs/*.log
+
+# Keep log directory structure
+!Logs/.gitkeep
+
+# ===========================
+# Environment & Secrets
+# ===========================
+.env
+.env.local
+.env.production
+
+# Credentials (NEVER commit)
+credentials/
+*.pem
+*.key
+*.p12
+*.pfx
+
+# ===========================
+# Ephemeral Agent State
+# ===========================
+# In_Progress is ephemeral (agents restart clean)
+In_Progress/*
+!In_Progress/.gitkeep
+
+# ===========================
+# Archive (backup only)
+# ===========================
+# Archive grows unbounded; keep in backups, not git
+Archive/*
+!Archive/.gitkeep
+
+# ===========================
+# Outputs & Generated Files
+# ===========================
+# Needs_Action is populated by watchers; don't commit
+Needs_Action/*
+!Needs_Action/.gitkeep
+!Needs_Action/**/.gitkeep
+
+# Approved is transient (orchestrator processes quickly)
+Approved/*
+!Approved/.gitkeep
+
+# ===========================
+# Optional: Keep Done Plans
+# ===========================
+# Uncomment to exclude Done/ from git (only in backups)
+# Done/*
+# !Done/.gitkeep
+
+# ===========================
+# Version Control Metadata
+# ===========================
+.git/
+.gitattributes
+
+# ===========================
+# IDE & Editor Files
+# ===========================
+.vscode/
+.idea/
+*.sublime-*
+
+# ===========================
+# Operating System Files
+# ===========================
+Thumbs.db
+Desktop.ini
+._*
+
+# ===========================
+# Preserve Folder Structure
+# ===========================
+# Keep empty folders by tracking .gitkeep
+!.gitkeep
+!**/.gitkeep
+
+# ===========================
+# NOTES
+# ===========================
+# This .gitignore is optimized for vault state management.
+# Key principles:
+# 1. Never commit secrets or credentials
+# 2. Never commit large logs (use rotation + backups)
+# 3. Commit Plans/, Pending_Approval/, Rejected/ (review history)
+# 4. Optionally commit Done/ (completed work history)
+# 5. Exclude ephemeral state (In_Progress, Approved)

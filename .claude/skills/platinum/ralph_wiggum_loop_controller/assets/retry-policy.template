@@ -1,0 +1,287 @@
+# Retry Policy Configuration Template
+
+# This template defines the retry policies for the Ralph Wiggum Loop Controller.
+
+---
+# Global Retry Configuration
+retry:
+  # Enable retry mechanisms
+  enabled: {{RETRY_ENABLED}}
+  
+  # Default maximum retry attempts
+  max_attempts: {{MAX_RETRY_ATTEMPTS}}
+  
+  # Base delay between retries in seconds
+  base_delay_seconds: {{BASE_DELAY_SECONDS}}
+  
+  # Maximum delay between retries in seconds
+  max_delay_seconds: {{MAX_DELAY_SECONDS}}
+  
+  # Enable exponential backoff for retries
+  exponential_backoff_enabled: {{EXPONENTIAL_BACKOFF_ENABLED}}
+  
+  # Exponential backoff factor
+  backoff_factor: {{BACKOFF_FACTOR}}
+  
+  # Enable jitter to prevent thundering herd
+  jitter_enabled: {{JITTER_ENABLED}}
+  
+  # Jitter range (0.0 to 1.0, percentage of delay)
+  jitter_range: {{JITTER_RANGE}}
+
+# Retry Strategy Configuration
+strategy:
+  # Default retry strategy
+  default_strategy: "{{DEFAULT_RETRY_STRATEGY}}"  # fixed, exponential, linear
+  
+  # Enable adaptive retry strategies
+  adaptive_enabled: {{ADAPTIVE_RETRY_ENABLED}}
+  
+  # Strategy selection based on error type
+  by_error_type:
+    "{{TRANSIENT_ERROR_TYPE}}":
+      strategy: "{{TRANSIENT_RETRY_STRATEGY}}"
+      max_attempts: {{TRANSIENT_MAX_ATTEMPTS}}
+      base_delay: {{TRANSIENT_BASE_DELAY}}
+    "{{RESOURCE_ERROR_TYPE}}":
+      strategy: "{{RESOURCE_RETRY_STRATEGY}}"
+      max_attempts: {{RESOURCE_MAX_ATTEMPTS}}
+      base_delay: {{RESOURCE_BASE_DELAY}}
+    "{{PERMANENT_ERROR_TYPE}}":
+      strategy: "{{PERMANENT_RETRY_STRATEGY}}"
+      max_attempts: {{PERMANENT_MAX_ATTEMPTS}}
+      base_delay: {{PERMANENT_BASE_DELAY}}
+
+# Task Type-Specific Retry Policies
+task_types:
+  # Retry policies for different task types
+  "{{TASK_TYPE_1}}":
+    max_attempts: {{TASK_TYPE_1_MAX_ATTEMPTS}}
+    base_delay_seconds: {{TASK_TYPE_1_BASE_DELAY_SECONDS}}
+    max_delay_seconds: {{TASK_TYPE_1_MAX_DELAY_SECONDS}}
+    exponential_backoff_enabled: {{TASK_TYPE_1_EXPONENTIAL_BACKOFF_ENABLED}}
+    jitter_enabled: {{TASK_TYPE_1_JITTER_ENABLED}}
+    enable_circuit_breaker: {{TASK_TYPE_1_CIRCUIT_BREAKER_ENABLED}}
+    circuit_breaker_failure_threshold: {{TASK_TYPE_1_CIRCUIT_BREAKER_THRESHOLD}}
+    circuit_breaker_timeout_seconds: {{TASK_TYPE_1_CIRCUIT_BREAKER_TIMEOUT_SECONDS}}
+  
+  "{{TASK_TYPE_2}}":
+    max_attempts: {{TASK_TYPE_2_MAX_ATTEMPTS}}
+    base_delay_seconds: {{TASK_TYPE_2_BASE_DELAY_SECONDS}}
+    max_delay_seconds: {{TASK_TYPE_2_MAX_DELAY_SECONDS}}
+    exponential_backoff_enabled: {{TASK_TYPE_2_EXPONENTIAL_BACKOFF_ENABLED}}
+    jitter_enabled: {{TASK_TYPE_2_JITTER_ENABLED}}
+    enable_circuit_breaker: {{TASK_TYPE_2_CIRCUIT_BREAKER_ENABLED}}
+    circuit_breaker_failure_threshold: {{TASK_TYPE_2_CIRCUIT_BREAKER_THRESHOLD}}
+    circuit_breaker_timeout_seconds: {{TASK_TYPE_2_CIRCUIT_BREAKER_TIMEOUT_SECONDS}}
+  
+  "{{TASK_TYPE_3}}":
+    max_attempts: {{TASK_TYPE_3_MAX_ATTEMPTS}}
+    base_delay_seconds: {{TASK_TYPE_3_BASE_DELAY_SECONDS}}
+    max_delay_seconds: {{TASK_TYPE_3_MAX_DELAY_SECONDS}}
+    exponential_backoff_enabled: {{TASK_TYPE_3_EXPONENTIAL_BACKOFF_ENABLED}}
+    jitter_enabled: {{TASK_TYPE_3_JITTER_ENABLED}}
+    enable_circuit_breaker: {{TASK_TYPE_3_CIRCUIT_BREAKER_ENABLED}}
+    circuit_breaker_failure_threshold: {{TASK_TYPE_3_CIRCUIT_BREAKER_THRESHOLD}}
+    circuit_breaker_timeout_seconds: {{TASK_TYPE_3_CIRCUIT_BREAKER_TIMEOUT_SECONDS}}
+
+# Circuit Breaker Configuration
+circuit_breaker:
+  # Enable circuit breaker pattern
+  enabled: {{CIRCUIT_BREAKER_ENABLED}}
+  
+  # Failure threshold (number of failures before opening circuit)
+  failure_threshold: {{CIRCUIT_BREAKER_FAILURE_THRESHOLD}}
+  
+  # Timeout in seconds before attempting to close circuit
+  timeout_seconds: {{CIRCUIT_BREAKER_TIMEOUT_SECONDS}}
+  
+  # Success threshold (number of successes to close circuit)
+  success_threshold: {{CIRCUIT_BREAKER_SUCCESS_THRESHOLD}}
+  
+  # Enable half-open state for circuit breaker
+  half_open_enabled: {{CIRCUIT_BREAKER_HALF_OPEN_ENABLED}}
+
+# Retry Condition Configuration
+conditions:
+  # Enable retry based on exception types
+  retry_on_exception_enabled: {{RETRY_ON_EXCEPTION_ENABLED}}
+  
+  # List of exception types to retry on
+  retry_on_exceptions:
+    - "{{RETRY_ON_EXCEPTION_1}}"
+    - "{{RETRY_ON_EXCEPTION_2}}"
+    - "{{RETRY_ON_EXCEPTION_3}}"
+  
+  # List of exception types to never retry on
+  never_retry_on_exceptions:
+    - "{{NEVER_RETRY_ON_EXCEPTION_1}}"
+    - "{{NEVER_RETRY_ON_EXCEPTION_2}}"
+  
+  # Enable retry based on return codes
+  retry_on_return_codes_enabled: {{RETRY_ON_RETURN_CODES_ENABLED}}
+  
+  # List of return codes to retry on
+  retry_on_return_codes:
+    - {{RETRY_ON_RETURN_CODE_1}}
+    - {{RETRY_ON_RETURN_CODE_2}}
+    - {{RETRY_ON_RETURN_CODE_3}}
+  
+  # Enable retry based on response content
+  retry_on_response_content_enabled: {{RETRY_ON_RESPONSE_CONTENT_ENABLED}}
+  
+  # Patterns in response that indicate retry is needed
+  retry_on_response_patterns:
+    - "{{RETRY_ON_RESPONSE_PATTERN_1}}"
+    - "{{RETRY_ON_RESPONSE_PATTERN_2}}"
+
+# Retry Context Configuration
+context:
+  # Enable context-aware retries
+  context_aware_enabled: {{CONTEXT_AWARE_RETRY_ENABLED}}
+  
+  # Context factors that influence retry behavior
+  context_factors:
+    # Time-based factors
+    time_based:
+      retry_more_during_off_hours: {{RETRY_MORE_OFF_HOURS_ENABLED}}
+      off_hours_start: "{{OFF_HOURS_START}}"
+      off_hours_end: "{{OFF_HOURS_END}}"
+    
+    # Load-based factors
+    load_based:
+      enable_load_aware_retries: {{LOAD_AWARE_RETRIES_ENABLED}}
+      max_system_load_percentage: {{MAX_SYSTEM_LOAD_PERCENTAGE}}
+      backoff_when_load_high: {{BACKOFF_WHEN_LOAD_HIGH_ENABLED}}
+    
+    # Resource-based factors
+    resource_based:
+      enable_resource_aware_retries: {{RESOURCE_AWARE_RETRIES_ENABLED}}
+      min_free_memory_mb: {{MIN_FREE_MEMORY_MB}}
+      min_free_disk_gb: {{MIN_FREE_DISK_GB}}
+
+# Retry Execution Configuration
+execution:
+  # Enable parallel retries for independent tasks
+  parallel_retries_enabled: {{PARALLEL_RETRIES_ENABLED}}
+  
+  # Maximum number of parallel retries
+  max_parallel_retries: {{MAX_PARALLEL_RETRIES}}
+  
+  # Enable retry scheduling
+  scheduling_enabled: {{SCHEDULING_ENABLED}}
+  
+  # Retry queue size limit
+  queue_size_limit: {{QUEUE_SIZE_LIMIT}}
+  
+  # Enable retry prioritization
+  prioritization_enabled: {{PRIORITIZATION_ENABLED}}
+  
+  # Priority factors
+  priority_factors:
+    failure_count_weight: {{FAILURE_COUNT_WEIGHT}}
+    task_importance_weight: {{TASK_IMPORTANCE_WEIGHT}}
+    time_since_first_attempt_weight: {{TIME_SINCE_FIRST_ATTEMPT_WEIGHT}}
+
+# Retry Monitoring Configuration
+monitoring:
+  # Enable retry monitoring
+  enabled: {{RETRY_MONITORING_ENABLED}}
+  
+  # Enable retry metrics collection
+  metrics_enabled: {{RETRY_METRICS_ENABLED}}
+  
+  # Metrics collection interval in seconds
+  metrics_interval_seconds: {{METRICS_INTERVAL_SECONDS}}
+  
+  # Enable retry logging
+  logging_enabled: {{RETRY_LOGGING_ENABLED}}
+  
+  # Log level for retry operations
+  log_level: "{{RETRY_LOG_LEVEL}}"
+  
+  # Enable retry tracing
+  tracing_enabled: {{RETRY_TRACING_ENABLED}}
+  
+  # Metrics to collect
+  metrics:
+    retry_attempts: {{COLLECT_RETRY_ATTEMPTS}}
+    retry_success_rate: {{COLLECT_RETRY_SUCCESS_RATE}}
+    average_retry_delay: {{COLLECT_AVERAGE_RETRY_DELAY}}
+    circuit_breaker_events: {{COLLECT_CIRCUIT_BREAKER_EVENTS}}
+    retry_queue_length: {{COLLECT_RETRY_QUEUE_LENGTH}}
+
+# Retry Fallback Configuration
+fallback:
+  # Enable fallback mechanisms after retries exhausted
+  enabled: {{FALLBACK_ENABLED}}
+  
+  # Fallback action after retries exhausted
+  action_after_exhaustion: "{{ACTION_AFTER_EXHAUSTION}}"  # escalate, skip, manual_intervention
+  
+  # Enable alternative implementation retries
+  alternative_impl_enabled: {{ALTERNATIVE_IMPL_ENABLED}}
+  
+  # Alternative implementations to try
+  alternative_implementations:
+    - "{{ALTERNATIVE_IMPL_1}}"
+    - "{{ALTERNATIVE_IMPL_2}}"
+  
+  # Enable task reassignment after retries
+  reassignment_enabled: {{REASSIGNMENT_ENABLED}}
+  
+  # Agents to reassign to (if reassignment enabled)
+  reassignment_agents:
+    - "{{REASSIGNMENT_AGENT_1}}"
+    - "{{REASSIGNMENT_AGENT_2}}"
+
+# Performance Configuration
+performance:
+  # Enable retry performance optimization
+  optimization_enabled: {{PERFORMANCE_OPTIMIZATION_ENABLED}}
+  
+  # Retry execution timeout in seconds
+  execution_timeout_seconds: {{EXECUTION_TIMEOUT_SECONDS}}
+  
+  # Enable retry result caching
+  result_caching_enabled: {{RESULT_CACHING_ENABLED}}
+  
+  # Cache TTL for retry results in seconds
+  result_cache_ttl_seconds: {{RESULT_CACHE_TTL_SECONDS}}
+  
+  # Enable retry execution profiling
+  profiling_enabled: {{PROFILING_ENABLED}}
+
+# Security Configuration
+security:
+  # Enable retry operation authentication
+  authentication_enabled: {{RETRY_AUTHENTICATION_ENABLED}}
+  
+  # Authentication method for retry operations
+  auth_method: "{{RETRY_AUTH_METHOD}}"
+  
+  # Enable encryption for retry data
+  encryption_enabled: {{RETRY_ENCRYPTION_ENABLED}}
+  
+  # Encryption algorithm for retry data
+  encryption_algorithm: "{{RETRY_ENCRYPTION_ALGORITHM}}"
+  
+  # Enable audit logging for retry operations
+  audit_logging_enabled: {{RETRY_AUDIT_LOGGING_ENABLED}}
+
+# Emergency Configuration
+emergency:
+  # Enable emergency retry override
+  override_enabled: {{EMERGENCY_OVERRIDE_ENABLED}}
+  
+  # Emergency maximum retry attempts (when override enabled)
+  emergency_max_attempts: {{EMERGENCY_MAX_ATTEMPTS}}
+  
+  # Emergency base delay (when override enabled)
+  emergency_base_delay_seconds: {{EMERGENCY_BASE_DELAY_SECONDS}}
+  
+  # Enable manual retry control
+  manual_control_enabled: {{MANUAL_CONTROL_ENABLED}}
+  
+  # Emergency contact for retry issues
+  emergency_contact: "{{EMERGENCY_CONTACT_INFO}}"

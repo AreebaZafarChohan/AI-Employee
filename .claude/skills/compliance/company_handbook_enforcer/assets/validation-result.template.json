@@ -1,0 +1,87 @@
+{
+  "validation_id": "{{VALIDATION_ID}}",
+  "timestamp": "{{ISO_TIMESTAMP}}",
+  "handbook_version": "{{HANDBOOK_VERSION}}",
+  "enforcement_level": "{{STRICT|WARN|SUGGEST}}",
+
+  "action": {
+    "id": "{{ACTION_ID}}",
+    "type": "{{ACTION_TYPE}}",
+    "description": "{{ACTION_DESCRIPTION}}",
+    "initiator": "{{AGENT_OR_USER_ID}}",
+    "environment": "{{ENVIRONMENT}}",
+    "details": "{{ACTION_DETAILS_JSON}}"
+  },
+
+  "validation": {
+    "compliant": "{{true|false}}",
+    "severity": "{{PASS|LOW|MEDIUM|HIGH|CRITICAL}}",
+    "policies_checked": [
+      "communication.tone",
+      "financial.payment_limit",
+      "privacy.pii_handling",
+      "operational.deployment_windows",
+      "ethical.ai_usage"
+    ],
+    "policies_passed": ["{{POLICY_KEY_1}}", "{{POLICY_KEY_2}}"],
+    "policies_failed": ["{{POLICY_KEY_3}}"],
+    "reasoning": "{{OVERALL_REASONING}}"
+  },
+
+  "violations": [
+    {
+      "policy": "{{POLICY_KEY}}",
+      "severity": "{{LOW|MEDIUM|HIGH|CRITICAL}}",
+      "description": "{{VIOLATION_DESCRIPTION}}",
+      "reasoning": "{{WHY_IT_VIOLATES}}",
+      "current_value": "{{ACTUAL_VALUE}}",
+      "required_value": "{{EXPECTED_VALUE}}",
+      "impact": {
+        "business_risk": "{{RISK_DESCRIPTION}}",
+        "affected_stakeholders": ["{{STAKEHOLDER_1}}", "{{STAKEHOLDER_2}}"],
+        "remediation_required": "{{true|false}}"
+      }
+    }
+  ],
+
+  "alternative": {
+    "available": "{{true|false}}",
+    "type": "{{template|incremental|manual}}",
+    "description": "{{ALTERNATIVE_DESCRIPTION}}",
+    "compliant_version": "{{SUGGESTED_ALTERNATIVE}}",
+    "changes_required": [
+      "{{CHANGE_1}}",
+      "{{CHANGE_2}}"
+    ],
+    "estimated_effort": "{{low|medium|high}}"
+  },
+
+  "approval": {
+    "required": "{{true|false}}",
+    "approver": "{{APPROVER_ROLE_OR_EMAIL}}",
+    "request_id": "{{APPROVAL_REQUEST_ID}}",
+    "status": "{{pending|approved|rejected|timeout}}",
+    "approval_url": "{{APPROVAL_SYSTEM_URL}}",
+    "expires_at": "{{EXPIRY_ISO_TIMESTAMP}}",
+    "timeout_action": "{{reject|escalate|allow_with_warning}}"
+  },
+
+  "audit": {
+    "audit_log_id": "{{AUDIT_LOG_ENTRY_ID}}",
+    "audit_trail_url": "{{AUDIT_SYSTEM_URL}}",
+    "recorded_at": "{{ISO_TIMESTAMP}}",
+    "session_id": "{{SESSION_ID}}"
+  },
+
+  "next_steps": [
+    "{{NEXT_STEP_1}}",
+    "{{NEXT_STEP_2}}"
+  ],
+
+  "metadata": {
+    "validation_duration_ms": "{{VALIDATION_TIME}}",
+    "cache_hit": "{{true|false}}",
+    "policy_source": "{{HANDBOOK_FILE_PATH}}",
+    "enforcer_version": "{{SKILL_VERSION}}"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "signal_type": "approval_sync",
+  "task_id": "{{TASK_ID}}",
+  "from_agent": "human",
+  "to_agent": "lex",
+  "created_at": "{{TIMESTAMP_ISO}}",
+  "approval": {
+    "decision": "{{DECISION}}",
+    "reason": "{{HUMAN_REASON}}",
+    "approved_by": "{{HUMAN_USER}}",
+    "approved_at": "{{APPROVAL_TIMESTAMP}}",
+    "task_path": "{{TARGET_FOLDER}}/{{TASK_ID}}.json",
+    "sync_policy": "sync",
+    "conditions": [
+      "{{CONDITION_1}}",
+      "{{CONDITION_2}}"
+    ]
+  },
+  "signature": {
+    "user": "{{HUMAN_USER}}",
+    "timestamp": "{{TIMESTAMP_ISO}}",
+    "hmac": "{{HMAC_SIGNATURE}}"
+  },
+  "metadata": {
+    "approved_via": "{{APPROVAL_METHOD}}",
+    "approval_location": "cloud",
+    "approval_device": "{{DEVICE_INFO}}"
+  }
+}

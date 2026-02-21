@@ -1,0 +1,127 @@
+{
+  "recovery_plan_id": "REC-{{YYYYMMDD}}-{{HHMMSS}}-{{HASH}}",
+  "task_id": "{{TASK_ID}}",
+  "created_at": "{{ISO8601_TIMESTAMP}}",
+  "created_by": "{{AGENT_NAME}}",
+  "status": "active",
+
+  "_comment_status": "Status values: active | completed | abandoned",
+
+  "error_context": {
+    "error_message": "{{ERROR_MESSAGE}}",
+    "error_code": "{{ERROR_CODE}}",
+    "error_stack": "{{ERROR_STACK_TRUNCATED}}",
+    "http_status": "{{HTTP_STATUS}}",
+    "occurred_at": "{{ERROR_TIMESTAMP}}",
+    "task_state": "{{TASK_STATE}}",
+    "attempt_number": "{{ATTEMPT_NUMBER}}",
+    "_comment": "All sensitive data sanitized (tokens, passwords, emails redacted)"
+  },
+
+  "classification": {
+    "error_type": "{{ERROR_TYPE}}",
+    "category": "{{ERROR_CATEGORY}}",
+    "confidence": "{{CONFIDENCE_LEVEL}}",
+    "reasoning": "{{CLASSIFICATION_REASONING}}",
+    "_comment_error_type": "Values: transient | permanent | ambiguous",
+    "_comment_category": "Examples: network_timeout, rate_limit, authentication_failure, file_lock, service_unavailable",
+    "_comment_confidence": "Values: high | medium | low"
+  },
+
+  "recovery_strategy": {
+    "action": "{{RECOVERY_ACTION}}",
+    "max_retries": "{{MAX_RETRIES}}",
+    "current_attempt": "{{CURRENT_ATTEMPT}}",
+    "backoff_strategy": "{{BACKOFF_STRATEGY}}",
+    "next_retry_at": "{{NEXT_RETRY_TIMESTAMP}}",
+    "backoff_ms": "{{BACKOFF_MILLISECONDS}}",
+    "_comment_action": "Values: retry | escalate | abandon",
+    "_comment_backoff_strategy": "Values: exponential | linear | fibonacci | rate_limit_aware | none",
+
+    "backoff_schedule": [
+      {
+        "attempt": 1,
+        "delay_ms": "{{DELAY_MS_ATTEMPT_1}}",
+        "retry_at": "{{RETRY_TIMESTAMP_1}}"
+      },
+      {
+        "attempt": 2,
+        "delay_ms": "{{DELAY_MS_ATTEMPT_2}}",
+        "retry_at": "{{RETRY_TIMESTAMP_2}}"
+      },
+      {
+        "attempt": 3,
+        "delay_ms": "{{DELAY_MS_ATTEMPT_3}}",
+        "retry_at": "{{RETRY_TIMESTAMP_3}}"
+      }
+    ],
+
+    "_impact_note": "Backoff schedule computed with jitter if RECOVERY_JITTER_FACTOR > 0. Delays will vary slightly between runs in production."
+  },
+
+  "recommended_actions": [
+    {
+      "priority": 1,
+      "action": "{{ACTION_1_NAME}}",
+      "description": "{{ACTION_1_DESCRIPTION}}",
+      "automated": true,
+      "requires_approval": false,
+      "trigger_condition": null
+    },
+    {
+      "priority": 2,
+      "action": "{{ACTION_2_NAME}}",
+      "description": "{{ACTION_2_DESCRIPTION}}",
+      "automated": false,
+      "requires_approval": false,
+      "trigger_condition": null
+    },
+    {
+      "priority": 3,
+      "action": "{{ACTION_3_NAME}}",
+      "description": "{{ACTION_3_DESCRIPTION}}",
+      "automated": true,
+      "requires_approval": false,
+      "trigger_condition": "{{TRIGGER_CONDITION}}"
+    }
+  ],
+
+  "escalation_policy": {
+    "escalate_after_attempts": "{{ESCALATE_AFTER_ATTEMPTS}}",
+    "escalate_if_permanent": true,
+    "escalation_reason": "{{ESCALATION_REASON}}",
+    "escalation_target": "human_operator",
+    "escalation_priority": "{{ESCALATION_PRIORITY}}",
+    "_comment_escalation_priority": "Values: low | normal | high | urgent",
+    "_impact_note": "Permanent errors escalate immediately. Transient errors escalate after max_retries exceeded."
+  },
+
+  "metadata": {
+    "related_tasks": [],
+    "similar_failures_count": 0,
+    "last_successful_execution": "{{LAST_SUCCESS_TIMESTAMP}}",
+    "environment": "{{ENVIRONMENT}}",
+    "agent_version": "{{AGENT_VERSION}}",
+    "recovery_planner_version": "1.0.0",
+    "_comment_environment": "Values: development | staging | production"
+  },
+
+  "audit_trail": {
+    "plan_created_at": "{{ISO8601_TIMESTAMP}}",
+    "plan_created_by": "{{AGENT_NAME}}",
+    "plan_updated_at": null,
+    "plan_updated_by": null,
+    "execution_started_at": null,
+    "execution_completed_at": null,
+    "execution_result": null
+  },
+
+  "_schema_version": "1.0",
+  "_template_notes": {
+    "usage": "This template is used by error_recovery_planner to generate recovery plans",
+    "placeholders": "All {{PLACEHOLDER}} values must be replaced with actual data",
+    "sensitive_data": "Error messages sanitized by sanitizeError() function before insertion",
+    "file_naming": "Recovery plans saved as: REC-YYYYMMDD-HHMMSS-HASH-task_id.json",
+    "retention": "Plans older than RECOVERY_PLAN_RETENTION_DAYS archived automatically"
+  }
+}

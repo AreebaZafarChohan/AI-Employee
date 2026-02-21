@@ -1,0 +1,28 @@
+{
+  "plan_id": "{{PLAN_ID}}",
+  "created_at": "{{TIMESTAMP_ISO}}",
+  "created_by": "{{AGENT_NAME}}",
+  "status": "{{STATUS}}",
+  "priority": "{{PRIORITY}}",
+  "tags": ["{{TAG1}}", "{{TAG2}}"],
+  "source": "{{SOURCE_TYPE}}",
+  "autonomy_required": "{{AUTONOMY_TIER}}",
+  "title": "{{TASK_TITLE}}",
+  "goal": "{{TASK_GOAL}}",
+  "steps": [
+    {
+      "action": "{{ACTION_1}}",
+      "status": "pending"
+    },
+    {
+      "action": "{{ACTION_2}}",
+      "status": "pending"
+    }
+  ],
+  "metadata": {
+    "source_file": "{{SOURCE_FILE_PATH}}",
+    "estimated_duration_minutes": {{DURATION}},
+    "requires_human_review": {{REQUIRES_APPROVAL}},
+    "dependencies": []
+  }
+}

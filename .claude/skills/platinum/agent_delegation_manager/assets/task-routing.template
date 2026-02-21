@@ -1,0 +1,196 @@
+# Task Routing Configuration Template
+
+# This template defines the configuration for routing tasks between agents
+# using the Agent Delegation Manager skill.
+
+---
+# Global Routing Configuration
+routing:
+  # Strategy for selecting agents (options: round_robin, load_balanced, priority_based, capability_based)
+  strategy: "{{ROUTING_STRATEGY}}"
+  
+  # Default timeout for task assignment (in seconds)
+  assignment_timeout: {{ASSIGNMENT_TIMEOUT_SECONDS}}
+  
+  # Maximum number of retry attempts for failed assignments
+  max_retries: {{MAX_RETRY_ATTEMPTS}}
+  
+  # Exponential backoff factor for retries
+  retry_backoff_factor: {{RETRY_BACKOFF_FACTOR}}
+
+# Agent Definitions and Capabilities
+agents:
+  # Example agent configuration
+  - id: "{{AGENT_ID}}"
+    name: "{{AGENT_NAME}}"
+    capabilities:
+      # List of capabilities this agent can handle
+      - "{{AGENT_CAPABILITY_1}}"
+      - "{{AGENT_CAPABILITY_2}}"
+      - "{{AGENT_CAPABILITY_3}}"
+    
+    # Current load threshold (0-100)
+    max_load_percentage: {{AGENT_MAX_LOAD_PERCENTAGE}}
+    
+    # Geographic location (optional, for geo-aware routing)
+    location: "{{AGENT_LOCATION}}"
+    
+    # Endpoint for agent communication
+    endpoint: "{{AGENT_ENDPOINT_URL}}"
+    
+    # Authentication token for agent communication
+    auth_token: "{{AGENT_AUTH_TOKEN}}"
+    
+    # Health check endpoint
+    health_check_url: "{{AGENT_HEALTH_CHECK_URL}}"
+    
+    # Preferred task types (for priority-based routing)
+    preferred_task_types:
+      - "{{PREFERRED_TASK_TYPE_1}}"
+      - "{{PREFERRED_TASK_TYPE_2}}"
+
+# Task Type Definitions
+task_types:
+  # Define different task types and their requirements
+  - name: "{{TASK_TYPE_NAME}}"
+    priority: "{{TASK_PRIORITY}}"  # low, medium, high, critical
+    required_capabilities:
+      - "{{REQUIRED_CAPABILITY_1}}"
+      - "{{REQUIRED_CAPABILITY_2}}"
+    estimated_duration_seconds: {{ESTIMATED_DURATION_SECONDS}}
+    max_retries: {{TASK_MAX_RETRIES}}
+    
+  # Example: Data processing task
+  - name: "data_processing"
+    priority: "high"
+    required_capabilities:
+      - "data_processing"
+      - "compute_intensive"
+    estimated_duration_seconds: 300
+    max_retries: 3
+
+# Priority Rules
+priority_rules:
+  # Define how tasks should be prioritized
+  - rule_name: "{{PRIORITY_RULE_NAME}}"
+    condition: "{{CONDITION_EXPRESSION}}"
+    priority_boost: {{PRIORITY_BOOST_VALUE}}
+    applies_to_task_types:
+      - "{{APPLIES_TO_TASK_TYPE_1}}"
+      - "{{APPLIES_TO_TASK_TYPE_2}}"
+
+# Example priority rule
+  - rule_name: "urgent_customer_request"
+    condition: "task.customer_tier == 'premium' and task.urgency == 'high'"
+    priority_boost: 10
+    applies_to_task_types:
+      - "support_request"
+      - "query_processing"
+
+# Load Balancing Configuration
+load_balancing:
+  # Method for calculating agent load
+  load_calculation_method: "{{LOAD_CALCULATION_METHOD}}"  # current_tasks, cpu_usage, custom_metric
+  
+  # Weight for different load factors (sum should equal 1.0)
+  load_weights:
+    current_task_count: {{WEIGHT_CURRENT_TASK_COUNT}}
+    cpu_utilization: {{WEIGHT_CPU_UTILIZATION}}
+    memory_utilization: {{WEIGHT_MEMORY_UTILIZATION}}
+  
+  # Thresholds for load-based routing
+  load_thresholds:
+    low_load: {{LOW_LOAD_THRESHOLD}}      # Below this, agent is underutilized
+    high_load: {{HIGH_LOAD_THRESHOLD}}    # Above this, agent is overloaded
+    critical_load: {{CRITICAL_LOAD_THRESHOLD}}  # Above this, agent is critically loaded
+
+# Failover Configuration
+failover:
+  # Agents to use when primary agents are unavailable
+  failover_agents:
+    - "{{FAILOVER_AGENT_ID_1}}"
+    - "{{FAILOVER_AGENT_ID_2}}"
+  
+  # Time to wait before attempting to restore primary agent (in seconds)
+  primary_restore_wait_time: {{PRIMARY_RESTORE_WAIT_TIME_SECONDS}}
+  
+  # Threshold for marking an agent as failed
+  failure_threshold:
+    consecutive_failures: {{CONSECUTIVE_FAILURE_THRESHOLD}}
+    failure_window_minutes: {{FAILURE_WINDOW_MINUTES}}
+
+# Geographic Routing Configuration (if applicable)
+geographic_routing:
+  # Enable geographic-aware routing
+  enabled: {{GEOGRAPHIC_ROUTING_ENABLED}}
+  
+  # Mapping of regions to preferred agents
+  region_agent_mapping:
+    "{{CLIENT_REGION}}": "{{PREFERRED_AGENT_ID}}"
+  
+  # Maximum latency threshold (in milliseconds) for geographic routing
+  max_latency_threshold_ms: {{MAX_LATENCY_THRESHOLD_MS}}
+
+# Circuit Breaker Configuration
+circuit_breaker:
+  # Enable circuit breaker pattern for agent failures
+  enabled: {{CIRCUIT_BREAKER_ENABLED}}
+  
+  # Number of failures before opening the circuit
+  failure_threshold: {{CIRCUIT_BREAKER_FAILURE_THRESHOLD}}
+  
+  # Time to wait before attempting to close the circuit (in seconds)
+  timeout_seconds: {{CIRCUIT_BREAKER_TIMEOUT_SECONDS}}
+  
+  # Success threshold for closing the circuit
+  success_threshold: {{CIRCUIT_BREAKER_SUCCESS_THRESHOLD}}
+
+# Monitoring and Logging Configuration
+monitoring:
+  # Enable detailed logging for all routing decisions
+  detailed_logging_enabled: {{DETAILED_LOGGING_ENABLED}}
+  
+  # Log level for routing decisions
+  log_level: "{{LOG_LEVEL}}"  # debug, info, warn, error
+  
+  # Metrics collection endpoint
+  metrics_endpoint: "{{METRICS_ENDPOINT_URL}}"
+  
+  # Enable audit logging for compliance
+  audit_logging_enabled: {{AUDIT_LOGGING_ENABLED}}
+
+# Security Configuration
+security:
+  # Enable authentication for agent communication
+  authentication_required: {{AUTHENTICATION_REQUIRED}}
+  
+  # Allowed authentication methods
+  allowed_auth_methods:
+    - "{{ALLOWED_AUTH_METHOD_1}}"
+    - "{{ALLOWED_AUTH_METHOD_2}}"
+  
+  # Encryption settings for task data
+  encryption_enabled: {{ENCRYPTION_ENABLED}}
+  encryption_algorithm: "{{ENCRYPTION_ALGORITHM}}"
+
+# Performance Tuning
+performance:
+  # Cache TTL for agent availability information (in seconds)
+  agent_availability_cache_ttl: {{AGENT_AVAILABILITY_CACHE_TTL_SECONDS}}
+  
+  # Batch size for task assignments
+  task_batch_size: {{TASK_BATCH_SIZE}}
+  
+  # Thread pool size for concurrent operations
+  thread_pool_size: {{THREAD_POOL_SIZE}}
+
+# Emergency Override Configuration
+emergency:
+  # Enable emergency override mode
+  override_enabled: {{EMERGENCY_OVERRIDE_ENABLED}}
+  
+  # Default agent to use in emergency mode
+  default_emergency_agent: "{{DEFAULT_EMERGENCY_AGENT_ID}}"
+  
+  # Emergency contact for manual intervention
+  emergency_contact: "{{EMERGENCY_CONTACT_INFO}}"

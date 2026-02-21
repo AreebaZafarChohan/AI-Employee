@@ -1,0 +1,135 @@
+# IMPACT NOTES:
+# - Standardized commands across projects
+# - Works with Docker Compose
+# - Parameterized for different environments
+# - No secrets in Makefile (all from .env)
+# - Cross-platform compatible (uses Docker for tooling)
+
+.PHONY: help build up down restart logs shell test lint format migrate backup restore
+
+# Default target
+help: ## Show this help message
+	@echo 'Usage: make [target]'
+	@echo ''
+	@echo 'Targets:'
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+# Docker Compose commands
+build: ## Build all services
+	docker-compose -f docker-compose.{{ENV}}.yml build
+
+up: ## Start all services
+	docker-compose -f docker-compose.{{ENV}}.yml up -d
+	@echo "Application started at http://localhost:{{HOST_PORT}}"
+
+down: ## Stop all services
+	docker-compose -f docker-compose.{{ENV}}.yml down
+
+restart: down up ## Restart all services
+
+logs: ## Show logs for all services
+	docker-compose -f docker-compose.{{ENV}}.yml logs -f --tail=100
+
+logs-{{APP_NAME}}: ## Show logs for app service only
+	docker-compose -f docker-compose.{{ENV}}.yml logs -f --tail=100 {{APP_NAME}}
+
+# Development commands
+shell: ## Access shell in app container
+	docker-compose -f docker-compose.{{ENV}}.yml exec {{APP_NAME}} sh
+
+db-shell: ## Access database shell
+	docker-compose -f docker-compose.{{ENV}}.yml exec {{DATABASE_SERVICE_NAME}} {{DB_SHELL_COMMAND}}
+
+cache-shell: ## Access redis CLI
+	docker-compose -f docker-compose.{{ENV}}.yml exec {{CACHE_SERVICE_NAME}} redis-cli
+
+# Testing
+test: ## Run tests
+	docker-compose -f docker-compose.{{ENV}}.yml exec {{APP_NAME}} {{TEST_COMMAND}}
+
+test-watch: ## Run tests in watch mode
+	docker-compose -f docker-compose.{{ENV}}.yml exec {{APP_NAME}} {{TEST_WATCH_COMMAND}}
+
+test-coverage: ## Run tests with coverage
+	docker-compose -f docker-compose.{{ENV}}.yml exec {{APP_NAME}} {{TEST_COVERAGE_COMMAND}}
+
+# Code quality
+lint: ## Run linter
+	docker-compose -f docker-compose.{{ENV}}.yml exec {{APP_NAME}} {{LINT_COMMAND}}
+
+lint-fix: ## Run linter with auto-fix
+	docker-compose -f docker-compose.{{ENV}}.yml exec {{APP_NAME}} {{LINT_FIX_COMMAND}}
+
+format: ## Format code
+	docker-compose -f docker-compose.{{ENV}}.yml exec {{APP_NAME}} {{FORMAT_COMMAND}}
+
+# Database commands
+migrate: ## Run database migrations
+	docker-compose -f docker-compose.{{ENV}}.yml exec {{APP_NAME}} {{MIGRATE_COMMAND}}
+
+migrate-rollback: ## Rollback last migration
+	docker-compose -f docker-compose.{{ENV}}.yml exec {{APP_NAME}} {{MIGRATE_ROLLBACK_COMMAND}}
+
+seed: ## Seed database with sample data
+	docker-compose -f docker-compose.{{ENV}}.yml exec {{APP_NAME}} {{SEED_COMMAND}}
+
+# Backup and restore
+backup-db: ## Backup database
+	docker-compose -f docker-compose.{{ENV}}.yml exec {{DATABASE_SERVICE_NAME}} {{BACKUP_COMMAND}} > backup_$(date +%Y%m%d_%H%M%S).sql
+
+restore-db: ## Restore database (usage: make restore-db FILE=backup.sql)
+	cat $(FILE) | docker-compose -f docker-compose.{{ENV}}.yml exec -T {{DATABASE_SERVICE_NAME}} {{RESTORE_COMMAND}}
+
+# Utility commands
+ps: ## Show running containers
+	docker-compose -f docker-compose.{{ENV}}.yml ps
+
+clean: ## Remove stopped containers and unused images
+	docker-compose -f docker-compose.{{ENV}}.yml down --rmi local --volumes --remove-orphans
+
+prune: ## Remove ALL unused Docker data (use with caution)
+	docker system prune -a --volumes -f
+
+# Deployment commands (for production)
+docker-login:
+	docker login -u {{DOCKER_REGISTRY_USER}} -p {{SECRET_DOCKER_REGISTRY_PASSWORD}} {{DOCKER_REGISTRY}}
+
+build-prod: ## Build production image
+	docker build -t {{IMAGE_NAME}}:{{VERSION}} .
+	docker tag {{IMAGE_NAME}}:{{VERSION}} {{IMAGE_NAME}}:latest
+
+push-prod: ## Push production image to registry
+	docker push {{IMAGE_NAME}}:{{VERSION}}
+	docker push {{IMAGE_NAME}}:latest
+
+deploy-staging: ## Deploy to staging
+	kubectl apply -f k8s/staging/
+	kubectl rollout status deployment/{{APP_NAME}}-deployment -n staging
+
+deploy-prod: ## Deploy to production (with confirmation)
+	@echo "Are you sure you want to deploy to production? [y/N]"
+	@read -r response; \
+	case $$response in \
+		[yY]) \
+			kubectl apply -f k8s/production/ && \
+			kubectl rollout status deployment/{{APP_NAME}}-deployment -n production ;; \
+		*) \
+			echo "Deployment cancelled" ;; \
+	esac
+
+# Health checks
+health: ## Check application health
+	curl -f http://localhost:{{HOST_PORT}}/health || echo "Health check failed"
+
+ready: ## Check application readiness
+	curl -f http://localhost:{{HOST_PORT}}/ready || echo "Readiness check failed"
+
+# Environment-specific configs
+dev: ## Switch to development environment
+	$(eval ENV=dev)
+
+staging: ## Switch to staging environment
+	$(eval ENV=staging)
+
+prod: ## Switch to production environment
+	$(eval ENV=prod)

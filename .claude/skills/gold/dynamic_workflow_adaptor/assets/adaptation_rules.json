@@ -1,0 +1,174 @@
+{
+  "version": "1.0",
+  "description": "Configuration file for defining dynamic workflow adaptation rules",
+  "adaptation_rules": [
+    {
+      "id": "critical_error_reroute",
+      "name": "Critical Error Reroute",
+      "description": "Reroute workflow when critical errors occur",
+      "enabled": true,
+      "trigger": {
+        "event_type": "system_error",
+        "condition": "event.severity === 'critical'"
+      },
+      "actions": [
+        {
+          "type": "reroute_task",
+          "target_step": "current_step",
+          "alternative_path": "emergency_processing",
+          "priority_boost": 10
+        }
+      ],
+      "rate_limit": {
+        "max_per_minute": 5,
+        "window_seconds": 60
+      },
+      "validation": {
+        "pre_check": "validate_emergency_path_available()",
+        "post_check": "verify_workflow_continuity()"
+      }
+    },
+    {
+      "id": "high_priority_boost",
+      "name": "High Priority Boost",
+      "description": "Boost priority of workflows when high-priority events occur",
+      "enabled": true,
+      "trigger": {
+        "event_type": "priority_change",
+        "condition": "event.priority === 'urgent'"
+      },
+      "actions": [
+        {
+          "type": "adjust_priority",
+          "target_workflow": "current_workflow",
+          "new_priority": 9,
+          "affects_children": true
+        },
+        {
+          "type": "preempt_lower_priority",
+          "priority_threshold": 5,
+          "timeout_seconds": 30
+        }
+      ],
+      "rate_limit": {
+        "max_per_minute": 10,
+        "window_seconds": 60
+      }
+    },
+    {
+      "id": "resource_fallback",
+      "name": "Resource Fallback",
+      "description": "Switch to alternative resources when primary ones are unavailable",
+      "enabled": true,
+      "trigger": {
+        "event_type": "resource_status_change",
+        "condition": "event.resource.status === 'unavailable' && event.resource.type === 'primary'"
+      },
+      "actions": [
+        {
+          "type": "switch_resource",
+          "original_resource": "primary_service",
+          "alternative_resource": "secondary_service",
+          "fallback_strategy": "immediate"
+        },
+        {
+          "type": "update_workflow_path",
+          "new_path": "degraded_mode_processing",
+          "preserve_state": true
+        }
+      ],
+      "validation": {
+        "pre_check": "check_alternative_resource_availability()",
+        "post_check": "verify_resource_switch_success()"
+      }
+    },
+    {
+      "id": "load_based_throttling",
+      "name": "Load-Based Throttling",
+      "description": "Throttle non-critical workflows when system load is high",
+      "enabled": true,
+      "trigger": {
+        "event_type": "performance_metrics",
+        "condition": "metrics.system_load > 0.85 && metrics.cpu_utilization > 0.80"
+      },
+      "actions": [
+        {
+          "type": "throttle_workflow",
+          "target_workflows": "non_critical",
+          "throttle_percentage": 30,
+          "duration_minutes": 10
+        },
+        {
+          "type": "increase_resources",
+          "resource_type": "compute",
+          "scaling_factor": 1.5,
+          "max_instances": 10
+        }
+      ],
+      "rate_limit": {
+        "max_per_minute": 2,
+        "window_seconds": 120
+      }
+    },
+    {
+      "id": "deadline_urgency_handler",
+      "name": "Deadline Urgency Handler",
+      "description": "Accelerate workflows as deadlines approach",
+      "enabled": true,
+      "trigger": {
+        "event_type": "deadline_monitor",
+        "condition": "event.remaining_time < 3600 && !event.progress_met_threshold"
+      },
+      "actions": [
+        {
+          "type": "skip_optional_steps",
+          "workflow_part": "validation_extra",
+          "preserve_core_functionality": true
+        },
+        {
+          "type": "increase_parallelism",
+          "target_step": "processing",
+          "factor": 2,
+          "resource_limit": 8
+        },
+        {
+          "type": "reroute_to_fast_track",
+          "current_path": "standard_processing",
+          "new_path": "express_processing",
+          "validation_required": true
+        }
+      ],
+      "validation": {
+        "pre_check": "validate_express_path_feasibility()",
+        "post_check": "confirm_deadline_feasibility()"
+      }
+    }
+  ],
+  "global_settings": {
+    "default_rate_limit": {
+      "max_per_minute": 20,
+      "window_seconds": 60
+    },
+    "adaptation_timeout_seconds": 30,
+    "event_buffer_size": 1000,
+    "checkpoint_interval_seconds": 300,
+    "rollback_enabled": true,
+    "logging_level": "INFO",
+    "state_storage_backend": "redis",
+    "state_storage_config": {
+      "redis_url": "${DYNAMIC_WORKFLOW_REDIS_URL}",
+      "namespace": "workflow_adaptations"
+    },
+    "event_source_config": {
+      "polling_interval_ms": 1000,
+      "batch_size": 100,
+      "retry_attempts": 3
+    }
+  },
+  "validation_rules": {
+    "prevent_deadlocks": true,
+    "ensure_workflow_continuity": true,
+    "validate_resource_availability": true,
+    "check_circular_dependencies": true
+  }
+}

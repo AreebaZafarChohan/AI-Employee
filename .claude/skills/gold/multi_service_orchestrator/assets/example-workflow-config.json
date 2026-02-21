@@ -1,0 +1,306 @@
+{
+  "version": "1.0",
+  "description": "Example configuration file demonstrating various multi-service orchestration patterns",
+  "workflows": [
+    {
+      "id": "simple_notification_chain",
+      "name": "Simple Notification Chain",
+      "description": "Trigger a series of notifications through different channels",
+      "enabled": true,
+      "steps": [
+        {
+          "id": "validate_recipient",
+          "service": "validation_service",
+          "endpoint": "/validate/email",
+          "method": "POST",
+          "timeout_seconds": 5,
+          "payload_template": {
+            "email": "{{input.recipient}}"
+          }
+        },
+        {
+          "id": "send_email",
+          "service": "email_service",
+          "endpoint": "/send",
+          "method": "POST",
+          "depends_on": ["validate_recipient"],
+          "timeout_seconds": 10,
+          "payload_template": {
+            "to": "{{input.recipient}}",
+            "subject": "{{input.subject}}",
+            "body": "{{input.body}}"
+          }
+        },
+        {
+          "id": "send_push_notification",
+          "service": "push_service",
+          "endpoint": "/send",
+          "method": "POST",
+          "depends_on": ["send_email"],
+          "timeout_seconds": 5,
+          "payload_template": {
+            "recipient": "{{input.recipient}}",
+            "message": "{{input.subject}}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "parallel_image_processing",
+      "name": "Parallel Image Processing",
+      "description": "Process images through multiple filters in parallel",
+      "enabled": true,
+      "steps": [
+        {
+          "id": "upload_original",
+          "service": "storage_service",
+          "endpoint": "/upload",
+          "method": "POST",
+          "timeout_seconds": 30,
+          "payload_template": {
+            "image_data": "{{input.image_data}}",
+            "filename": "{{input.filename}}"
+          }
+        },
+        {
+          "id": "apply_filters",
+          "service": "image_processing_service",
+          "endpoint": "/filter",
+          "method": "POST",
+          "depends_on": ["upload_original"],
+          "parallel_branches": [
+            {
+              "id": "apply_filter_grayscale",
+              "payload_template": {
+                "image_id": "{{upload_original.response.image_id}}",
+                "filter": "grayscale"
+              }
+            },
+            {
+              "id": "apply_filter_sepia",
+              "payload_template": {
+                "image_id": "{{upload_original.response.image_id}}",
+                "filter": "sepia"
+              }
+            },
+            {
+              "id": "apply_filter_blur",
+              "payload_template": {
+                "image_id": "{{upload_original.response.image_id}}",
+                "filter": "blur"
+              }
+            }
+          ],
+          "timeout_seconds": 60
+        },
+        {
+          "id": "combine_results",
+          "service": "image_processing_service",
+          "endpoint": "/combine",
+          "method": "POST",
+          "depends_on": ["apply_filters"],
+          "timeout_seconds": 20,
+          "payload_template": {
+            "processed_images": [
+              "{{apply_filter_grayscale.response.output_id}}",
+              "{{apply_filter_sepia.response.output_id}}",
+              "{{apply_filter_blur.response.output_id}}"
+            ],
+            "layout": "grid"
+          }
+        }
+      ]
+    },
+    {
+      "id": "conditional_approval_process",
+      "name": "Conditional Approval Process",
+      "description": "Route requests through different approval levels based on amount",
+      "enabled": true,
+      "steps": [
+        {
+          "id": "validate_request",
+          "service": "validation_service",
+          "endpoint": "/validate/request",
+          "method": "POST",
+          "timeout_seconds": 10,
+          "payload_template": {
+            "request_data": "{{input.request_data}}"
+          }
+        },
+        {
+          "id": "route_based_on_amount",
+          "service": "routing_service",
+          "endpoint": "/route",
+          "method": "POST",
+          "depends_on": ["validate_request"],
+          "timeout_seconds": 5,
+          "payload_template": {
+            "amount": "{{input.request_data.amount}}",
+            "thresholds": {
+              "manager_approval": 1000,
+              "director_approval": 5000,
+              "executive_approval": 10000
+            }
+          }
+        },
+        {
+          "id": "manager_approval",
+          "service": "approval_service",
+          "endpoint": "/approve",
+          "method": "POST",
+          "condition": "{{route_based_on_amount.response.level}} === 'manager'",
+          "timeout_seconds": 3600,
+          "payload_template": {
+            "request_id": "{{input.request_data.id}}",
+            "approver_role": "manager"
+          }
+        },
+        {
+          "id": "director_approval",
+          "service": "approval_service",
+          "endpoint": "/approve",
+          "method": "POST",
+          "condition": "{{route_based_on_amount.response.level}} === 'director'",
+          "timeout_seconds": 3600,
+          "payload_template": {
+            "request_id": "{{input.request_data.id}}",
+            "approver_role": "director"
+          }
+        },
+        {
+          "id": "executive_approval",
+          "service": "approval_service",
+          "endpoint": "/approve",
+          "method": "POST",
+          "condition": "{{route_based_on_amount.response.level}} === 'executive'",
+          "timeout_seconds": 7200,
+          "payload_template": {
+            "request_id": "{{input.request_data.id}}",
+            "approver_role": "executive"
+          }
+        },
+        {
+          "id": "finalize_request",
+          "service": "request_service",
+          "endpoint": "/finalize",
+          "method": "POST",
+          "depends_on": [
+            "manager_approval",
+            "director_approval", 
+            "executive_approval"
+          ],
+          "timeout_seconds": 10,
+          "payload_template": {
+            "request_id": "{{input.request_data.id}}",
+            "status": "approved"
+          }
+        }
+      ]
+    },
+    {
+      "id": "microservice_health_check",
+      "name": "Microservice Health Check",
+      "description": "Check health of multiple services and aggregate results",
+      "enabled": true,
+      "steps": [
+        {
+          "id": "check_auth_service",
+          "service": "auth_service",
+          "endpoint": "/health",
+          "method": "GET",
+          "timeout_seconds": 5
+        },
+        {
+          "id": "check_user_service",
+          "service": "user_service",
+          "endpoint": "/health",
+          "method": "GET",
+          "timeout_seconds": 5
+        },
+        {
+          "id": "check_payment_service",
+          "service": "payment_service",
+          "endpoint": "/health",
+          "method": "GET",
+          "timeout_seconds": 5
+        },
+        {
+          "id": "check_inventory_service",
+          "service": "inventory_service",
+          "endpoint": "/health",
+          "method": "GET",
+          "timeout_seconds": 5
+        },
+        {
+          "id": "aggregate_health",
+          "service": "monitoring_service",
+          "endpoint": "/aggregate-health",
+          "method": "POST",
+          "depends_on": [
+            "check_auth_service",
+            "check_user_service",
+            "check_payment_service",
+            "check_inventory_service"
+          ],
+          "timeout_seconds": 10,
+          "payload_template": {
+            "checks": [
+              {
+                "service": "auth_service",
+                "status": "{{check_auth_service.response.status}}"
+              },
+              {
+                "service": "user_service", 
+                "status": "{{check_user_service.response.status}}"
+              },
+              {
+                "service": "payment_service",
+                "status": "{{check_payment_service.response.status}}"
+              },
+              {
+                "service": "inventory_service",
+                "status": "{{check_inventory_service.response.status}}"
+              }
+            ]
+          }
+        },
+        {
+          "id": "notify_if_issues",
+          "service": "alert_service",
+          "endpoint": "/send-alert",
+          "method": "POST",
+          "condition": "{{aggregate_health.response.has_issues}}",
+          "timeout_seconds": 10,
+          "payload_template": {
+            "alert_type": "service_health_issue",
+            "details": "{{aggregate_health.response.details}}"
+          }
+        }
+      ]
+    }
+  ],
+  "global_settings": {
+    "default_timeout_seconds": 30,
+    "max_concurrent_workflows": 25,
+    "state_storage_backend": "database",
+    "state_storage_config": {
+      "connection_string": "${ORCHESTRATOR_DB_CONNECTION_STRING}",
+      "table_name": "workflow_instances"
+    },
+    "event_logging": {
+      "enabled": true,
+      "backend": "file",
+      "path": "/var/log/orchestrator/events.log"
+    },
+    "circuit_breaker_defaults": {
+      "failure_threshold": 5,
+      "timeout_seconds": 60,
+      "reset_timeout_seconds": 300
+    },
+    "retry_defaults": {
+      "max_attempts": 3,
+      "backoff_multiplier": 2,
+      "initial_delay_seconds": 1
+    }
+  }
+}

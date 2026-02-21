@@ -1,0 +1,34 @@
+{
+  "timestamp": "{{TIMESTAMP_ISO}}",
+  "trace_id": "{{TRACE_ID}}",
+  "actor": {
+    "type": "{{ACTOR_TYPE}}",
+    "name": "{{ACTOR_NAME}}",
+    "id": "{{ACTOR_ID}}"
+  },
+  "action": {
+    "type": "{{ACTION_TYPE}}",
+    "verb": "{{ACTION_VERB}}",
+    "category": "{{CATEGORY}}"
+  },
+  "resource": {
+    "type": "{{RESOURCE_TYPE}}",
+    "id": "{{RESOURCE_ID}}",
+    "path": "{{RESOURCE_PATH}}"
+  },
+  "result": {
+    "status": "{{STATUS}}",
+    "code": "{{RESULT_CODE}}",
+    "message": "{{RESULT_MESSAGE}}",
+    "duration_ms": {{DURATION_MS}}
+  },
+  "details": {
+    "{{KEY_1}}": "{{VALUE_1}}",
+    "{{KEY_2}}": "{{VALUE_2}}"
+  },
+  "metadata": {
+    "hostname": "{{HOSTNAME}}",
+    "process_id": {{PROCESS_ID}},
+    "version": "{{APP_VERSION}}"
+  }
+}

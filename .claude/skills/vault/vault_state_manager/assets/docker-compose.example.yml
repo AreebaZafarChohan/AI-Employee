@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  # Local Executive Agent (lex)
+  lex:
+    build:
+      context: .
+      dockerfile: Dockerfile.lex
+    environment:
+      - VAULT_PATH=/vault
+      - VAULT_LOG_LEVEL=info
+      - AGENT_NAME=lex
+    volumes:
+      - ./vault:/vault:rw          # Mount vault with read-write
+      - ./.env:/app/.env:ro        # Mount config (read-only)
+    networks:
+      - agent-network
+    restart: unless-stopped
+    depends_on:
+      - watcher-gmail
+      - watcher-whats
+
+  # Gmail Watcher Agent
+  watcher-gmail:
+    build:
+      context: .
+      dockerfile: Dockerfile.watcher
+    environment:
+      - VAULT_PATH=/vault
+      - WATCHER_TYPE=gmail
+      - POLL_INTERVAL_MS=60000     # 60 seconds
+    volumes:
+      - ./vault:/vault:rw
+      - ./credentials/gmail:/credentials:ro
+    networks:
+      - agent-network
+    restart: unless-stopped
+
+  # WhatsApp Watcher Agent
+  watcher-whats:
+    build:
+      context: .
+      dockerfile: Dockerfile.watcher
+    environment:
+      - VAULT_PATH=/vault
+      - WATCHER_TYPE=whatsapp
+      - POLL_INTERVAL_MS=30000     # 30 seconds
+    volumes:
+      - ./vault:/vault:rw
+      - ./credentials/whatsapp:/credentials:ro
+    networks:
+      - agent-network
+    restart: unless-stopped
+
+  # Orchestrator Agent
+  orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile.orchestrator
+    environment:
+      - VAULT_PATH=/vault
+      - AGENT_NAME=orch
+      - MCP_SERVER_URL=http://mcp-server:3000
+    volumes:
+      - ./vault:/vault:rw
+    networks:
+      - agent-network
+    restart: unless-stopped
+    depends_on:
+      - mcp-server
+
+  # MCP Server (for action agents)
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.mcp
+    ports:
+      - "3000:3000"
+    environment:
+      - MCP_EMAIL_ENABLED=true
+      - MCP_BROWSER_ENABLED=true
+    networks:
+      - agent-network
+    restart: unless-stopped
+
+networks:
+  agent-network:
+    driver: bridge
+
+# NOTES:
+# 1. All services share the same vault volume
+# 2. Watchers have read-write to vault (write to Needs_Action/)
+# 3. Lex has read-write to vault (write to Plans/, In_Progress/, etc.)
+# 4. Orchestrator has read-write to vault (moves files between folders)
+# 5. Credentials are mounted read-only (never written to vault)
+# 6. Services can communicate via agent-network

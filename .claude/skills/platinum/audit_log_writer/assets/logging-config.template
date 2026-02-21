@@ -1,0 +1,262 @@
+# Audit Logging Configuration Template
+
+# This template defines the configuration for the Audit Log Writer skill.
+
+---
+# Global Logging Configuration
+logging:
+  # Enable audit logging
+  enabled: {{AUDIT_LOGGING_ENABLED}}
+  
+  # Log level (debug, info, warn, error)
+  level: "{{AUDIT_LOG_LEVEL}}"
+  
+  # Output format (json, text)
+  format: "{{AUDIT_LOG_FORMAT}}"
+  
+  # Path to audit log file
+  path: "{{AUDIT_LOG_PATH}}"
+  
+  # Maximum log file size before rotation (in MB)
+  max_file_size_mb: {{AUDIT_LOG_MAX_SIZE_MB}}
+  
+  # Number of rotated files to keep
+  max_rotated_files: {{AUDIT_LOG_MAX_ROTATED_FILES}}
+  
+  # Enable compression for rotated files
+  compress_rotated_files: {{AUDIT_LOG_COMPRESS_ROTATED_FILES}}
+
+# Agent Configuration
+agent:
+  # Unique identifier for this agent
+  id: "{{AGENT_ID}}"
+  
+  # Session identifier (auto-generated if not provided)
+  session_id: "{{SESSION_ID}}"
+  
+  # Agent version
+  version: "{{AGENT_VERSION}}"
+
+# Schema Validation Configuration
+schema:
+  # Enable schema validation for log entries
+  validation_enabled: {{SCHEMA_VALIDATION_ENABLED}}
+  
+  # Schema version to use
+  version: "{{SCHEMA_VERSION}}"
+  
+  # Strict validation (reject invalid entries) vs lenient (log warnings)
+  strict_validation: {{STRICT_SCHEMA_VALIDATION}}
+  
+  # Custom schema file path (if using custom schema)
+  custom_schema_path: "{{CUSTOM_SCHEMA_PATH}}"
+
+# Performance Configuration
+performance:
+  # Enable asynchronous logging
+  async_logging_enabled: {{ASYNC_LOGGING_ENABLED}}
+  
+  # Batch size for log entries (when async enabled)
+  batch_size: {{LOG_BATCH_SIZE}}
+  
+  # Flush interval for batched logs (in seconds)
+  flush_interval_seconds: {{FLUSH_INTERVAL_SECONDS}}
+  
+  # Buffer size for async logging
+  buffer_size: {{BUFFER_SIZE}}
+  
+  # Enable log entry caching
+  caching_enabled: {{CACHING_ENABLED}}
+  
+  # Cache size limit (number of entries)
+  cache_size_limit: {{CACHE_SIZE_LIMIT}}
+
+# Security Configuration
+security:
+  # Enable encryption for log files
+  encryption_enabled: {{ENCRYPTION_ENABLED}}
+  
+  # Encryption algorithm
+  encryption_algorithm: "{{ENCRYPTION_ALGORITHM}}"
+  
+  # Encryption key path
+  encryption_key_path: "{{ENCRYPTION_KEY_PATH}}"
+  
+  # Enable sensitive data sanitization
+  data_sanitization_enabled: {{DATA_SANITIZATION_ENABLED}}
+  
+  # Patterns for identifying sensitive data
+  sensitive_patterns:
+    - "{{SENSITIVE_PATTERN_1}}"
+    - "{{SENSITIVE_PATTERN_2}}"
+    - "{{SENSITIVE_PATTERN_3}}"
+  
+  # Replacement string for sanitized data
+  sanitization_replacement: "{{SANITIZATION_REPLACEMENT}}"
+  
+  # Enable access logging for audit log access
+  access_logging_enabled: {{ACCESS_LOGGING_ENABLED}}
+
+# Remote Logging Configuration
+remote:
+  # Enable remote logging
+  enabled: {{REMOTE_LOGGING_ENABLED}}
+  
+  # Remote logging endpoint
+  endpoint: "{{REMOTE_LOGGING_ENDPOINT}}"
+  
+  # Authentication method for remote logging
+  auth_method: "{{REMOTE_AUTH_METHOD}}"  # none, token, certificate
+  
+  # Authentication token (if using token auth)
+  auth_token: "{{REMOTE_AUTH_TOKEN}}"
+  
+  # Certificate path (if using certificate auth)
+  cert_path: "{{REMOTE_CERT_PATH}}"
+  
+  # Private key path (if using certificate auth)
+  key_path: "{{REMOTE_KEY_PATH}}"
+  
+  # Connection timeout (in seconds)
+  connection_timeout: {{REMOTE_CONNECTION_TIMEOUT_SECONDS}}
+  
+  # Request timeout (in seconds)
+  request_timeout: {{REMOTE_REQUEST_TIMEOUT_SECONDS}}
+  
+  # Retry configuration
+  retry:
+    max_attempts: {{REMOTE_RETRY_MAX_ATTEMPTS}}
+    base_delay_seconds: {{REMOTE_RETRY_BASE_DELAY_SECONDS}}
+    max_delay_seconds: {{REMOTE_RETRY_MAX_DELAY_SECONDS}}
+
+# Retention and Archival Configuration
+retention:
+  # Log retention period (in days)
+  retention_days: {{LOG_RETENTION_DAYS}}
+  
+  # Archive logs after this many days
+  archive_after_days: {{ARCHIVE_AFTER_DAYS}}
+  
+  # Archive destination
+  archive_destination: "{{ARCHIVE_DESTINATION}}"  # local, s3, gcs, azure
+  
+  # Archive path/format
+  archive_path: "{{ARCHIVE_PATH}}"
+  
+  # Enable compression for archived logs
+  archive_compression: {{ARCHIVE_COMPRESSION_ENABLED}}
+  
+  # Compression algorithm for archived logs
+  archive_compression_algorithm: "{{ARCHIVE_COMPRESSION_ALGORITHM}}"
+
+# Monitoring and Alerting Configuration
+monitoring:
+  # Enable metrics collection
+  metrics_enabled: {{METRICS_ENABLED}}
+  
+  # Metrics collection interval (in seconds)
+  metrics_interval: {{METRICS_INTERVAL_SECONDS}}
+  
+  # Metrics endpoint (for push-based metrics)
+  metrics_endpoint: "{{METRICS_ENDPOINT}}"
+  
+  # Enable health checks
+  health_checks_enabled: {{HEALTH_CHECKS_ENABLED}}
+  
+  # Health check endpoint
+  health_check_endpoint: "{{HEALTH_CHECK_ENDPOINT}}"
+  
+  # Alerting configuration
+  alerts:
+    # Enable alerting
+    enabled: {{ALERTS_ENABLED}}
+    
+    # Alert when log write latency exceeds threshold (in seconds)
+    latency_threshold: {{LATENCY_THRESHOLD_SECONDS}}
+    
+    # Alert when storage usage exceeds threshold (percentage)
+    storage_threshold: {{STORAGE_THRESHOLD_PERCENT}}
+    
+    # Alert when validation error rate exceeds threshold (percentage)
+    validation_error_threshold: {{VALIDATION_ERROR_THRESHOLD_PERCENT}}
+    
+    # Alert when remote logging fails for more than threshold (in seconds)
+    remote_failure_threshold: {{REMOTE_FAILURE_THRESHOLD_SECONDS}}
+
+# Field Configuration
+fields:
+  # Required fields (logs without these will be rejected if strict validation is enabled)
+  required:
+    - "{{REQUIRED_FIELD_1}}"
+    - "{{REQUIRED_FIELD_2}}"
+    - "{{REQUIRED_FIELD_3}}"
+  
+  # Optional fields
+  optional:
+    - "{{OPTIONAL_FIELD_1}}"
+    - "{{OPTIONAL_FIELD_2}}"
+    - "{{OPTIONAL_FIELD_3}}"
+  
+  # Sensitive fields (subject to sanitization)
+  sensitive:
+    - "{{SENSITIVE_FIELD_1}}"
+    - "{{SENSITIVE_FIELD_2}}"
+    - "{{SENSITIVE_FIELD_3}}"
+
+# Action-Specific Configuration
+actions:
+  # Configuration for specific action types
+  task_created:
+    enabled: {{TASK_CREATED_LOGGING_ENABLED}}
+    include_metadata: {{TASK_CREATED_INCLUDE_METADATA}}
+  
+  task_claimed:
+    enabled: {{TASK_CLAIMED_LOGGING_ENABLED}}
+    include_metadata: {{TASK_CLAIMED_INCLUDE_METADATA}}
+  
+  task_completed:
+    enabled: {{TASK_COMPLETED_LOGGING_ENABLED}}
+    include_metadata: {{TASK_COMPLETED_INCLUDE_METADATA}}
+  
+  task_failed:
+    enabled: {{TASK_FAILED_LOGGING_ENABLED}}
+    include_metadata: {{TASK_FAILED_INCLUDE_METADATA}}
+    include_error_details: {{TASK_FAILED_INCLUDE_ERROR_DETAILS}}
+
+# Compliance Configuration
+compliance:
+  # Enable compliance-specific logging
+  enabled: {{COMPLIANCE_LOGGING_ENABLED}}
+  
+  # Compliance standard (e.g., SOX, HIPAA, GDPR)
+  standard: "{{COMPLIANCE_STANDARD}}"
+  
+  # Additional fields required for compliance
+  required_fields:
+    - "{{COMPLIANCE_REQUIRED_FIELD_1}}"
+    - "{{COMPLIANCE_REQUIRED_FIELD_2}}"
+  
+  # Immutable log storage (write-once)
+  immutable_storage: {{IMMUTABLE_STORAGE_ENABLED}}
+  
+  # Digital signatures for log integrity
+  digital_signatures_enabled: {{DIGITAL_SIGNATURES_ENABLED}}
+  signature_algorithm: "{{SIGNATURE_ALGORITHM}}"
+  signing_key_path: "{{SIGNING_KEY_PATH}}"
+
+# Backup Configuration
+backup:
+  # Enable automatic backups
+  enabled: {{BACKUP_ENABLED}}
+  
+  # Backup schedule (cron format)
+  schedule: "{{BACKUP_SCHEDULE_CRON}}"
+  
+  # Backup retention (number of backups to keep)
+  retention_count: {{BACKUP_RETENTION_COUNT}}
+  
+  # Backup destination
+  destination: "{{BACKUP_DESTINATION}}"  # local, s3, gcs, azure
+  
+  # Backup path
+  path: "{{BACKUP_PATH}}"

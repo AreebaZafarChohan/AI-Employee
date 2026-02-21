@@ -1,0 +1,59 @@
+# IMPACT NOTES:
+# - Non-root user execution for security
+# - Multi-stage build to reduce final image size
+# - Parameterized build arguments (no build-time secrets)
+# - Health check via curl (ensure curl is installed)
+# - Production-ready: use distroless or minimal base for runtime
+
+# Build stage
+FROM node:18-alpine AS builder
+
+# Install build dependencies if needed (for native modules)
+RUN apk add --no-cache dumb-init
+
+WORKDIR /app
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S appuser -u 1001
+
+# Copy dependency files
+COPY package*.json ./
+
+# Install dependencies (only production)
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy application code
+COPY . .
+
+# Build application if needed (TypeScript, etc.)
+# RUN npm run build
+
+# Change ownership to non-root user
+RUN chown -R appuser:nodejs /app
+
+# Runtime stage (switch to distroless or minimal base)
+FROM gcr.io/distroless/nodejs:18
+
+# Use non-root user from build stage
+# COPY --from=builder /etc/passwd /etc/passwd
+# USER appuser
+
+WORKDIR /app
+
+# Copy built application
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app ./
+
+# Port for application
+EXPOSE {{PORT}}
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:{{PORT}}/health/live || exit 1
+
+# Use dumb-init to handle signals properly
+# ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+
+# Start application
+CMD ["node", "src/server.js"]

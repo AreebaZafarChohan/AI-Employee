@@ -1,0 +1,47 @@
+{
+  "signal_type": "delegation_request",
+  "task_id": "{{TASK_ID}}",
+  "from_agent": "lex",
+  "to_agent": "cex",
+  "created_at": "{{TIMESTAMP_ISO}}",
+  "timeout_at": "{{TIMEOUT_TIMESTAMP_ISO}}",
+  "request": {
+    "action": "plan_task",
+    "task_path": "Needs_Action/{{TASK_ID}}.json",
+    "sync_policy": "sync",
+    "context": {
+      "user_request": "{{USER_REQUEST}}",
+      "constraints": [
+        "{{CONSTRAINT_1}}",
+        "{{CONSTRAINT_2}}"
+      ],
+      "dependencies": [
+        "{{DEPENDENCY_1}}"
+      ]
+    },
+    "task_summary": {
+      "title": "{{TASK_TITLE}}",
+      "description": "{{TASK_DESCRIPTION}}",
+      "priority": "{{PRIORITY}}",
+      "estimated_complexity": "{{COMPLEXITY}}"
+    }
+  },
+  "metadata": {
+    "priority": "{{PRIORITY}}",
+    "autonomy_tier": "{{AUTONOMY_TIER}}",
+    "delegation_depth": 1,
+    "delegation_chain": [
+      {
+        "agent": "lex",
+        "timestamp": "{{TIMESTAMP_ISO}}",
+        "action": "delegate_to_cloud"
+      }
+    ],
+    "max_delegation_depth": 3
+  },
+  "sync_health": {
+    "online": true,
+    "last_sync": "{{LAST_SYNC_TIMESTAMP}}",
+    "sync_latency_ms": 0
+  }
+}

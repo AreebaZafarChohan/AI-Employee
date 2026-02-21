@@ -1,0 +1,87 @@
+{
+  "version": "1.0",
+  "categories": {
+    "security": {
+      "keywords": ["vulnerability", "exploit", "CVE", "security", "breach", "attack", "injection", "XSS", "CSRF"],
+      "severity_boost": 30,
+      "auto_escalate": true,
+      "default_owner": "security-team",
+      "sla_hours": 4
+    },
+    "bug_critical": {
+      "keywords": ["crash", "outage", "down", "broken", "critical bug", "production", "data loss", "corruption"],
+      "severity_boost": 25,
+      "auto_escalate": true,
+      "default_owner": "sre-team",
+      "sla_hours": 2
+    },
+    "bug_major": {
+      "keywords": ["error", "broken", "not working", "failing", "bug", "issue", "problem"],
+      "severity_boost": 15,
+      "auto_escalate": false,
+      "default_owner": "dev-team",
+      "sla_hours": 24
+    },
+    "feature_request": {
+      "keywords": ["feature", "enhancement", "improvement", "would be nice", "request", "add", "support for"],
+      "severity_boost": 0,
+      "auto_escalate": false,
+      "default_owner": "product-team",
+      "sla_hours": 168
+    },
+    "question": {
+      "keywords": ["how to", "question", "help", "documentation", "unclear", "explain", "why does"],
+      "severity_boost": 5,
+      "auto_escalate": false,
+      "default_owner": "support-team",
+      "sla_hours": 48
+    }
+  },
+  "urgency_indicators": {
+    "immediate": {
+      "patterns": ["URGENT", "ASAP", "NOW", "IMMEDIATE", "EMERGENCY", "CRITICAL"],
+      "score_boost": 20
+    },
+    "deadline_near": {
+      "patterns": ["today", "by EOD", "this week", "deadline", "due"],
+      "score_boost": 15
+    },
+    "blocking": {
+      "patterns": ["blocked", "blocking", "cannot proceed", "stuck", "waiting on"],
+      "score_boost": 10
+    }
+  },
+  "impact_indicators": {
+    "high_impact": {
+      "patterns": ["all users", "production", "customer-facing", "revenue", "business critical"],
+      "score_multiplier": 1.5
+    },
+    "medium_impact": {
+      "patterns": ["some users", "staging", "internal", "team"],
+      "score_multiplier": 1.2
+    },
+    "low_impact": {
+      "patterns": ["single user", "development", "cosmetic", "minor"],
+      "score_multiplier": 1.0
+    }
+  },
+  "routing_rules": {
+    "escalation_chain": [
+      {
+        "condition": "score >= 90",
+        "action": "escalate_to_oncall",
+        "notify": ["slack", "pagerduty"]
+      },
+      {
+        "condition": "category == 'security'",
+        "action": "escalate_to_security",
+        "notify": ["email", "slack"]
+      },
+      {
+        "condition": "sla_breach_imminent",
+        "action": "escalate_to_manager",
+        "notify": ["email"]
+      }
+    ]
+  }
+}

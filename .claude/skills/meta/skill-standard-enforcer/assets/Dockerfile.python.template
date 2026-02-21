@@ -1,0 +1,67 @@
+# IMPACT NOTES:
+# - Python-specific optimizations
+# - Virtual environment for proper dependency isolation
+# - Non-root user execution
+# - Multi-stage build to reduce image size (Python deps are large)
+# - No build-time secrets
+
+# Build stage with full Python
+FROM python:3.11-slim as builder
+
+# Install system dependencies for building native packages
+RUN apt-get update && apt-get install -y \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Create virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Runtime stage - minimal Python
+FROM python:3.11-slim
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser
+
+# Copy virtual environment from builder
+COPY --from=builder /opt/venv /opt/venv
+
+# Set environment
+ENV PATH="/opt/venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+WORKDIR /app
+
+# Copy application code
+COPY --from=builder /app .
+
+# Change ownership to non-root user
+RUN chown -R appuser:appgroup /app
+
+# Switch to non-root user
+USER appuser
+
+# Port
+EXPOSE {{PORT}}
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:{{PORT}}/health/live || exit 1
+
+# Run application
+CMD ["python", "-m", "{{APP_MODULE}}"]

@@ -1,0 +1,348 @@
+# Agent Status Configuration Template
+
+# This template defines the configuration for monitoring and reporting
+# agent status in the Agent Claim Coordinator ecosystem.
+
+---
+# Agent Identity and Registration
+agent:
+  # Unique identifier for this agent (should be globally unique)
+  id: "{{AGENT_ID}}"
+  
+  # Human-readable name for the agent
+  name: "{{AGENT_NAME}}"
+  
+  # Description of the agent's purpose and capabilities
+  description: "{{AGENT_DESCRIPTION}}"
+  
+  # Version of the agent software
+  version: "{{AGENT_VERSION}}"
+  
+  # Registration token for authenticating with the claim coordinator
+  registration_token: "{{REGISTRATION_TOKEN}}"
+
+# Communication Configuration
+communication:
+  # Endpoint where the agent can be reached
+  endpoint_url: "{{AGENT_ENDPOINT_URL}}"
+  
+  # Port for incoming task assignments
+  task_port: {{TASK_PORT_NUMBER}}
+  
+  # Port for health checks and status updates
+  health_port: {{HEALTH_PORT_NUMBER}}
+  
+  # Supported communication protocols
+  supported_protocols:
+    - "{{SUPPORTED_PROTOCOL_1}}"
+    - "{{SUPPORTED_PROTOCOL_2}}"
+  
+  # Authentication method for communication
+  auth_method: "{{AUTH_METHOD}}"
+  
+  # Authentication token for secure communication
+  auth_token: "{{AUTH_TOKEN}}"
+  
+  # SSL/TLS configuration
+  ssl:
+    enabled: {{SSL_ENABLED}}
+    certificate_path: "{{CERTIFICATE_PATH}}"
+    private_key_path: "{{PRIVATE_KEY_PATH}}"
+
+# Status Reporting Configuration
+status_reporting:
+  # Enable status reporting to the claim coordinator
+  enabled: {{STATUS_REPORTING_ENABLED}}
+  
+  # Interval for sending status updates (in seconds)
+  report_interval_seconds: {{REPORT_INTERVAL_SECONDS}}
+  
+  # Endpoint for status updates
+  status_endpoint: "{{STATUS_ENDPOINT_URL}}"
+  
+  # Status update timeout (in seconds)
+  status_update_timeout: {{STATUS_UPDATE_TIMEOUT_SECONDS}}
+  
+  # Enable batch status updates
+  batch_updates_enabled: {{BATCH_UPDATES_ENABLED}}
+  
+  # Batch size for status updates
+  batch_size: {{BATCH_SIZE}}
+
+# Health Check Configuration
+health_checks:
+  # Enable health checks
+  enabled: {{HEALTH_CHECKS_ENABLED}}
+  
+  # Interval for internal health checks (in seconds)
+  check_interval_seconds: {{CHECK_INTERVAL_SECONDS}}
+  
+  # Endpoint for external health checks
+  health_check_endpoint: "{{HEALTH_CHECK_ENDPOINT}}"
+  
+  # Custom health check script path
+  custom_health_script: "{{CUSTOM_HEALTH_SCRIPT_PATH}}"
+  
+  # Thresholds for self-reporting as unhealthy
+  thresholds:
+    cpu_usage_percent: {{CPU_USAGE_THRESHOLD_PERCENT}}
+    memory_usage_percent: {{MEMORY_USAGE_THRESHOLD_PERCENT}}
+    error_rate_percent: {{ERROR_RATE_THRESHOLD_PERCENT}}
+    response_time_ms: {{RESPONSE_TIME_THRESHOLD_MS}}
+    disk_usage_percent: {{DISK_USAGE_THRESHOLD_PERCENT}}
+    network_errors_per_minute: {{NETWORK_ERRORS_THRESHOLD}}
+
+# Resource Monitoring
+resource_monitoring:
+  # Enable resource monitoring
+  enabled: {{RESOURCE_MONITORING_ENABLED}}
+  
+  # Collection interval for resource metrics (in seconds)
+  collection_interval_seconds: {{RESOURCE_COLLECTION_INTERVAL_SECONDS}}
+  
+  # Resources to monitor
+  monitored_resources:
+    cpu:
+      enabled: {{CPU_MONITORING_ENABLED}}
+      collection_interval_seconds: {{CPU_COLLECTION_INTERVAL_SECONDS}}
+    memory:
+      enabled: {{MEMORY_MONITORING_ENABLED}}
+      collection_interval_seconds: {{MEMORY_COLLECTION_INTERVAL_SECONDS}}
+    disk:
+      enabled: {{DISK_MONITORING_ENABLED}}
+      collection_interval_seconds: {{DISK_COLLECTION_INTERVAL_SECONDS}}
+    network:
+      enabled: {{NETWORK_MONITORING_ENABLED}}
+      collection_interval_seconds: {{NETWORK_COLLECTION_INTERVAL_SECONDS}}
+    processes:
+      enabled: {{PROCESSES_MONITORING_ENABLED}}
+      collection_interval_seconds: {{PROCESSES_COLLECTION_INTERVAL_SECONDS}}
+
+# Performance Metrics
+performance_metrics:
+  # Enable performance metrics collection
+  enabled: {{PERFORMANCE_METRICS_ENABLED}}
+  
+  # Collection interval for performance metrics (in seconds)
+  collection_interval_seconds: {{PERFORMANCE_COLLECTION_INTERVAL_SECONDS}}
+  
+  # Metrics to collect
+  metrics:
+    # Task processing metrics
+    task_processing:
+      tasks_completed_per_minute: {{TASKS_COMPLETED_PER_MINUTE_ENABLED}}
+      average_task_completion_time_ms: {{AVERAGE_TASK_COMPLETION_TIME_ENABLED}}
+      task_failure_rate: {{TASK_FAILURE_RATE_ENABLED}}
+      
+    # System performance metrics
+    system_performance:
+      cpu_utilization: {{CPU_UTILIZATION_ENABLED}}
+      memory_utilization: {{MEMORY_UTILIZATION_ENABLED}}
+      disk_io: {{DISK_IO_ENABLED}}
+      network_io: {{NETWORK_IO_ENABLED}}
+      
+    # Claim-related metrics
+    claim_metrics:
+      claims_attempted_per_minute: {{CLAIMS_ATTEMPTED_PER_MINUTE_ENABLED}}
+      claim_success_rate: {{CLAIM_SUCCESS_RATE_ENABLED}}
+      average_claim_time_ms: {{AVERAGE_CLAIM_TIME_ENABLED}}
+      collisions_encountered: {{COLLISIONS_ENCOUNTERED_ENABLED}}
+
+# Capability Reporting
+capabilities:
+  # Enable capability reporting
+  reporting_enabled: {{CAPABILITY_REPORTING_ENABLED}}
+  
+  # Interval for capability updates (in seconds)
+  update_interval_seconds: {{CAPABILITY_UPDATE_INTERVAL_SECONDS}}
+  
+  # List of capabilities this agent can handle
+  available:
+    - "{{CAPABILITY_1}}"
+    - "{{CAPABILITY_2}}"
+    - "{{CAPABILITY_3}}"
+  
+  # Maximum number of concurrent tasks this agent can handle
+  max_concurrent_tasks: {{MAX_CONCURRENT_TASKS}}
+  
+  # Estimated processing capacity (tasks per minute)
+  processing_capacity: {{PROCESSING_CAPACITY_PER_MINUTE}}
+  
+  # Specialized skills or expertise areas
+  expertise_areas:
+    - "{{EXPERTISE_AREA_1}}"
+    - "{{EXPERTISE_AREA_2}}"
+
+# Availability Configuration
+availability:
+  # Enable availability reporting
+  reporting_enabled: {{AVAILABILITY_REPORTING_ENABLED}}
+  
+  # Working hours configuration
+  working_hours:
+    enabled: {{WORKING_HOURS_ENABLED}}
+    timezone: "{{AGENT_TIMEZONE}}"
+    schedule:
+      monday:
+        start_time: "{{MONDAY_START_TIME}}"
+        end_time: "{{MONDAY_END_TIME}}"
+      tuesday:
+        start_time: "{{TUESDAY_START_TIME}}"
+        end_time: "{{TUESDAY_END_TIME}}"
+      wednesday:
+        start_time: "{{WEDNESDAY_START_TIME}}"
+        end_time: "{{WEDNESDAY_END_TIME}}"
+      thursday:
+        start_time: "{{THURSDAY_START_TIME}}"
+        end_time: "{{THURSDAY_END_TIME}}"
+      friday:
+        start_time: "{{FRIDAY_START_TIME}}"
+        end_time: "{{FRIDAY_END_TIME}}"
+      saturday:
+        start_time: "{{SATURDAY_START_TIME}}"
+        end_time: "{{SATURDAY_END_TIME}}"
+      sunday:
+        start_time: "{{SUNDAY_START_TIME}}"
+        end_time: "{{SUNDAY_END_TIME}}"
+  
+  # Maintenance windows
+  maintenance_windows:
+    - start_time: "{{MAINTENANCE_START_TIME}}"
+      duration_hours: {{MAINTENANCE_DURATION_HOURS}}
+      days_of_week:
+        - "{{MAINTENANCE_DAY_1}}"
+        - "{{MAINTENANCE_DAY_2}}"
+
+# Load Balancing Configuration
+load_balancing:
+  # Enable load reporting for load balancing
+  reporting_enabled: {{LOAD_BALANCING_REPORTING_ENABLED}}
+  
+  # Load calculation method
+  calculation_method: "{{LOAD_CALCULATION_METHOD}}"  # cpu_based, task_based, hybrid
+  
+  # Load thresholds
+  thresholds:
+    low_load: {{LOW_LOAD_THRESHOLD}}      # Below this, agent is underutilized
+    high_load: {{HIGH_LOAD_THRESHOLD}}    # Above this, agent is overloaded
+    critical_load: {{CRITICAL_LOAD_THRESHOLD}}  # Above this, agent is critically loaded
+  
+  # Weight for different load factors (sum should equal 1.0)
+  load_weights:
+    current_task_count: {{WEIGHT_CURRENT_TASK_COUNT}}
+    cpu_utilization: {{WEIGHT_CPU_UTILIZATION}}
+    memory_utilization: {{WEIGHT_MEMORY_UTILIZATION}}
+
+# Status Notification Configuration
+notifications:
+  # Enable status change notifications
+  enabled: {{NOTIFICATIONS_ENABLED}}
+  
+  # Notification methods
+  methods:
+    webhook:
+      enabled: {{WEBHOOK_NOTIFICATIONS_ENABLED}}
+      url: "{{WEBHOOK_URL}}"
+      timeout_seconds: {{WEBHOOK_TIMEOUT_SECONDS}}
+    email:
+      enabled: {{EMAIL_NOTIFICATIONS_ENABLED}}
+      recipients:
+        - "{{EMAIL_RECIPIENT_1}}"
+        - "{{EMAIL_RECIPIENT_2}}"
+      smtp_server: "{{SMTP_SERVER}}"
+      smtp_port: {{SMTP_PORT}}
+    slack:
+      enabled: {{SLACK_NOTIFICATIONS_ENABLED}}
+      webhook_url: "{{SLACK_WEBHOOK_URL}}"
+  
+  # Events to notify about
+  events:
+    status_change: {{NOTIFY_STATUS_CHANGE}}
+    health_issue: {{NOTIFY_HEALTH_ISSUE}}
+    capacity_change: {{NOTIFY_CAPACITY_CHANGE}}
+    error_threshold_crossed: {{NOTIFY_ERROR_THRESHOLD_CROSSED}}
+
+# Security Configuration
+security:
+  # Enable security features
+  enabled: {{SECURITY_ENABLED}}
+  
+  # Encryption settings for status data
+  encryption:
+    enabled: {{ENCRYPTION_ENABLED}}
+    algorithm: "{{ENCRYPTION_ALGORITHM}}"
+    key_rotation_days: {{KEY_ROTATION_DAYS}}
+  
+  # Access control list for status endpoints
+  access_control:
+    allowed_ips:
+      - "{{ALLOWED_IP_1}}"
+      - "{{ALLOWED_IP_2}}"
+    blocked_ips:
+      - "{{BLOCKED_IP_1}}"
+  
+  # Audit logging configuration
+  audit:
+    enabled: {{AUDIT_LOGGING_ENABLED}}
+    log_level: "{{AUDIT_LOG_LEVEL}}"  # debug, info, warn, error
+    retention_days: {{AUDIT_LOG_RETENTION_DAYS}}
+
+# Monitoring and Logging
+monitoring:
+  # Enable application performance monitoring
+  apm_enabled: {{APM_ENABLED}}
+  
+  # Application performance monitoring endpoint
+  apm_endpoint: "{{APM_ENDPOINT_URL}}"
+  
+  # Logging configuration
+  logging:
+    level: "{{LOG_LEVEL}}"  # debug, info, warn, error
+    format: "{{LOG_FORMAT}}"  # json, text, syslog
+    retention_days: {{LOG_RETENTION_DAYS}}
+    max_file_size_mb: {{LOG_MAX_FILE_SIZE_MB}}
+  
+  # Metrics collection
+  metrics:
+    enabled: {{METRICS_ENABLED}}
+    collection_interval_seconds: {{METRICS_INTERVAL_SECONDS}}
+    push_gateway_url: "{{PUSH_GATEWAY_URL}}"
+
+# Backup and Recovery
+backup:
+  # Enable automated status configuration backups
+  enabled: {{BACKUP_ENABLED}}
+  
+  # Backup schedule (cron format)
+  schedule: "{{BACKUP_SCHEDULE_CRON}}"
+  
+  # Backup retention policy
+  retention:
+    daily: {{DAILY_BACKUP_RETENTION}}
+    weekly: {{WEEKLY_BACKUP_RETENTION}}
+    monthly: {{MONTHLY_BACKUP_RETENTION}}
+  
+  # Backup destination
+  destination:
+    type: "{{BACKUP_DESTINATION_TYPE}}"  # local, s3, gcs, azure
+    path: "{{BACKUP_DESTINATION_PATH}}"
+
+# Emergency Configuration
+emergency:
+  # Emergency contact information
+  contact:
+    email: "{{EMERGENCY_CONTACT_EMAIL}}"
+    phone: "{{EMERGENCY_CONTACT_PHONE}}"
+    escalation_procedure: "{{ESCALATION_PROCEDURE_URL}}"
+  
+  # Emergency status override
+  override:
+    enabled: {{EMERGENCY_OVERRIDE_ENABLED}}
+    override_status: "{{EMERGENCY_OVERRIDE_STATUS}}"  # online, offline, maintenance
+    override_reason: "{{EMERGENCY_OVERRIDE_REASON}}"
+  
+  # Circuit breaker settings
+  circuit_breaker:
+    enabled: {{CIRCUIT_BREAKER_ENABLED}}
+    failure_threshold: {{CIRCUIT_BREAKER_FAILURE_THRESHOLD}}
+    timeout_seconds: {{CIRCUIT_BREAKER_TIMEOUT_SECONDS}}

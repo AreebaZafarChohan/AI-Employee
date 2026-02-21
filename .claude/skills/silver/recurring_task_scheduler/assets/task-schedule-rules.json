@@ -1,0 +1,137 @@
+{
+  "version": "1.0",
+  "description": "Configuration file for defining recurring tasks with scheduling rules",
+  "tasks": [
+    {
+      "id": "daily_backup",
+      "name": "Daily Database Backup",
+      "description": "Perform a full backup of the production database",
+      "enabled": true,
+      "schedule": {
+        "type": "cron",
+        "expression": "0 2 * * *",
+        "timezone": "UTC"
+      },
+      "command": "/usr/local/bin/backup-script.sh",
+      "arguments": ["--full", "--compress"],
+      "working_directory": "/opt/backups",
+      "environment": {
+        "DB_HOST": "${DB_HOST}",
+        "BACKUP_DIR": "${BACKUP_DIR}"
+      },
+      "timeout_seconds": 7200,
+      "retry_on_failure": {
+        "max_attempts": 3,
+        "delay_seconds": 300
+      },
+      "notifications": {
+        "on_start": ["admin@example.com"],
+        "on_success": [],
+        "on_failure": ["admin@example.com", "ops-team@example.com"]
+      },
+      "dependencies": [],
+      "resources": {
+        "cpu_limit": "50%",
+        "memory_limit": "2GB"
+      },
+      "logging": {
+        "level": "INFO",
+        "output_file": "/var/log/daily-backup.log"
+      }
+    },
+    {
+      "id": "weekly_report",
+      "name": "Weekly Analytics Report",
+      "description": "Generate and send weekly analytics report to stakeholders",
+      "enabled": true,
+      "schedule": {
+        "type": "cron",
+        "expression": "0 6 * * 0",
+        "timezone": "America/New_York"
+      },
+      "command": "python3",
+      "arguments": ["/opt/scripts/generate_weekly_report.py", "--email=stakeholders@example.com"],
+      "working_directory": "/opt/scripts",
+      "timeout_seconds": 1800,
+      "retry_on_failure": {
+        "max_attempts": 2,
+        "delay_seconds": 600
+      },
+      "notifications": {
+        "on_start": [],
+        "on_success": ["stakeholders@example.com"],
+        "on_failure": ["admin@example.com"]
+      },
+      "dependencies": ["daily_backup"],
+      "logging": {
+        "level": "INFO",
+        "output_file": "/var/log/weekly-report.log"
+      }
+    },
+    {
+      "id": "health_check_monitor",
+      "name": "Health Check Monitor",
+      "description": "Monitor system health and send alerts if thresholds are exceeded",
+      "enabled": true,
+      "schedule": {
+        "type": "interval",
+        "unit": "minutes",
+        "frequency": 5
+      },
+      "command": "/opt/monitoring/health-check.sh",
+      "timeout_seconds": 30,
+      "retry_on_failure": {
+        "max_attempts": 1,
+        "delay_seconds": 10
+      },
+      "notifications": {
+        "on_start": [],
+        "on_success": [],
+        "on_failure": ["admin@example.com"]
+      },
+      "dependencies": [],
+      "logging": {
+        "level": "WARNING",
+        "output_file": "/var/log/health-monitor.log"
+      }
+    },
+    {
+      "id": "monthly_cleanup",
+      "name": "Monthly Log Cleanup",
+      "description": "Remove log files older than 30 days to free up disk space",
+      "enabled": true,
+      "schedule": {
+        "type": "cron",
+        "expression": "0 1 1 * *",
+        "timezone": "UTC"
+      },
+      "command": "/bin/bash",
+      "arguments": ["/opt/cleanup/monthly-cleanup.sh"],
+      "timeout_seconds": 1800,
+      "retry_on_failure": {
+        "max_attempts": 1,
+        "delay_seconds": 300
+      },
+      "notifications": {
+        "on_start": [],
+        "on_success": ["admin@example.com"],
+        "on_failure": ["admin@example.com"]
+      },
+      "dependencies": [],
+      "logging": {
+        "level": "INFO",
+        "output_file": "/var/log/monthly-cleanup.log"
+      }
+    }
+  ],
+  "scheduler_config": {
+    "max_concurrent_tasks": 5,
+    "default_timeout_seconds": 3600,
+    "state_file_path": "./state/task_state.json",
+    "audit_log_path": "./logs/task-audit.log",
+    "lock_file_directory": "/tmp",
+    "on_missed_cycle": "execute_once",  // Options: "execute_once", "catch_up", "skip"
+    "enable_health_check_api": true,
+    "health_check_port": 8080
+  }
+}

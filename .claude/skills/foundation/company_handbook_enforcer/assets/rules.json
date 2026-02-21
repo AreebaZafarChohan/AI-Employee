@@ -1,0 +1,65 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-02-06T00:00:00Z",
+  "rules": [
+    {
+      "id": "cred_exposure",
+      "pattern": "(password|secret|token|api_key|private_key)",
+      "severity": "high",
+      "description": "Potential credentials exposed in content",
+      "enabled": true,
+      "action": "block",
+      "suggested_fix": "Remove credentials and use secure storage"
+    },
+    {
+      "id": "conf_marking",
+      "pattern": "(confidential|proprietary|internal use only)",
+      "severity": "medium",
+      "description": "Confidential marking detected without proper authorization",
+      "enabled": true,
+      "action": "warn",
+      "suggested_fix": "Verify proper authorization for confidential marking"
+    },
+    {
+      "id": "exec_comp",
+      "pattern": "(CEO|CFO|CTO|VP|Director)\\s+compensation",
+      "severity": "high",
+      "description": "Executive compensation details require approval",
+      "enabled": true,
+      "action": "review",
+      "suggested_fix": "Submit for executive approval before sharing"
+    },
+    {
+      "id": "legal_disclaimer",
+      "pattern": "legal disclaimer required",
+      "severity": "medium",
+      "description": "Legal disclaimer missing from document",
+      "enabled": true,
+      "action": "warn",
+      "suggested_fix": "Add required legal disclaimer"
+    },
+    {
+      "id": "brand_guidelines",
+      "pattern": "company logo|brand guidelines",
+      "severity": "low",
+      "description": "Brand guidelines not followed",
+      "enabled": true,
+      "action": "info",
+      "suggested_fix": "Review brand guidelines for proper usage"
+    }
+  ],
+  "exceptions": [
+    {
+      "id": "dev_credentials",
+      "pattern": "/development/",
+      "description": "Allow credentials in development environments",
+      "approvers": ["admin@example.com"],
+      "expires": "2026-12-31T23:59:59Z"
+    }
+  ],
+  "metadata": {
+    "created_by": "Company Governance Team",
+    "reviewed_by": "Legal and Compliance Team",
+    "next_review_date": "2026-05-06T00:00:00Z"
+  }
+}

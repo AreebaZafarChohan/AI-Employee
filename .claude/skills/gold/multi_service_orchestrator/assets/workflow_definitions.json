@@ -1,0 +1,346 @@
+{
+  "version": "1.0",
+  "description": "Configuration file for defining multi-service workflows with orchestration rules",
+  "workflows": [
+    {
+      "id": "customer_onboarding",
+      "name": "Customer Onboarding Workflow",
+      "description": "Complete process for onboarding new customers",
+      "enabled": true,
+      "steps": [
+        {
+          "id": "validate_customer_info",
+          "service": "validation_service",
+          "endpoint": "/validate/customer",
+          "method": "POST",
+          "timeout_seconds": 10,
+          "retry_policy": {
+            "max_attempts": 3,
+            "backoff_multiplier": 2,
+            "initial_delay_seconds": 1
+          },
+          "payload_template": {
+            "customer_data": "{{input.customer_data}}"
+          },
+          "error_handling": {
+            "INVALID_DATA": {
+              "handler": "stop_workflow",
+              "error_message": "Customer data validation failed"
+            }
+          }
+        },
+        {
+          "id": "create_user_account",
+          "service": "identity_service",
+          "endpoint": "/users",
+          "method": "POST",
+          "timeout_seconds": 15,
+          "depends_on": ["validate_customer_info"],
+          "retry_policy": {
+            "max_attempts": 3,
+            "backoff_multiplier": 2,
+            "initial_delay_seconds": 1
+          },
+          "payload_template": {
+            "username": "{{input.customer_data.email}}",
+            "email": "{{input.customer_data.email}}",
+            "profile": "{{input.customer_data.profile}}"
+          }
+        },
+        {
+          "id": "send_welcome_email",
+          "service": "email_service",
+          "endpoint": "/send",
+          "method": "POST",
+          "timeout_seconds": 10,
+          "depends_on": ["create_user_account"],
+          "retry_policy": {
+            "max_attempts": 2,
+            "backoff_multiplier": 1.5,
+            "initial_delay_seconds": 2
+          },
+          "payload_template": {
+            "to": "{{input.customer_data.email}}",
+            "template": "welcome",
+            "variables": {
+              "username": "{{create_user_account.response.username}}"
+            }
+          }
+        },
+        {
+          "id": "provision_resources",
+          "service": "resource_service",
+          "endpoint": "/provision",
+          "method": "POST",
+          "timeout_seconds": 30,
+          "depends_on": ["create_user_account"],
+          "retry_policy": {
+            "max_attempts": 5,
+            "backoff_multiplier": 2,
+            "initial_delay_seconds": 1
+          },
+          "payload_template": {
+            "user_id": "{{create_user_account.response.user_id}}",
+            "plan": "{{input.customer_data.plan}}"
+          }
+        }
+      ],
+      "compensation_steps": [
+        {
+          "id": "cleanup_user_account",
+          "service": "identity_service",
+          "endpoint": "/users/{{create_user_account.response.user_id}}",
+          "method": "DELETE",
+          "condition": "workflow_failed_after=create_user_account",
+          "timeout_seconds": 15
+        },
+        {
+          "id": "revoke_resources",
+          "service": "resource_service",
+          "endpoint": "/revoke",
+          "method": "POST",
+          "condition": "workflow_failed_after=provision_resources",
+          "timeout_seconds": 20,
+          "payload_template": {
+            "user_id": "{{create_user_account.response.user_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "id": "order_processing",
+      "name": "Order Processing Workflow",
+      "description": "Process customer orders with payment and fulfillment",
+      "enabled": true,
+      "steps": [
+        {
+          "id": "validate_order",
+          "service": "order_service",
+          "endpoint": "/validate",
+          "method": "POST",
+          "timeout_seconds": 10,
+          "retry_policy": {
+            "max_attempts": 3,
+            "backoff_multiplier": 2,
+            "initial_delay_seconds": 1
+          },
+          "payload_template": {
+            "order": "{{input.order}}"
+          }
+        },
+        {
+          "id": "check_inventory",
+          "service": "inventory_service",
+          "endpoint": "/check",
+          "method": "POST",
+          "timeout_seconds": 10,
+          "depends_on": ["validate_order"],
+          "retry_policy": {
+            "max_attempts": 3,
+            "backoff_multiplier": 2,
+            "initial_delay_seconds": 1
+          },
+          "payload_template": {
+            "items": "{{input.order.items}}"
+          }
+        },
+        {
+          "id": "process_payment",
+          "service": "payment_service",
+          "endpoint": "/charge",
+          "method": "POST",
+          "timeout_seconds": 20,
+          "depends_on": ["check_inventory"],
+          "circuit_breaker": {
+            "failure_threshold": 5,
+            "timeout_seconds": 60,
+            "reset_timeout_seconds": 300
+          },
+          "retry_policy": {
+            "max_attempts": 2,
+            "backoff_multiplier": 1.5,
+            "initial_delay_seconds": 3
+          },
+          "payload_template": {
+            "amount": "{{input.order.total}}",
+            "payment_method": "{{input.order.payment_method}}",
+            "customer_id": "{{input.order.customer_id}}"
+          }
+        },
+        {
+          "id": "update_inventory",
+          "service": "inventory_service",
+          "endpoint": "/update",
+          "method": "POST",
+          "timeout_seconds": 15,
+          "depends_on": ["process_payment"],
+          "retry_policy": {
+            "max_attempts": 4,
+            "backoff_multiplier": 2,
+            "initial_delay_seconds": 1
+          },
+          "payload_template": {
+            "items": "{{input.order.items}}",
+            "operation": "decrement"
+          }
+        },
+        {
+          "id": "schedule_fulfillment",
+          "service": "fulfillment_service",
+          "endpoint": "/schedule",
+          "method": "POST",
+          "timeout_seconds": 15,
+          "depends_on": ["update_inventory"],
+          "retry_policy": {
+            "max_attempts": 3,
+            "backoff_multiplier": 2,
+            "initial_delay_seconds": 1
+          },
+          "payload_template": {
+            "order_id": "{{input.order.id}}",
+            "items": "{{input.order.items}}",
+            "shipping_address": "{{input.order.shipping_address}}"
+          }
+        }
+      ],
+      "compensation_steps": [
+        {
+          "id": "refund_payment",
+          "service": "payment_service",
+          "endpoint": "/refund",
+          "method": "POST",
+          "condition": "workflow_failed_after=process_payment",
+          "timeout_seconds": 20,
+          "payload_template": {
+            "transaction_id": "{{process_payment.response.transaction_id}}",
+            "amount": "{{input.order.total}}"
+          }
+        },
+        {
+          "id": "restore_inventory",
+          "service": "inventory_service",
+          "endpoint": "/update",
+          "method": "POST",
+          "condition": "workflow_failed_after=update_inventory",
+          "timeout_seconds": 15,
+          "payload_template": {
+            "items": "{{input.order.items}}",
+            "operation": "increment"
+          }
+        }
+      ]
+    },
+    {
+      "id": "data_pipeline_etl",
+      "name": "ETL Pipeline Workflow",
+      "description": "Extract, transform, and load data from multiple sources",
+      "enabled": true,
+      "parallelizable": true,
+      "steps": [
+        {
+          "id": "extract_sales_data",
+          "service": "etl_service",
+          "endpoint": "/extract/sales",
+          "method": "POST",
+          "timeout_seconds": 120,
+          "retry_policy": {
+            "max_attempts": 2,
+            "backoff_multiplier": 2,
+            "initial_delay_seconds": 5
+          },
+          "payload_template": {
+            "source": "sales_db",
+            "date_range": "{{input.date_range}}"
+          }
+        },
+        {
+          "id": "extract_user_data",
+          "service": "etl_service",
+          "endpoint": "/extract/users",
+          "method": "POST",
+          "timeout_seconds": 120,
+          "retry_policy": {
+            "max_attempts": 2,
+            "backoff_multiplier": 2,
+            "initial_delay_seconds": 5
+          },
+          "payload_template": {
+            "source": "user_db",
+            "date_range": "{{input.date_range}}"
+          }
+        },
+        {
+          "id": "transform_data",
+          "service": "etl_service",
+          "endpoint": "/transform",
+          "method": "POST",
+          "timeout_seconds": 300,
+          "depends_on": ["extract_sales_data", "extract_user_data"],
+          "retry_policy": {
+            "max_attempts": 3,
+            "backoff_multiplier": 2,
+            "initial_delay_seconds": 1
+          },
+          "payload_template": {
+            "sales_data": "{{extract_sales_data.response.data}}",
+            "user_data": "{{extract_user_data.response.data}}",
+            "transformation_rules": "{{input.transformation_rules}}"
+          }
+        },
+        {
+          "id": "load_analytics_db",
+          "service": "etl_service",
+          "endpoint": "/load/analytics",
+          "method": "POST",
+          "timeout_seconds": 300,
+          "depends_on": ["transform_data"],
+          "retry_policy": {
+            "max_attempts": 3,
+            "backoff_multiplier": 2,
+            "initial_delay_seconds": 1
+          },
+          "payload_template": {
+            "data": "{{transform_data.response.transformed_data}}",
+            "destination": "analytics_warehouse"
+          }
+        },
+        {
+          "id": "generate_reports",
+          "service": "reporting_service",
+          "endpoint": "/generate",
+          "method": "POST",
+          "timeout_seconds": 180,
+          "depends_on": ["load_analytics_db"],
+          "retry_policy": {
+            "max_attempts": 2,
+            "backoff_multiplier": 2,
+            "initial_delay_seconds": 3
+          },
+          "payload_template": {
+            "report_type": "daily_summary",
+            "date_range": "{{input.date_range}}"
+          }
+        }
+      ]
+    }
+  ],
+  "global_settings": {
+    "default_timeout_seconds": 30,
+    "max_concurrent_workflows": 50,
+    "state_storage_backend": "redis",
+    "state_storage_config": {
+      "redis_url": "${ORCHESTRATOR_REDIS_URL}",
+      "namespace": "orchestrator_states"
+    },
+    "event_logging": {
+      "enabled": true,
+      "backend": "kafka",
+      "topic": "orchestration_events"
+    },
+    "metrics_collection": {
+      "enabled": true,
+      "backend": "prometheus",
+      "push_gateway_url": "${PROMETHEUS_PUSH_GATEWAY_URL}"
+    }
+  }
+}

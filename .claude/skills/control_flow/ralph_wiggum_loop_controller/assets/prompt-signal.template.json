@@ -1,0 +1,15 @@
+{
+  "signal_type": "prompt_injection",
+  "loop_id": "{{LOOP_ID}}",
+  "task_id": "{{TASK_ID}}",
+  "created_at": "{{TIMESTAMP_ISO}}",
+  "expires_at": "{{EXPIRY_TIMESTAMP}}",
+
+  "prompt": "{{RENDERED_PROMPT}}",
+
+  "metadata": {
+    "attempt_number": "{{ATTEMPT_NUMBER}}",
+    "iteration": "{{ITERATION}}",
+    "injected_by": "loop_controller"
+  }
+}

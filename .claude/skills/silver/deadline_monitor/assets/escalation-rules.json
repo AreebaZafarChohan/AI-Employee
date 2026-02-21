@@ -1,0 +1,91 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-02-06T00:00:00Z",
+  "monitoring_rules": {
+    "default_reminder_schedule": {
+      "before_deadline": "24h",
+      "repeat_interval": "6h",
+      "max_reminders": 3
+    },
+    "escalation_tiers": [
+      {
+        "tier": 1,
+        "condition": "deadline_passed",
+        "delay": "1h",
+        "recipients": ["assignee"],
+        "message_template": "REMINDER_OVERDUE"
+      },
+      {
+        "tier": 2,
+        "condition": "overdue_for", 
+        "delay": "24h",
+        "recipients": ["assignee", "manager"],
+        "message_template": "ESCALATION_LEVEL_1"
+      },
+      {
+        "tier": 3,
+        "condition": "critically_overdue",
+        "delay": "72h",
+        "recipients": ["assignee", "manager", "director"],
+        "message_template": "ESCALATION_LEVEL_2"
+      }
+    ],
+    "critical_conditions": [
+      {
+        "field": "priority",
+        "operator": "==",
+        "value": "critical",
+        "escalation_delay": "12h"
+      },
+      {
+        "field": "tags",
+        "operator": "contains",
+        "value": "security",
+        "escalation_delay": "6h"
+      },
+      {
+        "field": "project",
+        "operator": "==",
+        "value": "customer-facing",
+        "escalation_delay": "18h"
+      }
+    ],
+    "notification_templates": {
+      "REMINDER_UPCOMING": {
+        "subject": "Upcoming Task Deadline: {{task_title}}",
+        "body": "This is a reminder that task '{{task_title}}' (ID: {{task_id}}) is due soon.\n\nDue Date: {{deadline}}\nAssignee: {{assignee}}\nPriority: {{priority}}\n\nPlease ensure timely completion."
+      },
+      "REMINDER_OVERDUE": {
+        "subject": "OVERDUE TASK: {{task_title}}",
+        "body": "ALERT: Task '{{task_title}}' (ID: {{task_id}}) is now overdue.\n\nOriginal Due Date: {{deadline}}\nAssignee: {{assignee}}\nPriority: {{priority}}\n\nImmediate action required!"
+      },
+      "ESCALATION_LEVEL_1": {
+        "subject": "ESCALATED: Overdue Task {{task_title}}",
+        "body": "ESCALATION: Task '{{task_title}}' (ID: {{task_id}}) remains overdue.\n\nOriginal Due Date: {{deadline}}\nDays Overdue: {{days_overdue}}\nAssignee: {{assignee}}\nPriority: {{priority}}\n\nManagement attention required."
+      },
+      "ESCALATION_LEVEL_2": {
+        "subject": "CRITICAL ESCALATION: Severely Overdue Task {{task_title}}",
+        "body": "CRITICAL ESCALATION: Task '{{task_title}}' (ID: {{task_id}}) is severely overdue.\n\nOriginal Due Date: {{deadline}}\nDays Overdue: {{days_overdue}}\nAssignee: {{assignee}}\nPriority: {{priority}}\n\nImmediate executive attention required!"
+      }
+    },
+    "channel_preferences": {
+      "default": "slack",
+      "by_priority": {
+        "critical": ["email", "sms"],
+        "high": ["slack", "email"],
+        "medium": "slack",
+        "low": "digest_email"
+      },
+      "by_recipient_role": {
+        "assignee": "direct_channel",
+        "manager": "email",
+        "director": "email_summary"
+      }
+    }
+  },
+  "metadata": {
+    "created_by": "Deadline Monitoring System",
+    "reviewed_by": "Operations Team",
+    "next_review_date": "2026-05-06T00:00:00Z"
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "request_id": "{{APPROVAL_REQUEST_ID}}",
+  "created_at": "{{ISO_TIMESTAMP}}",
+  "expires_at": "{{EXPIRY_ISO_TIMESTAMP}}",
+  "timeout_action": "{{reject|escalate|allow_with_warning}}",
+
+  "action": {
+    "id": "{{ACTION_ID}}",
+    "type": "{{ACTION_TYPE}}",
+    "description": "{{ACTION_DESCRIPTION}}",
+    "initiator": "{{AGENT_OR_USER_ID}}",
+    "environment": "{{ENVIRONMENT}}",
+    "priority": "{{low|medium|high|critical}}",
+    "details": "{{ACTION_DETAILS_JSON}}"
+  },
+
+  "violation": {
+    "policy": "{{POLICY_KEY}}",
+    "policy_section": "{{HANDBOOK_SECTION}}",
+    "severity": "{{LOW|MEDIUM|HIGH|CRITICAL}}",
+    "reasoning": "{{WHY_IT_VIOLATES}}",
+    "impact": {
+      "business_risk": "{{RISK_DESCRIPTION}}",
+      "affected_stakeholders": ["{{STAKEHOLDER_1}}", "{{STAKEHOLDER_2}}"],
+      "risk_level": "{{low|medium|high|critical}}"
+    }
+  },
+
+  "justification": {
+    "business_reason": "{{WHY_THIS_ACTION_NEEDED}}",
+    "urgency": "{{low|medium|high|critical}}",
+    "customer_impact": "{{CUSTOMER_IMPACT_DESCRIPTION}}",
+    "alternative_considered": "{{true|false}}",
+    "alternative_rejected_reason": "{{WHY_ALTERNATIVE_NOT_VIABLE}}"
+  },
+
+  "approval": {
+    "required_approver": "{{APPROVER_ROLE_OR_EMAIL}}",
+    "approver_email": "{{APPROVER_EMAIL}}",
+    "approval_level": "{{manager|director|vp|cfo|cto|ceo}}",
+    "sla_hours": "{{SLA_TIME_IN_HOURS}}",
+    "status": "{{pending|approved|rejected|timeout|escalated}}",
+    "approved_by": null,
+    "approved_at": null,
+    "rejection_reason": null,
+    "override_justification": null
+  },
+
+  "timeline": {
+    "requested_at": "{{ISO_TIMESTAMP}}",
+    "approver_notified_at": null,
+    "approver_viewed_at": null,
+    "decision_made_at": null,
+    "action_executed_at": null
+  },
+
+  "notifications": {
+    "email": {
+      "to": "{{APPROVER_EMAIL}}",
+      "subject": "Approval Required: {{ACTION_TYPE}} - {{ACTION_DESCRIPTION}}",
+      "sent": "{{true|false}}",
+      "sent_at": "{{ISO_TIMESTAMP}}"
+    },
+    "slack": {
+      "channel": "{{SLACK_CHANNEL}}",
+      "webhook_url": "{{SLACK_WEBHOOK_URL}}",
+      "sent": "{{true|false}}",
+      "sent_at": "{{ISO_TIMESTAMP}}"
+    },
+    "sms": {
+      "enabled": "{{true|false}}",
+      "phone": "{{APPROVER_PHONE}}",
+      "sent": "{{true|false}}",
+      "sent_at": "{{ISO_TIMESTAMP}}"
+    }
+  },
+
+  "audit": {
+    "audit_log_id": "{{AUDIT_LOG_ENTRY_ID}}",
+    "session_id": "{{SESSION_ID}}",
+    "ip_address": "{{REQUESTER_IP}}",
+    "user_agent": "{{REQUESTER_USER_AGENT}}"
+  },
+
+  "metadata": {
+    "handbook_version": "{{HANDBOOK_VERSION}}",
+    "enforcer_version": "{{SKILL_VERSION}}",
+    "approval_url": "{{APPROVAL_SYSTEM_URL}}/request/{{APPROVAL_REQUEST_ID}}",
+    "related_requests": ["{{RELATED_REQUEST_ID_1}}", "{{RELATED_REQUEST_ID_2}}"],
+    "tags": ["{{TAG_1}}", "{{TAG_2}}"]
+  },
+
+  "reminder_schedule": [
+    {
+      "scheduled_at": "{{ISO_TIMESTAMP}}",
+      "sent": "{{true|false}}",
+      "type": "{{initial|reminder_1h|reminder_before_expiry}}"
+    }
+  ],
+
+  "escalation": {
+    "enabled": "{{true|false}}",
+    "escalate_to": "{{ESCALATION_ROLE_OR_EMAIL}}",
+    "escalate_at": "{{ISO_TIMESTAMP}}",
+    "escalation_reason": "{{timeout|no_response|declined}}"
+  }
+}

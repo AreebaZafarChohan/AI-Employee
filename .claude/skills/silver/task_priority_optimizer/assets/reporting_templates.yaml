@@ -1,0 +1,624 @@
+# Reporting Templates
+
+## Overview
+This document contains templates for generating reports related to task priority optimization. These templates cover various aspects of priority analysis, system performance, and business impact measurement.
+
+## Template 1: Priority Analysis Report
+
+### Description
+Provides a comprehensive view of current task priorities, highlighting key insights and recommendations.
+
+### Configuration Template
+```yaml
+reporting:
+  template: priority_analysis
+  title: "Task Priority Analysis Report"
+  sections:
+    - section: executive_summary
+      title: "Executive Summary"
+      elements:
+        - type: metric_display
+          title: "Tasks by Priority Level"
+          metric: "task_distribution_by_priority"
+          visualization: pie_chart
+        - type: metric_display
+          title: "Average Time to Complete by Priority"
+          metric: "avg_completion_time_by_priority"
+          visualization: bar_chart
+        - type: text_summary
+          title: "Key Insights"
+          content: "{{executive_insights}}"
+    - section: priority_breakdown
+      title: "Priority Breakdown"
+      elements:
+        - type: table
+          title: "High Priority Tasks"
+          columns: ["Task ID", "Title", "Current Priority", "Urgency Score", "Importance Score", "Deadline", "Dependencies"]
+          data_source: "high_priority_tasks"
+        - type: table
+          title: "Medium Priority Tasks"
+          columns: ["Task ID", "Title", "Current Priority", "Urgency Score", "Importance Score", "Deadline", "Dependencies"]
+          data_source: "medium_priority_tasks"
+        - type: table
+          title: "Low Priority Tasks"
+          columns: ["Task ID", "Title", "Current Priority", "Urgency Score", "Importance Score", "Deadline", "Dependencies"]
+          data_source: "low_priority_tasks"
+    - section: priority_changes
+      title: "Recent Priority Changes"
+      elements:
+        - type: table
+          title: "Tasks with Priority Changes in Last 24 Hours"
+          columns: ["Task ID", "Title", "Previous Priority", "New Priority", "Change Reason", "Time Changed"]
+          data_source: "recent_priority_changes"
+        - type: chart
+          title: "Priority Change Volume by Hour"
+          visualization: line_chart
+          data_source: "priority_change_volume"
+    - section: recommendations
+      title: "Recommendations"
+      elements:
+        - type: text_list
+          title: "Tasks to Reprioritize"
+          items: "{{reprioritization_recommendations}}"
+        - type: text_list
+          title: "Potential Bottlenecks"
+          items: "{{bottleneck_identifications}}"
+  filters:
+    date_range: last_7_days
+    priority_levels: ["high", "medium", "low"]
+    projects: all
+    teams: all
+  scheduling:
+    frequency: daily
+    time: "09:00"
+    recipients:
+      - "project_managers"
+      - "team_leads"
+  delivery_methods:
+    - email
+    - dashboard
+```
+
+### Sample Output
+```html
+<h1>Task Priority Analysis Report</h1>
+
+<h2>Executive Summary</h2>
+<p>There are currently 42 high priority tasks, 87 medium priority tasks, and 156 low priority tasks.</p>
+<p>Average completion time: High priority: 2.3 days, Medium priority: 4.7 days, Low priority: 8.1 days.</p>
+
+<h2>Priority Breakdown</h2>
+<h3>High Priority Tasks</h3>
+<table>
+  <thead>
+    <tr><th>Task ID</th><th>Title</th><th>Priority</th><th>Urgency</th><th>Importance</th><th>Deadline</th><th>Dependencies</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>TASK-123</td><td>Fix login issue</td><td>0.92</td><td>0.85</td><td>0.95</td><td>2026-02-08</td><td>None</td></tr>
+    <!-- More rows -->
+  </tbody>
+</table>
+
+<!-- Additional sections... -->
+```
+
+### Usage Notes
+- Configure distribution lists based on organizational needs
+- Adjust time windows for priority change analysis
+- Customize columns based on available task attributes
+
+## Template 2: System Performance Report
+
+### Description
+Measures the performance and effectiveness of the priority optimization system.
+
+### Configuration Template
+```yaml
+reporting:
+  template: system_performance
+  title: "Priority Optimization System Performance Report"
+  sections:
+    - section: system_metrics
+      title: "System Performance Metrics"
+      elements:
+        - type: metric_display
+          title: "Priority Calculation Performance"
+          metrics:
+            - { name: "Avg Calculation Time", value: "{{avg_calc_time}}", unit: "ms", threshold_good: 50, threshold_warn: 100 }
+            - { name: "Calculation Throughput", value: "{{calc_throughput}}", unit: "tasks/sec", threshold_good: 100, threshold_warn: 50 }
+            - { name: "Cache Hit Rate", value: "{{cache_hit_rate}}", unit: "%", threshold_good: 90, threshold_warn: 75 }
+        - type: chart
+          title: "Priority Calculation Time Trend"
+          visualization: line_chart
+          data_source: "calculation_time_trend"
+    - section: algorithm_effectiveness
+      title: "Algorithm Effectiveness"
+      elements:
+        - type: metric_display
+          title: "Priority Accuracy Indicators"
+          metrics:
+            - { name: "On-time Completion Rate (High Priority)", value: "{{on_time_high_priority}}", unit: "%", threshold_good: 85, threshold_warn: 70 }
+            - { name: "On-time Completion Rate (Low Priority)", value: "{{on_time_low_priority}}", unit: "%", threshold_good: 60, threshold_warn: 40 }
+            - { name: "Priority Stability Index", value: "{{stability_index}}", unit: "", threshold_good: 0.8, threshold_warn: 0.6 }
+        - type: chart
+          title: "Completion Rates by Priority Level"
+          visualization: bar_chart
+          data_source: "completion_rates_by_priority"
+    - section: user_adoption
+      title: "User Adoption & Satisfaction"
+      elements:
+        - type: metric_display
+          title: "Adoption Metrics"
+          metrics:
+            - { name: "Active Users", value: "{{active_users}}", unit: "", threshold_good: 50, threshold_warn: 25 }
+            - { name: "Override Rate", value: "{{override_rate}}", unit: "%", threshold_good: 10, threshold_warn: 25 }
+            - { name: "System Trust Score", value: "{{trust_score}}", unit: "/10", threshold_good: 8, threshold_warn: 6 }
+        - type: chart
+          title: "User Satisfaction Over Time"
+          visualization: line_chart
+          data_source: "satisfaction_trend"
+    - section: integration_health
+      title: "Integration Health"
+      elements:
+        - type: metric_display
+          title: "Integration Performance"
+          metrics:
+            - { name: "API Success Rate", value: "{{api_success_rate}}", unit: "%", threshold_good: 99, threshold_warn: 95 }
+            - { name: "Avg Response Time", value: "{{avg_response_time}}", unit: "ms", threshold_good: 500, threshold_warn: 1000 }
+            - { name: "Sync Success Rate", value: "{{sync_success_rate}}", unit: "%", threshold_good: 98, threshold_warn: 90 }
+        - type: chart
+          title: "API Error Rates by Integration"
+          visualization: bar_chart
+          data_source: "api_errors_by_integration"
+    - section: recommendations
+      title: "System Optimization Recommendations"
+      elements:
+        - type: text_list
+          title: "Performance Improvements"
+          items: "{{performance_recommendations}}"
+        - type: text_list
+          title: "Algorithm Tuning Suggestions"
+          items: "{{algorithm_recommendations}}"
+  filters:
+    date_range: last_30_days
+    systems_monitored: ["priority_engine", "api_integrations", "data_sync"]
+  scheduling:
+    frequency: weekly
+    time: "08:00"
+    recipients:
+      - "system_administrators"
+      - "product_managers"
+  delivery_methods:
+    - email
+    - dashboard
+    - slack_notification
+```
+
+### Sample Output
+```html
+<h1>Priority Optimization System Performance Report</h1>
+
+<h2>System Performance Metrics</h2>
+<ul>
+  <li>Avg Calculation Time: 32 ms (Good)</li>
+  <li>Calculation Throughput: 125 tasks/sec (Good)</li>
+  <li>Cache Hit Rate: 94% (Good)</li>
+</ul>
+
+<h2>Algorithm Effectiveness</h2>
+<p>High priority tasks completed on time: 87%</p>
+<p>Low priority tasks completed on time: 58%</p>
+<p>Priority stability index: 0.82</p>
+
+<!-- Additional sections... -->
+```
+
+### Usage Notes
+- Adjust performance thresholds based on system requirements
+- Include relevant metrics for your specific implementation
+- Schedule based on system change frequency
+
+## Template 3: Business Impact Report
+
+### Description
+Quantifies the business value and impact of the priority optimization system.
+
+### Configuration Template
+```yaml
+reporting:
+  template: business_impact
+  title: "Priority Optimization Business Impact Report"
+  sections:
+    - section: productivity_metrics
+      title: "Productivity Improvements"
+      elements:
+        - type: metric_display
+          title: "Key Productivity Indicators"
+          metrics:
+            - { name: "Tasks Completed per Week", value: "{{tasks_completed_week}}", unit: "tasks", baseline: "{{baseline_tasks_week}}", improvement: "{{improvement_tasks_week}}" }
+            - { name: "Average Task Cycle Time", value: "{{avg_cycle_time}}", unit: "days", baseline: "{{baseline_cycle_time}}", improvement: "{{improvement_cycle_time}}" }
+            - { name: "Team Utilization Rate", value: "{{utilization_rate}}", unit: "%", baseline: "{{baseline_utilization}}", improvement: "{{improvement_utilization}}" }
+        - type: chart
+          title: "Productivity Trends Over Time"
+          visualization: line_chart
+          data_source: "productivity_trend"
+    - section: deadline_compliance
+      title: "Deadline Compliance"
+      elements:
+        - type: metric_display
+          title: "Compliance Improvements"
+          metrics:
+            - { name: "On-time Delivery Rate", value: "{{on_time_delivery}}", unit: "%", baseline: "{{baseline_on_time}}", improvement: "{{improvement_on_time}}" }
+            - { name: "Critical Deadline Misses", value: "{{critical_misses}}", unit: "misses", baseline: "{{baseline_critical_misses}}", improvement: "{{improvement_critical_misses}}" }
+            - { name: "Average Days Late", value: "{{avg_days_late}}", unit: "days", baseline: "{{baseline_days_late}}", improvement: "{{improvement_days_late}}" }
+        - type: chart
+          title: "On-time Delivery Rate Trend"
+          visualization: line_chart
+          data_source: "on_time_delivery_trend"
+    - section: cost_impact
+      title: "Cost Impact Analysis"
+      elements:
+        - type: metric_display
+          title: "Financial Impact"
+          metrics:
+            - { name: "Estimated Cost Savings", value: "{{cost_savings}}", unit: "USD", baseline: 0, improvement: "{{cost_savings}}" }
+            - { name: "Overtime Reduction", value: "{{overtime_reduction}}", unit: "hours", baseline: "{{baseline_overtime}}", improvement: "{{improvement_overtime}}" }
+            - { name: "Missed Opportunity Cost", value: "{{opportunity_cost}}", unit: "USD", baseline: "{{baseline_opportunity_cost}}", improvement: "{{improvement_opportunity_cost}}" }
+        - type: chart
+          title: "Cost Savings Over Time"
+          visualization: area_chart
+          data_source: "cost_savings_trend"
+    - section: quality_metrics
+      title: "Quality Improvements"
+      elements:
+        - type: metric_display
+          title: "Quality Indicators"
+          metrics:
+            - { name: "Defect Rate", value: "{{defect_rate}}", unit: "%", baseline: "{{baseline_defect_rate}}", improvement: "{{improvement_defect_rate}}" }
+            - { name: "Rework Rate", value: "{{rework_rate}}", unit: "%", baseline: "{{baseline_rework_rate}}", improvement: "{{improvement_rework_rate}}" }
+            - { name: "Customer Satisfaction", value: "{{customer_sat}}", unit: "/10", baseline: "{{baseline_customer_sat}}", improvement: "{{improvement_customer_sat}}" }
+        - type: chart
+          title: "Defect Rate Trend"
+          visualization: line_chart
+          data_source: "defect_rate_trend"
+    - section: roi_analysis
+      title: "Return on Investment"
+      elements:
+        - type: metric_display
+          title: "ROI Metrics"
+          metrics:
+            - { name: "System Implementation Cost", value: "{{implementation_cost}}", unit: "USD", baseline: 0, improvement: 0 }
+            - { name: "Annual Benefit Value", value: "{{annual_benefit}}", unit: "USD", baseline: 0, improvement: "{{annual_benefit}}" }
+            - { name: "Payback Period", value: "{{payback_period}}", unit: "months", baseline: 0, improvement: 0 }
+            - { name: "3-Year ROI", value: "{{three_year_roi}}", unit: "%", baseline: 0, improvement: "{{three_year_roi}}" }
+        - type: chart
+          title: "Cumulative Benefit vs. Cost"
+          visualization: combo_chart
+          data_source: "roi_trend"
+    - section: success_stories
+      title: "Success Stories & Case Studies"
+      elements:
+        - type: text_list
+          title: "Notable Successes"
+          items: "{{success_stories}}"
+        - type: text_list
+          title: "Lessons Learned"
+          items: "{{lessons_learned}}"
+  filters:
+    date_range: last_quarter
+    departments: all
+    project_types: ["strategic", "operational", "maintenance"]
+  baseline_period: previous_quarter
+  scheduling:
+    frequency: monthly
+    time: "10:00"
+    recipients:
+      - "executives"
+      - "department_heads"
+      - "finance_team"
+  delivery_methods:
+    - email
+    - dashboard
+    - presentation_format
+```
+
+### Sample Output
+```html
+<h1>Priority Optimization Business Impact Report</h1>
+
+<h2>Productivity Improvements</h2>
+<p>Tasks completed per week: 242 (was 198, +22%)</p>
+<p>Average task cycle time: 5.2 days (was 7.1 days, -27%)</p>
+<p>Team utilization rate: 78% (was 72%, +8%)</p>
+
+<h2>Deadline Compliance</h2>
+<p>On-time delivery rate: 89% (was 76%, +17%)</p>
+<p>Critical deadline misses: 3 (was 8, -63%)</p>
+
+<!-- Additional sections... -->
+```
+
+### Usage Notes
+- Define clear baseline metrics before implementation
+- Include both quantitative and qualitative impact measures
+- Regularly update financial models and ROI calculations
+
+## Template 4: Dependency Analysis Report
+
+### Description
+Provides insights into task dependencies and their impact on project timelines.
+
+### Configuration Template
+```yaml
+reporting:
+  template: dependency_analysis
+  title: "Task Dependency Analysis Report"
+  sections:
+    - section: dependency_overview
+      title: "Dependency Overview"
+      elements:
+        - type: metric_display
+          title: "Dependency Statistics"
+          metrics:
+            - { name: "Total Dependencies", value: "{{total_dependencies}}", unit: "", threshold_good: null, threshold_warn: null }
+            - { name: "Average Dependencies per Task", value: "{{avg_dependencies_per_task}}", unit: "", threshold_good: null, threshold_warn: null }
+            - { name: "Tasks with Circular Dependencies", value: "{{circular_deps}}", unit: "", threshold_good: 0, threshold_warn: 1 }
+            - { name: "Tasks on Critical Path", value: "{{critical_path_tasks}}", unit: "", threshold_good: null, threshold_warn: null }
+        - type: chart
+          title: "Dependency Types Distribution"
+          visualization: pie_chart
+          data_source: "dependency_types"
+    - section: critical_path_analysis
+      title: "Critical Path Analysis"
+      elements:
+        - type: table
+          title: "Tasks on Critical Path"
+          columns: ["Task ID", "Title", "Duration", "Early Start", "Late Start", "Float", "Dependencies"]
+          data_source: "critical_path_tasks"
+        - type: chart
+          title: "Critical Path Visualization"
+          visualization: gantt_chart
+          data_source: "critical_path_gantt"
+    - section: bottleneck_identification
+      title: "Bottleneck Identification"
+      elements:
+        - type: table
+          title: "Potential Bottlenecks"
+          columns: ["Task ID", "Title", "Blocking Count", "Criticality Score", "Recommended Action"]
+          data_source: "potential_bottlenecks"
+        - type: chart
+          title: "Bottleneck Severity Distribution"
+          visualization: histogram
+          data_source: "bottleneck_severity"
+    - section: dependency_health
+      title: "Dependency Health Assessment"
+      elements:
+        - type: metric_display
+          title: "Health Indicators"
+          metrics:
+            - { name: "Orphaned Tasks", value: "{{orphaned_tasks}}", unit: "", threshold_good: 0, threshold_warn: 5 }
+            - { name: "Unresolved Dependencies", value: "{{unresolved_deps}}", unit: "", threshold_good: 0, threshold_warn: 3 }
+            - { name: "Long Chain Dependencies", value: "{{long_chains}}", unit: "", threshold_good: 0, threshold_warn: 2 }
+            - { name: "External Dependencies", value: "{{external_deps}}", unit: "", threshold_good: null, threshold_warn: null }
+        - type: chart
+          title: "Dependency Health Trend"
+          visualization: line_chart
+          data_source: "dependency_health_trend"
+    - section: recommendations
+      title: "Dependency Optimization Recommendations"
+      elements:
+        - type: text_list
+          title: "Tasks to Decompose"
+          items: "{{decomposition_recommendations}}"
+        - type: text_list
+          title: "Dependencies to Simplify"
+          items: "{{simplification_recommendations}}"
+        - type: text_list
+          title: "Parallelization Opportunities"
+          items: "{{parallelization_opportunities}}"
+  filters:
+    date_range: current_sprint
+    projects: all
+    dependency_types: ["requires", "precedes", "resource_shared"]
+  scheduling:
+    frequency: biweekly
+    time: "09:30"
+    recipients:
+      - "project_managers"
+      - "scrum_masters"
+      - "technical_leads"
+  delivery_methods:
+    - email
+    - dashboard
+    - jira_integration
+```
+
+### Sample Output
+```html
+<h1>Task Dependency Analysis Report</h1>
+
+<h2>Dependency Overview</h2>
+<p>Total dependencies: 342</p>
+<p>Average dependencies per task: 2.4</p>
+<p>No circular dependencies detected</p>
+<p>Tasks on critical path: 28</p>
+
+<h2>Critical Path Analysis</h2>
+<table>
+  <thead>
+    <tr><th>Task ID</th><th>Title</th><th>Duration</th><th>Early Start</th><th>Late Start</th><th>Float</th><th>Dependencies</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>TASK-456</td><td>Design database schema</td><td>5 days</td><td>2026-02-09</td><td>2026-02-09</td><td>0</td><td>None</td></tr>
+    <!-- More rows -->
+  </tbody>
+</table>
+
+<!-- Additional sections... -->
+```
+
+### Usage Notes
+- Use in conjunction with project planning activities
+- Share with project managers and scrum masters
+- Include visualizations for complex dependency relationships
+
+## Template 5: Priority Conflict Resolution Report
+
+### Description
+Documents priority conflicts and their resolution to maintain system integrity.
+
+### Configuration Template
+```yaml
+reporting:
+  template: priority_conflict_resolution
+  title: "Priority Conflict Resolution Report"
+  sections:
+    - section: conflict_summary
+      title: "Conflict Summary"
+      elements:
+        - type: metric_display
+          title: "Conflict Statistics"
+          metrics:
+            - { name: "Total Conflicts Detected", value: "{{total_conflicts}}", unit: "", threshold_good: null, threshold_warn: null }
+            - { name: "Auto-Resolved Conflicts", value: "{{auto_resolved}}", unit: "", threshold_good: null, threshold_warn: null }
+            - { name: "Manual Intervention Required", value: "{{manual_required}}", unit: "", threshold_good: null, threshold_warn: null }
+            - { name: "Conflicts Resolved", value: "{{resolved}}", unit: "", threshold_good: null, threshold_warn: null }
+        - type: chart
+          title: "Conflict Types Distribution"
+          visualization: pie_chart
+          data_source: "conflict_types"
+    - section: conflict_details
+      title: "Detailed Conflict Analysis"
+      elements:
+        - type: table
+          title: "Unresolved Conflicts Requiring Attention"
+          columns: ["Conflict ID", "Tasks Involved", "Conflict Type", "Impact Level", "Reported Time", "Assigned To"]
+          data_source: "unresolved_conflicts"
+        - type: table
+          title: "Recently Resolved Conflicts"
+          columns: ["Conflict ID", "Tasks Involved", "Resolution Method", "Resolver", "Resolution Time", "Outcome"]
+          data_source: "recently_resolved_conflicts"
+    - section: resolution_patterns
+      title: "Resolution Pattern Analysis"
+      elements:
+        - type: chart
+          title: "Resolution Time Distribution"
+          visualization: histogram
+          data_source: "resolution_time_dist"
+        - type: chart
+          title: "Resolution Methods Used"
+          visualization: bar_chart
+          data_source: "resolution_methods_used"
+    - section: escalation_matrix
+      title: "Escalation Matrix"
+      elements:
+        - type: table
+          title: "Escalation Guidelines"
+          columns: ["Conflict Type", "Severity", "Time Threshold", "Escalation Target", "Action Required"]
+          data_source: "escalation_guidelines"
+        - type: chart
+          title: "Escalation Frequency by Type"
+          visualization: bar_chart
+          data_source: "escalation_frequency"
+    - section: prevention_insights
+      title: "Conflict Prevention Insights"
+      elements:
+        - type: text_list
+          title: "Common Root Causes"
+          items: "{{common_root_causes}}"
+        - type: text_list
+          title: "Prevention Recommendations"
+          items: "{{prevention_recommendations}}"
+  filters:
+    date_range: last_7_days
+    conflict_types: ["resource_conflict", "deadline_collision", "dependency_violation", "policy_violation"]
+    severity_levels: ["low", "medium", "high", "critical"]
+  scheduling:
+    frequency: daily
+    time: "08:30"
+    recipients:
+      - "conflict_resolvers"
+      - "system_administrators"
+      - "process_managers"
+  delivery_methods:
+    - email
+    - dashboard
+    - slack_notification
+```
+
+### Sample Output
+```html
+<h1>Priority Conflict Resolution Report</h1>
+
+<h2>Conflict Summary</h2>
+<p>Total conflicts detected: 12</p>
+<p>Auto-resolved conflicts: 8</p>
+<p>Manual intervention required: 4</p>
+<p>Conflicts resolved: 10</p>
+
+<h2>Detailed Conflict Analysis</h2>
+<h3>Unresolved Conflicts Requiring Attention</h3>
+<table>
+  <thead>
+    <tr><th>Conflict ID</th><th>Tasks Involved</th><th>Conflict Type</th><th>Impact Level</th><th>Reported Time</th><th>Assigned To</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>CONFLICT-001</td><td>TASK-123, TASK-456</td><td>resource_conflict</td><td>high</td><td>2026-02-06 08:15</td><td>John Doe</td></tr>
+    <!-- More rows -->
+  </tbody>
+</table>
+
+<!-- Additional sections... -->
+```
+
+### Usage Notes
+- Monitor for patterns in conflict types
+- Ensure appropriate escalation procedures are followed
+- Use insights to improve prevention mechanisms
+
+## Template 6: Custom Priority Report
+
+### Description
+Template for creating custom reports based on specific organizational needs.
+
+### Configuration Template
+```yaml
+reporting:
+  template: custom_priority_report
+  title: "{{custom_title}}"
+  sections:
+    - section: custom_metrics
+      title: "{{section_title}}"
+      elements:
+        - type: metric_display
+          title: "{{metric_title}}"
+          metrics: "{{custom_metrics}}"
+        - type: chart
+          title: "{{chart_title}}"
+          visualization: "{{chart_type}}"
+          data_source: "{{data_source}}"
+    - section: custom_analysis
+      title: "{{analysis_section_title}}"
+      elements:
+        - type: table
+          title: "{{table_title}}"
+          columns: "{{table_columns}}"
+          data_source: "{{table_data_source}}"
+        - type: text_summary
+          title: "{{summary_title}}"
+          content: "{{custom_summary}}"
+  filters:
+    date_range: "{{filter_date_range}}"
+    custom_filters: "{{additional_filters}}"
+  scheduling:
+    frequency: "{{custom_frequency}}"
+    time: "{{custom_time}}"
+    recipients: "{{custom_recipients}}"
+  delivery_methods:
+    - "{{delivery_method}}"
+```
+
+### Usage Notes
+- Use this template as a starting point for organization-specific reports
+- Customize sections and metrics based on specific requirements
+- Integrate with existing reporting infrastructure

@@ -1,0 +1,70 @@
+{
+  "task_id": "{{TASK_ID}}",
+  "loop_id": "{{LOOP_ID}}",
+  "created_at": "{{TIMESTAMP_ISO}}",
+  "updated_at": "{{TIMESTAMP_ISO}}",
+  "state": "PENDING",
+
+  "mission": {
+    "description": "{{MISSION_DESCRIPTION}}",
+    "stop_hooks": [
+      {
+        "type": "success",
+        "condition": "file_exists",
+        "value": "{{COMPLETION_FILE_PATH}}",
+        "description": "Task marked complete"
+      },
+      {
+        "type": "timeout",
+        "condition": "elapsed_time_ms",
+        "value": "{{TIMEOUT_MS}}",
+        "operator": "gte",
+        "description": "Task exceeded time limit"
+      }
+    ]
+  },
+
+  "execution": {
+    "attempts": 0,
+    "max_attempts": 5,
+    "last_attempt_at": null,
+    "next_attempt_at": "{{NEXT_ATTEMPT_TIMESTAMP}}",
+    "total_duration_ms": 0,
+    "last_exit_code": null,
+    "last_output": null,
+    "last_error": null,
+    "last_heartbeat_at": "{{TIMESTAMP_ISO}}"
+  },
+
+  "prompt": {
+    "template": "{{PROMPT_TEMPLATE}}",
+    "variables": {},
+    "inject_to": "{{TARGET_AGENT}}",
+    "inject_method": "signal_file"
+  },
+
+  "limits": {
+    "max_duration_ms": "{{TIMEOUT_MS}}",
+    "max_memory_mb": 512,
+    "max_cpu_percent": 80,
+    "max_retries": 5,
+    "retry_backoff_ms": [1000, 2000, 4000, 8000, 16000],
+    "check_interval_ms": 5000
+  },
+
+  "metrics": {
+    "loop_iterations": 0,
+    "successful_checks": 0,
+    "failed_checks": 0,
+    "hooks_triggered": [],
+    "prompt_injections": 0,
+    "total_backoff_ms": 0
+  },
+
+  "metadata": {
+    "created_by": "{{CREATOR}}",
+    "tags": [],
+    "parent_loop_id": null,
+    "child_loops": []
+  }
+}

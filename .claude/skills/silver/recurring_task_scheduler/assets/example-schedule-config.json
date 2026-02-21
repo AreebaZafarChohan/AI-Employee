@@ -1,0 +1,122 @@
+{
+  "version": "1.0",
+  "description": "Example configuration file demonstrating various recurring task scheduling patterns",
+  "tasks": [
+    {
+      "id": "example_basic_cron",
+      "name": "Basic Cron Task",
+      "description": "Runs every day at 2 AM UTC",
+      "enabled": true,
+      "schedule": {
+        "type": "cron",
+        "expression": "0 2 * * *",
+        "timezone": "UTC"
+      },
+      "command": "echo",
+      "arguments": ["Daily task executed at $(date)"],
+      "timeout_seconds": 30,
+      "logging": {
+        "level": "INFO",
+        "output_file": "/tmp/example_basic_cron.log"
+      }
+    },
+    {
+      "id": "example_interval_task",
+      "name": "Interval-based Task",
+      "description": "Runs every 30 minutes",
+      "enabled": true,
+      "schedule": {
+        "type": "interval",
+        "unit": "minutes",
+        "frequency": 30
+      },
+      "command": "sh",
+      "arguments": ["-c", "echo 'Running interval task at $(date)' >> /tmp/interval_task.log"],
+      "timeout_seconds": 60,
+      "logging": {
+        "level": "INFO",
+        "output_file": "/tmp/example_interval_task.log"
+      }
+    },
+    {
+      "id": "example_dependent_task",
+      "name": "Dependent Task",
+      "description": "Runs after the basic cron task completes successfully",
+      "enabled": true,
+      "schedule": {
+        "type": "triggered"
+      },
+      "command": "sh",
+      "arguments": ["-c", "echo 'Dependent task running after example_basic_cron completed at $(date)' >> /tmp/dependent_task.log"],
+      "timeout_seconds": 120,
+      "dependencies": ["example_basic_cron"],
+      "logging": {
+        "level": "INFO",
+        "output_file": "/tmp/example_dependent_task.log"
+      }
+    },
+    {
+      "id": "example_with_conditions",
+      "name": "Condition-based Task",
+      "description": "Runs only if certain conditions are met",
+      "enabled": true,
+      "schedule": {
+        "type": "interval",
+        "unit": "hours",
+        "frequency": 1
+      },
+      "command": "sh",
+      "arguments": ["-c", "if [ $(date +%-H) -ge 9 -a $(date +%-H) -lt 17 ]; then echo 'Business hours task running at $(date)' >> /tmp/business_hours_task.log; fi"],
+      "timeout_seconds": 60,
+      "conditions": [
+        {
+          "type": "time_range",
+          "start_time": "09:00",
+          "end_time": "17:00",
+          "timezone": "America/New_York"
+        }
+      ],
+      "logging": {
+        "level": "INFO",
+        "output_file": "/tmp/example_with_conditions.log"
+      }
+    },
+    {
+      "id": "example_resource_intensive",
+      "name": "Resource-intensive Task",
+      "description": "Runs weekly during off-peak hours",
+      "enabled": true,
+      "schedule": {
+        "type": "cron",
+        "expression": "0 2 * * 0",  // Sundays at 2 AM
+        "timezone": "UTC"
+      },
+      "command": "/opt/scripts/heavy-processing.sh",
+      "arguments": ["--verbose"],
+      "timeout_seconds": 14400,  // 4 hours
+      "resources": {
+        "cpu_limit": "75%",
+        "memory_limit": "4GB"
+      },
+      "notifications": {
+        "on_start": ["admin@company.com"],
+        "on_success": ["admin@company.com"],
+        "on_failure": ["admin@company.com", "ops@company.com"]
+      },
+      "logging": {
+        "level": "DEBUG",
+        "output_file": "/tmp/example_resource_intensive.log"
+      }
+    }
+  ],
+  "scheduler_config": {
+    "max_concurrent_tasks": 3,
+    "default_timeout_seconds": 1800,
+    "state_file_path": "./state/example_task_state.json",
+    "audit_log_path": "./logs/example_task-audit.log",
+    "lock_file_directory": "/tmp",
+    "on_missed_cycle": "catch_up",
+    "enable_health_check_api": true,
+    "health_check_port": 8081
+  }
+}

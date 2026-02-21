@@ -1,0 +1,164 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vault-storage
+  namespace: {{NAMESPACE}}
+spec:
+  accessModes:
+    - ReadWriteMany  # Multiple pods need write access
+  resources:
+    requests:
+      storage: {{STORAGE_SIZE_GB}}Gi
+  storageClassName: {{STORAGE_CLASS}}  # e.g., standard, fast-ssd
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-config
+  namespace: {{NAMESPACE}}
+data:
+  VAULT_PATH: "/vault"
+  VAULT_LOG_LEVEL: "{{LOG_LEVEL}}"
+  VAULT_POLL_INTERVAL_MS: "5000"
+  VAULT_LOG_MAX_SIZE_MB: "100"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lex-agent
+  namespace: {{NAMESPACE}}
+spec:
+  replicas: 1  # Only one lex at Bronze/Silver tier
+  selector:
+    matchLabels:
+      app: lex-agent
+  template:
+    metadata:
+      labels:
+        app: lex-agent
+    spec:
+      securityContext:
+        fsGroup: 1000  # Ensure vault is writable
+      containers:
+      - name: lex
+        image: {{DOCKER_REGISTRY}}/lex-agent:{{VERSION}}
+        envFrom:
+        - configMapRef:
+            name: vault-config
+        env:
+        - name: AGENT_NAME
+          value: "lex"
+        volumeMounts:
+        - name: vault
+          mountPath: /vault
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: vault
+        persistentVolumeClaim:
+          claimName: vault-storage
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: watcher-gmail
+  namespace: {{NAMESPACE}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: watcher-gmail
+  template:
+    metadata:
+      labels:
+        app: watcher-gmail
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+      - name: watcher
+        image: {{DOCKER_REGISTRY}}/watcher:{{VERSION}}
+        envFrom:
+        - configMapRef:
+            name: vault-config
+        env:
+        - name: AGENT_NAME
+          value: "watcher-gmail"
+        - name: WATCHER_TYPE
+          value: "gmail"
+        - name: POLL_INTERVAL_MS
+          value: "60000"
+        volumeMounts:
+        - name: vault
+          mountPath: /vault
+        - name: gmail-credentials
+          mountPath: /credentials
+          readOnly: true
+      volumes:
+      - name: vault
+        persistentVolumeClaim:
+          claimName: vault-storage
+      - name: gmail-credentials
+        secret:
+          secretName: gmail-credentials
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orchestrator
+  namespace: {{NAMESPACE}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orchestrator
+  template:
+    metadata:
+      labels:
+        app: orchestrator
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+      - name: orchestrator
+        image: {{DOCKER_REGISTRY}}/orchestrator:{{VERSION}}
+        envFrom:
+        - configMapRef:
+            name: vault-config
+        env:
+        - name: AGENT_NAME
+          value: "orch"
+        - name: MCP_SERVER_URL
+          value: "http://mcp-server:3000"
+        volumeMounts:
+        - name: vault
+          mountPath: /vault
+      volumes:
+      - name: vault
+        persistentVolumeClaim:
+          claimName: vault-storage
+
+---
+# NOTES:
+# 1. PersistentVolumeClaim uses ReadWriteMany (RWX) for multi-pod access
+# 2. fsGroup ensures correct permissions (1000 = container user)
+# 3. All pods mount same vault volume
+# 4. Credentials stored in Kubernetes secrets (not vault)
+# 5. Storage class should support RWX (e.g., NFS, CephFS, EFS)
+# 6. Resource limits prevent runaway processes
+
+# DEPLOYMENT:
+# kubectl apply -f k8s-vault-pvc.yml
+# kubectl get pvc -n {{NAMESPACE}}  # Verify PVC bound
+# kubectl get pods -n {{NAMESPACE}}  # Verify pods running
+# kubectl logs -f lex-agent-xxx -n {{NAMESPACE}}  # Check logs

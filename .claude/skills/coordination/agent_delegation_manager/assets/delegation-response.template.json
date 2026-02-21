@@ -1,0 +1,34 @@
+{
+  "signal_type": "delegation_response",
+  "task_id": "{{TASK_ID}}",
+  "from_agent": "cex",
+  "to_agent": "lex",
+  "created_at": "{{TIMESTAMP_ISO}}",
+  "in_response_to": "{{DELEGATION_REQUEST_ID}}",
+  "response": {
+    "status": "{{STATUS}}",
+    "plan_path": "Plans/{{TASK_ID}}.json",
+    "sync_policy": "sync",
+    "outcome": "{{OUTCOME_DESCRIPTION}}",
+    "next_action": "{{RECOMMENDED_NEXT_STEP}}",
+    "estimated_duration": "{{ESTIMATED_DURATION_MS}}",
+    "confidence": "{{CONFIDENCE_LEVEL}}"
+  },
+  "errors": [],
+  "metadata": {
+    "processing_time_ms": "{{PROCESSING_TIME}}",
+    "model_used": "{{MODEL_NAME}}",
+    "delegation_chain": [
+      {
+        "agent": "lex",
+        "timestamp": "{{LEX_TIMESTAMP}}",
+        "action": "delegate_to_cloud"
+      },
+      {
+        "agent": "cex",
+        "timestamp": "{{CEX_TIMESTAMP}}",
+        "action": "create_plan"
+      }
+    ]
+  }
+}

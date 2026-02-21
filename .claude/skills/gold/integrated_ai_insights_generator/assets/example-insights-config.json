@@ -1,0 +1,218 @@
+{
+  "version": "1.0",
+  "description": "Example configuration file demonstrating various AI insights generation setups",
+  "data_sources": {
+    "project_management": {
+      "type": "jira",
+      "enabled": true,
+      "url": "https://example-company.atlassian.net",
+      "api_token": "${EXAMPLE_JIRA_API_TOKEN}",
+      "username": "${EXAMPLE_JIRA_USERNAME}",
+      "projects": ["ENG", "MKT", "OPS"],
+      "fields": ["summary", "status", "assignee", "created", "updated", "resolutiondate", "timespent", "timeestimate", "priority"],
+      "query_filters": {
+        "date_range": "last_180_days",
+        "issue_types": ["Story", "Bug", "Task", "Epic"]
+      },
+      "rate_limit": {
+        "requests_per_minute": 100
+      }
+    },
+    "system_logs": {
+      "type": "file",
+      "enabled": true,
+      "path": "/var/log/applications/app.log",
+      "format": "json",
+      "pattern": null,
+      "encoding": "utf-8",
+      "refresh_interval_seconds": 15,
+      "fields": ["timestamp", "level", "message", "component", "thread", "user_id"]
+    },
+    "task_metrics": {
+      "type": "database",
+      "enabled": true,
+      "connection_string": "${EXAMPLE_DATABASE_CONNECTION_STRING}",
+      "table": "task_performance",
+      "query": "SELECT * FROM task_performance WHERE created_at >= NOW() - INTERVAL '60 days'",
+      "fields": ["task_id", "start_time", "end_time", "duration", "status", "assigned_to", "priority", "project_id", "complexity_score"],
+      "refresh_interval_seconds": 30
+    },
+    "performance_metrics": {
+      "type": "api",
+      "enabled": true,
+      "base_url": "https://metrics.example.com/api/v1",
+      "auth_token": "${EXAMPLE_METRICS_API_TOKEN}",
+      "endpoints": {
+        "requests": "/metrics/requests?timeframe=last_30_days",
+        "errors": "/metrics/errors?timeframe=last_30_days",
+        "performance": "/metrics/performance?timeframe=last_30_days"
+      },
+      "rate_limit": {
+        "requests_per_minute": 50
+      },
+      "fields": ["timestamp", "metric_name", "value", "tags", "source"]
+    }
+  },
+  "ai_configuration": {
+    "provider": "openai",
+    "model": "gpt-4-turbo",
+    "api_key": "${EXAMPLE_OPENAI_API_KEY}",
+    "temperature": 0.2,
+    "max_tokens": 1500,
+    "top_p": 0.9,
+    "frequency_penalty": 0.5,
+    "presence_penalty": 0.5,
+    "request_timeout": 60
+  },
+  "analysis_settings": {
+    "trend_analysis": {
+      "enabled": true,
+      "time_periods": ["7d", "14d", "30d", "90d"],
+      "minimum_data_points": 20,
+      "confidence_level": 0.90,
+      "trend_types": ["linear", "polynomial", "exponential"]
+    },
+    "anomaly_detection": {
+      "enabled": true,
+      "algorithm": "isolation_forest",
+      "sensitivity": 0.65,
+      "features_to_analyze": ["response_time", "error_rate", "throughput", "memory_usage", "cpu_utilization"],
+      "min_samples": 50,
+      "contamination": 0.1
+    },
+    "benchmarking": {
+      "enabled": true,
+      "baseline_source": "rolling_average_90d",
+      "comparison_metrics": ["velocity", "defect_rate", "cycle_time", "lead_time", "deployment_frequency"],
+      "update_frequency": "daily",
+      "benchmark_groups": ["team", "project", "quarter"]
+    },
+    "root_cause_analysis": {
+      "enabled": true,
+      "max_depth": 5,
+      "correlation_threshold": 0.4,
+      "min_causal_relationships": 3,
+      "causal_methods": ["correlation", "mutual_information", "granger_causality"]
+    },
+    "predictive_analysis": {
+      "enabled": true,
+      "horizon": "30d",
+      "algorithms": ["prophet", "arima", "ensemble"],
+      "confidence_intervals": [0.68, 0.95],
+      "evaluation_metrics": ["mae", "rmse", "mape"]
+    }
+  },
+  "insight_categories": [
+    {
+      "id": "project_velocity",
+      "name": "Project Velocity Insights",
+      "description": "Analysis of project completion rates and team productivity",
+      "data_sources": ["project_management", "task_metrics"],
+      "techniques": ["trend_analysis", "benchmarking"],
+      "output_format": "dashboard",
+      "frequency": "daily"
+    },
+    {
+      "id": "system_performance",
+      "name": "System Performance Insights",
+      "description": "Analysis of system logs and performance metrics",
+      "data_sources": ["system_logs", "performance_metrics"],
+      "techniques": ["anomaly_detection", "root_cause_analysis"],
+      "output_format": "alert",
+      "frequency": "real_time"
+    },
+    {
+      "id": "resource_optimization",
+      "name": "Resource Optimization Insights",
+      "description": "Analysis of resource utilization and optimization opportunities",
+      "data_sources": ["task_metrics", "performance_metrics"],
+      "techniques": ["trend_analysis", "benchmarking", "predictive_analysis"],
+      "output_format": "report",
+      "frequency": "weekly"
+    }
+  ],
+  "output_formats": {
+    "dashboard": {
+      "enabled": true,
+      "template": "executive_summary_template",
+      "refresh_interval_minutes": 5,
+      "widgets": [
+        "metric_cards",
+        "trend_charts",
+        "anomaly_indicators",
+        "comparison_tables",
+        "prediction_visualizations"
+      ],
+      "access_control": {
+        "role_based": true,
+        "allowed_roles": ["admin", "manager", "analyst"]
+      }
+    },
+    "reports": {
+      "enabled": true,
+      "formats": ["pdf", "excel", "json", "pptx"],
+      "schedule": {
+        "daily": "08:00",
+        "weekly": "monday_09:00",
+        "monthly": "first_day_10:00"
+      },
+      "distribution": {
+        "recipients": ["executives@company.com", "managers@company.com"],
+        "delivery_method": "email"
+      }
+    },
+    "alerts": {
+      "enabled": true,
+      "thresholds": {
+        "critical": 0.95,
+        "high": 0.85,
+        "medium": 0.7,
+        "low": 0.5
+      },
+      "delivery_channels": ["email", "slack", "teams", "sms"],
+      "suppression": {
+        "same_alert_suppression_minutes": 30,
+        "user_acknowledgment_required": true
+      }
+    }
+  },
+  "global_settings": {
+    "default_timezone": "America/Los_Angeles",
+    "data_retention_days": 730,
+    "insight_cache_duration_minutes": 30,
+    "max_insights_per_request": 50,
+    "validation_enabled": true,
+    "confidence_threshold": 0.75,
+    "privacy_preserving": true,
+    "debug_mode": false,
+    "anonymization_fields": ["user_id", "email", "ip_address"]
+  },
+  "monitoring_config": {
+    "metrics_enabled": true,
+    "metrics_backend": "prometheus",
+    "custom_metrics": [
+      "insights_generated_total",
+      "ai_model_response_time",
+      "data_quality_score",
+      "anomaly_detection_precision",
+      "insight_accuracy_rate"
+    ],
+    "alerting_rules": [
+      {
+        "name": "low_data_quality",
+        "condition": "data_quality_score < 0.8",
+        "severity": "warning"
+      },
+      {
+        "name": "high_anomaly_rate",
+        "condition": "anomaly_rate > 0.1",
+        "severity": "critical"
+      },
+      {
+        "name": "ai_model_slow_response",
+        "condition": "avg_response_time > 10",
+        "severity": "warning"
+      }
+    ]
+  }
+}

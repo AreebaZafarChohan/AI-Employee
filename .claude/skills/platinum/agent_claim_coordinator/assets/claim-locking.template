@@ -1,0 +1,205 @@
+# Claim Locking Configuration Template
+
+# This template defines the configuration for distributed claim locking
+# using the Agent Claim Coordinator skill.
+
+---
+# Global Locking Configuration
+locking:
+  # Backend for distributed locking coordination
+  backend: "{{LOCKING_BACKEND}}"  # redis, etcd, zookeeper, database
+  
+  # Default lock timeout in seconds
+  default_timeout_seconds: {{DEFAULT_LOCK_TIMEOUT_SECONDS}}
+  
+  # Maximum number of retry attempts for failed claims
+  max_retries: {{MAX_RETRY_ATTEMPTS}}
+  
+  # Base delay between retries (exponential backoff)
+  retry_base_delay_seconds: {{RETRY_BASE_DELAY_SECONDS}}
+  
+  # Maximum delay between retries
+  retry_max_delay_seconds: {{RETRY_MAX_DELAY_SECONDS}}
+  
+  # Jitter factor for retry delays (0.0 to 1.0)
+  retry_jitter_factor: {{RETRY_JITTER_FACTOR}}
+
+# Backend-Specific Configuration
+backend_config:
+  # Redis configuration
+  redis:
+    url: "{{REDIS_URL}}"
+    namespace: "{{REDIS_NAMESPACE}}"
+    connection_pool_size: {{REDIS_CONNECTION_POOL_SIZE}}
+    socket_timeout_seconds: {{REDIS_SOCKET_TIMEOUT_SECONDS}}
+    retry_on_timeout: {{REDIS_RETRY_ON_TIMEOUT}}
+  
+  # Etcd configuration
+  etcd:
+    endpoints:
+      - "{{ETCD_ENDPOINT_1}}"
+      - "{{ETCD_ENDPOINT_2}}"
+    username: "{{ETCD_USERNAME}}"
+    password: "{{ETCD_PASSWORD}}"
+    cert_file: "{{ETCD_CERT_FILE}}"
+    key_file: "{{ETCD_KEY_FILE}}"
+    ca_file: "{{ETCD_CA_FILE}}"
+    timeout_seconds: {{ETCD_TIMEOUT_SECONDS}}
+  
+  # Database configuration
+  database:
+    url: "{{DATABASE_URL}}"
+    table_name: "{{LOCKS_TABLE_NAME}}"
+    connection_pool_size: {{DATABASE_CONNECTION_POOL_SIZE}}
+    max_idle_connections: {{DATABASE_MAX_IDLE_CONNECTIONS}}
+
+# Claim Coordination Configuration
+coordination:
+  # Enable collision detection
+  collision_detection_enabled: {{COLLISION_DETECTION_ENABLED}}
+  
+  # Collision detection window in seconds
+  collision_detection_window_seconds: {{COLLISION_DETECTION_WINDOW_SECONDS}}
+  
+  # Enable lease-based claims with automatic renewal
+  lease_based_claims_enabled: {{LEASE_BASED_CLAIMS_ENABLED}}
+  
+  # Lease duration in seconds
+  lease_duration_seconds: {{LEASE_DURATION_SECONDS}}
+  
+  # Lease renewal interval (should be less than lease duration)
+  lease_renewal_interval_seconds: {{LEASE_RENEWAL_INTERVAL_SECONDS}}
+  
+  # Enable fair claim distribution
+  fair_distribution_enabled: {{FAIR_DISTRIBUTION_ENABLED}}
+  
+  # Distribution algorithm (round_robin, least_claimed, consistent_hash)
+  distribution_algorithm: "{{DISTRIBUTION_ALGORITHM}}"
+
+# Agent Health Configuration
+agent_health:
+  # Enable health-based claim eligibility
+  health_based_eligibility_enabled: {{HEALTH_BASED_ELIGIBILITY_ENABLED}}
+  
+  # Health check interval in seconds
+  health_check_interval_seconds: {{HEALTH_CHECK_INTERVAL_SECONDS}}
+  
+  # Minimum health score for claim eligibility (0.0 to 1.0)
+  minimum_health_score: {{MINIMUM_HEALTH_SCORE}}
+  
+  # Health metrics to consider
+  health_metrics:
+    cpu_utilization_threshold: {{CPU_UTILIZATION_THRESHOLD}}  # percentage
+    memory_utilization_threshold: {{MEMORY_UTILIZATION_THRESHOLD}}  # percentage
+    error_rate_threshold: {{ERROR_RATE_THRESHOLD}}  # percentage
+    response_time_threshold_ms: {{RESPONSE_TIME_THRESHOLD_MS}}
+
+# Security Configuration
+security:
+  # Enable authentication for lock operations
+  authentication_required: {{AUTHENTICATION_REQUIRED}}
+  
+  # Authentication method (token, certificate, oauth)
+  auth_method: "{{AUTH_METHOD}}"
+  
+  # Token validity period in seconds
+  token_validity_seconds: {{TOKEN_VALIDITY_SECONDS}}
+  
+  # Enable encryption for lock data
+  encryption_enabled: {{ENCRYPTION_ENABLED}}
+  
+  # Encryption algorithm
+  encryption_algorithm: "{{ENCRYPTION_ALGORITHM}}"
+
+# Performance Tuning
+performance:
+  # Enable caching for frequently accessed locks
+  cache_enabled: {{CACHE_ENABLED}}
+  
+  # Cache TTL in seconds
+  cache_ttl_seconds: {{CACHE_TTL_SECONDS}}
+  
+  # Cache size limit (number of entries)
+  cache_size_limit: {{CACHE_SIZE_LIMIT}}
+  
+  # Batch size for bulk operations
+  batch_operation_size: {{BATCH_OPERATION_SIZE}}
+  
+  # Thread pool size for concurrent operations
+  thread_pool_size: {{THREAD_POOL_SIZE}}
+
+# Monitoring and Logging
+monitoring:
+  # Enable detailed logging for all claim operations
+  detailed_logging_enabled: {{DETAILED_LOGGING_ENABLED}}
+  
+  # Log level for claim operations
+  log_level: "{{LOG_LEVEL}}"  # debug, info, warn, error
+  
+  # Metrics collection endpoint
+  metrics_endpoint: "{{METRICS_ENDPOINT_URL}}"
+  
+  # Enable audit logging for compliance
+  audit_logging_enabled: {{AUDIT_LOGGING_ENABLED}}
+  
+  # Metrics to collect
+  metrics:
+    claim_attempts: {{COLLECT_CLAIM_ATTEMPTS}}
+    claim_successes: {{COLLECT_CLAIM_SUCCESSES}}
+    collisions_detected: {{COLLECT_COLLISIONS_DETECTED}}
+    average_claim_time: {{COLLECT_AVERAGE_CLAIM_TIME}}
+    lock_contestation_rate: {{COLLECT_LOCK_CONTESTATION_RATE}}
+
+# Timeout Configuration
+timeouts:
+  # Connection timeout to coordination backend (in seconds)
+  backend_connection_timeout: {{BACKEND_CONNECTION_TIMEOUT_SECONDS}}
+  
+  # Operation timeout for coordination backend (in seconds)
+  backend_operation_timeout: {{BACKEND_OPERATION_TIMEOUT_SECONDS}}
+  
+  # Claim acquisition timeout (in seconds)
+  claim_acquisition_timeout: {{CLAIM_ACQUISITION_TIMEOUT_SECONDS}}
+  
+  # Lease renewal timeout (in seconds)
+  lease_renewal_timeout: {{LEASE_RENEWAL_TIMEOUT_SECONDS}}
+
+# Emergency Override Configuration
+emergency:
+  # Enable emergency override mode
+  override_enabled: {{EMERGENCY_OVERRIDE_ENABLED}}
+  
+  # Emergency contact for manual intervention
+  emergency_contact: "{{EMERGENCY_CONTACT_INFO}}"
+  
+  # Admin credentials for emergency operations
+  admin_credentials:
+    username: "{{ADMIN_USERNAME}}"
+    password: "{{ADMIN_PASSWORD}}"
+    api_key: "{{ADMIN_API_KEY}}"
+  
+  # Emergency procedures
+  emergency_procedures:
+    force_release_enabled: {{FORCE_RELEASE_ENABLED}}
+    bulk_release_enabled: {{BULK_RELEASE_ENABLED}}
+    status_inspection_enabled: {{STATUS_INSPECTION_ENABLED}}
+
+# Task-Specific Configuration
+task_specific:
+  # Default timeout per task type
+  task_type_defaults:
+    "{{TASK_TYPE_1}}":
+      timeout_seconds: {{TASK_TYPE_1_TIMEOUT_SECONDS}}
+      max_retries: {{TASK_TYPE_1_MAX_RETRIES}}
+    "{{TASK_TYPE_2}}":
+      timeout_seconds: {{TASK_TYPE_2_TIMEOUT_SECONDS}}
+      max_retries: {{TASK_TYPE_2_MAX_RETRIES}}
+  
+  # Size-based timeout adjustments
+  size_based_adjustment:
+    enabled: {{SIZE_BASED_ADJUSTMENT_ENABLED}}
+    thresholds:
+      - max_size_kb: {{SIZE_THRESHOLD_1_KB}}
+        multiplier: {{THRESHOLD_1_MULTIPLIER}}
+      - max_size_kb: {{SIZE_THRESHOLD_2_KB}}
+        multiplier: {{THRESHOLD_2_MULTIPLIER}}

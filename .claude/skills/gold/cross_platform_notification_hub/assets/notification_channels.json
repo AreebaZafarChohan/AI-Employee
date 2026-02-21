@@ -1,0 +1,148 @@
+{
+  "version": "1.0",
+  "description": "Configuration file for defining notification channels and delivery rules",
+  "channels": {
+    "slack": {
+      "enabled": true,
+      "workspace": "my-workspace",
+      "bot_token": "${SLACK_BOT_TOKEN}",
+      "signing_secret": "${SLACK_SIGNING_SECRET}",
+      "default_channel": "#general",
+      "rate_limit": {
+        "requests_per_minute": 50,
+        "burst_size": 10
+      },
+      "message_format": {
+        "template": "{{message.title}}\n{{message.content}}\n\n<{{message.link}}|View Details>",
+        "blocks_supported": true
+      }
+    },
+    "email": {
+      "enabled": true,
+      "smtp": {
+        "host": "${EMAIL_SMTP_HOST}",
+        "port": 587,
+        "username": "${EMAIL_SMTP_USER}",
+        "password": "${EMAIL_SMTP_PASSWORD}",
+        "use_tls": true
+      },
+      "from_address": "${EMAIL_FROM_ADDRESS}",
+      "rate_limit": {
+        "requests_per_minute": 100,
+        "burst_size": 20
+      },
+      "message_format": {
+        "subject_template": "[{{priority}}] {{message.title}}",
+        "html_template": "<h2>{{message.title}}</h2><p>{{message.content}}</p><a href=\"{{message.link}}\">View Details</a>",
+        "text_template": "{{message.title}}\n\n{{message.content}}\n\nView Details: {{message.link}}"
+      }
+    },
+    "msteams": {
+      "enabled": true,
+      "webhook_url": "${TEAMS_WEBHOOK_URL}",
+      "rate_limit": {
+        "requests_per_minute": 30,
+        "burst_size": 5
+      },
+      "message_format": {
+        "template": {
+          "@type": "MessageCard",
+          "@context": "http://schema.org/extensions",
+          "themeColor": "{{message.color}}",
+          "summary": "{{message.title}}",
+          "sections": [{
+            "activityTitle": "{{message.title}}",
+            "activitySubtitle": "{{message.subtitle}}",
+            "activityText": "{{message.content}}",
+            "markdown": true
+          }],
+          "potentialAction": [{
+            "@type": "OpenUri",
+            "name": "View Details",
+            "targets": [{
+              "os": "default",
+              "uri": "{{message.link}}"
+            }]
+          }]
+        }
+      }
+    },
+    "sms": {
+      "enabled": true,
+      "provider": "twilio",
+      "credentials": {
+        "account_sid": "${SMS_TWILIO_ACCOUNT_SID}",
+        "auth_token": "${SMS_TWILIO_AUTH_TOKEN}"
+      },
+      "from_number": "${SMS_FROM_NUMBER}",
+      "rate_limit": {
+        "requests_per_second": 1,
+        "burst_size": 1
+      },
+      "message_format": {
+        "template": "{{message.title}}: {{message.content}} View: {{message.link}}",
+        "max_length": 160,
+        "truncate_indicator": "..."
+      }
+    }
+  },
+  "user_preferences": {
+    "store_type": "redis",
+    "redis_config": {
+      "url": "${NOTIFICATION_PREFERENCES_REDIS_URL}",
+      "namespace": "notification_preferences"
+    },
+    "default_channels": ["email", "slack"],
+    "business_hours_only": false,
+    "timezone": "UTC",
+    "opt_out_keywords": ["STOP", "UNSUBSCRIBE", "CANCEL"]
+  },
+  "delivery_rules": {
+    "priorities": {
+      "critical": {
+        "channels": ["sms", "slack", "email"],
+        "timeout_minutes": 5,
+        "retries": 3
+      },
+      "high": {
+        "channels": ["slack", "email", "teams"],
+        "timeout_minutes": 10,
+        "retries": 2
+      },
+      "normal": {
+        "channels": ["email", "slack"],
+        "timeout_minutes": 30,
+        "retries": 1
+      },
+      "low": {
+        "channels": ["email"],
+        "timeout_minutes": 60,
+        "retries": 0
+      }
+    },
+    "fallback_rules": {
+      "enabled": true,
+      "sequence": {
+        "critical": ["sms", "phone_call", "slack", "email"],
+        "high": ["slack", "teams", "email"],
+        "normal": ["email", "slack"],
+        "low": ["email"]
+      }
+    },
+    "throttling": {
+      "max_notifications_per_hour_per_user": 50,
+      "notification_burst_limit": 5
+    }
+  },
+  "global_settings": {
+    "default_priority": "normal",
+    "max_retries": 3,
+    "retry_delay_seconds": 5,
+    "message_ttl_seconds": 3600,
+    "queue_size": 1000,
+    "enable_batching": true,
+    "batch_window_seconds": 30,
+    "enable_interactive_messages": true,
+    "delivery_confirmation_required": true
+  }
+}

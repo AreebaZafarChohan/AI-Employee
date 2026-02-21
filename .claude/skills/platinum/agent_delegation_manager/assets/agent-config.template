@@ -1,0 +1,279 @@
+# Agent Configuration Template
+
+# This template defines the configuration for individual agents
+# that participate in the Agent Delegation Manager ecosystem.
+
+---
+# Agent Identity and Registration
+agent:
+  # Unique identifier for this agent (should be globally unique)
+  id: "{{AGENT_ID}}"
+  
+  # Human-readable name for the agent
+  name: "{{AGENT_NAME}}"
+  
+  # Description of the agent's purpose and capabilities
+  description: "{{AGENT_DESCRIPTION}}"
+  
+  # Version of the agent software
+  version: "{{AGENT_VERSION}}"
+  
+  # Registration token for authenticating with the delegation manager
+  registration_token: "{{REGISTRATION_TOKEN}}"
+
+# Communication Configuration
+communication:
+  # Endpoint where the agent can be reached
+  endpoint_url: "{{AGENT_ENDPOINT_URL}}"
+  
+  # Port for incoming task assignments
+  task_port: {{TASK_PORT_NUMBER}}
+  
+  # Port for health checks and status updates
+  health_port: {{HEALTH_PORT_NUMBER}}
+  
+  # Supported communication protocols
+  supported_protocols:
+    - "{{SUPPORTED_PROTOCOL_1}}"
+    - "{{SUPPORTED_PROTOCOL_2}}"
+  
+  # Authentication method for communication
+  auth_method: "{{AUTH_METHOD}}"
+  
+  # Authentication token for secure communication
+  auth_token: "{{AUTH_TOKEN}}"
+  
+  # SSL/TLS configuration
+  ssl:
+    enabled: {{SSL_ENABLED}}
+    certificate_path: "{{CERTIFICATE_PATH}}"
+    private_key_path: "{{PRIVATE_KEY_PATH}}"
+
+# Capability Definitions
+capabilities:
+  # List of capabilities this agent can handle
+  available:
+    - "{{CAPABILITY_1}}"
+    - "{{CAPABILITY_2}}"
+    - "{{CAPABILITY_3}}"
+  
+  # Example capabilities
+  # - "data_processing"
+  # - "image_analysis"
+  # - "text_summarization"
+  # - "report_generation"
+  
+  # Maximum number of concurrent tasks this agent can handle
+  max_concurrent_tasks: {{MAX_CONCURRENT_TASKS}}
+  
+  # Estimated processing capacity (tasks per minute)
+  processing_capacity: {{PROCESSING_CAPACITY_PER_MINUTE}}
+  
+  # Specialized skills or expertise areas
+  expertise_areas:
+    - "{{EXPERTISE_AREA_1}}"
+    - "{{EXPERTISE_AREA_2}}"
+
+# Resource Configuration
+resources:
+  # CPU cores allocated to this agent
+  cpu_cores: {{CPU_CORES_ALLOCATED}}
+  
+  # Memory (RAM) allocated to this agent (in MB)
+  memory_mb: {{MEMORY_MB_ALLOCATED}}
+  
+  # Storage space allocated to this agent (in GB)
+  storage_gb: {{STORAGE_GB_ALLOCATED}}
+  
+  # GPU resources (if applicable)
+  gpu:
+    enabled: {{GPU_ENABLED}}
+    device_count: {{GPU_DEVICE_COUNT}}
+    memory_per_device_mb: {{GPU_MEMORY_PER_DEVICE_MB}}
+  
+  # Resource monitoring
+  monitoring:
+    enabled: {{RESOURCE_MONITORING_ENABLED}}
+    collection_interval_seconds: {{RESOURCE_MONITORING_INTERVAL_SECONDS}}
+
+# Performance Configuration
+performance:
+  # Expected task completion time (in seconds)
+  avg_completion_time_seconds: {{AVG_COMPLETION_TIME_SECONDS}}
+  
+  # Task timeout (in seconds) - abandon task if taking too long
+  task_timeout_seconds: {{TASK_TIMEOUT_SECONDS}}
+  
+  # Maximum task size (in MB) that this agent can handle
+  max_task_size_mb: {{MAX_TASK_SIZE_MB}}
+  
+  # Performance metrics collection
+  metrics_collection:
+    enabled: {{METRICS_COLLECTION_ENABLED}}
+    collection_interval_seconds: {{METRICS_COLLECTION_INTERVAL_SECONDS}}
+    endpoint: "{{METRICS_ENDPOINT_URL}}"
+
+# Health Check Configuration
+health:
+  # Interval for sending health checks to the delegation manager (in seconds)
+  heartbeat_interval: {{HEARTBEAT_INTERVAL_SECONDS}}
+  
+  # Endpoint for external health checks
+  health_check_endpoint: "{{HEALTH_CHECK_ENDPOINT}}"
+  
+  # Custom health check script path
+  custom_health_script: "{{CUSTOM_HEALTH_SCRIPT_PATH}}"
+  
+  # Thresholds for self-reporting as unhealthy
+  thresholds:
+    cpu_usage_percent: {{CPU_USAGE_THRESHOLD_PERCENT}}
+    memory_usage_percent: {{MEMORY_USAGE_THRESHOLD_PERCENT}}
+    error_rate_percent: {{ERROR_RATE_THRESHOLD_PERCENT}}
+    response_time_ms: {{RESPONSE_TIME_THRESHOLD_MS}}
+
+# Task Processing Configuration
+task_processing:
+  # Number of worker threads for processing tasks
+  worker_threads: {{WORKER_THREADS_COUNT}}
+  
+  # Queue size for incoming tasks
+  task_queue_size: {{TASK_QUEUE_SIZE}}
+  
+  # Preprocessing steps before task execution
+  preprocessing_steps:
+    - "{{PREPROCESSING_STEP_1}}"
+    - "{{PREPROCESSING_STEP_2}}"
+  
+  # Post-processing steps after task completion
+  postprocessing_steps:
+    - "{{POSTPROCESSING_STEP_1}}"
+    - "{{POSTPROCESSING_STEP_2}}"
+  
+  # Retry configuration for failed tasks
+  retry_policy:
+    max_attempts: {{MAX_RETRY_ATTEMPTS}}
+    backoff_multiplier: {{RETRY_BACKOFF_MULTIPLIER}}
+    base_delay_seconds: {{BASE_RETRY_DELAY_SECONDS}}
+
+# Geographic Configuration
+geographic:
+  # Geographic location of the agent (region/zone)
+  location: "{{AGENT_GEOGRAPHIC_LOCATION}}"
+  
+  # Data center or cloud region identifier
+  region: "{{CLOUD_REGION_IDENTIFIER}}"
+  
+  # Latency preferences for task routing
+  latency_preferences:
+    preferred_regions:
+      - "{{PREFERRED_REGION_1}}"
+      - "{{PREFERRED_REGION_2}}"
+    avoided_regions:
+      - "{{AVOIDED_REGION_1}}"
+  
+  # Timezone for scheduling tasks
+  timezone: "{{AGENT_TIMEZONE}}"
+
+# Security Configuration
+security:
+  # Enable security features
+  enabled: {{SECURITY_ENABLED}}
+  
+  # Encryption settings for task data
+  encryption:
+    enabled: {{ENCRYPTION_ENABLED}}
+    algorithm: "{{ENCRYPTION_ALGORITHM}}"
+    key_rotation_days: {{KEY_ROTATION_DAYS}}
+  
+  # Access control list for authorized delegation managers
+  access_control:
+    allowed_managers:
+      - "{{ALLOWED_MANAGER_1}}"
+      - "{{ALLOWED_MANAGER_2}}"
+    blocked_managers:
+      - "{{BLOCKED_MANAGER_1}}"
+  
+  # Audit logging configuration
+  audit:
+    enabled: {{AUDIT_LOGGING_ENABLED}}
+    log_level: "{{AUDIT_LOG_LEVEL}}"  # debug, info, warn, error
+    retention_days: {{AUDIT_LOG_RETENTION_DAYS}}
+
+# Monitoring and Logging
+monitoring:
+  # Enable application performance monitoring
+  apm_enabled: {{APM_ENABLED}}
+  
+  # Application performance monitoring endpoint
+  apm_endpoint: "{{APM_ENDPOINT_URL}}"
+  
+  # Logging configuration
+  logging:
+    level: "{{LOG_LEVEL}}"  # debug, info, warn, error
+    format: "{{LOG_FORMAT}}"  # json, text, syslog
+    retention_days: {{LOG_RETENTION_DAYS}}
+    max_file_size_mb: {{LOG_MAX_FILE_SIZE_MB}}
+  
+  # Metrics collection
+  metrics:
+    enabled: {{METRICS_ENABLED}}
+    collection_interval_seconds: {{METRICS_INTERVAL_SECONDS}}
+    push_gateway_url: "{{PUSH_GATEWAY_URL}}"
+
+# Backup and Recovery
+backup:
+  # Enable automated backups
+  enabled: {{BACKUP_ENABLED}}
+  
+  # Backup schedule (cron format)
+  schedule: "{{BACKUP_SCHEDULE_CRON}}"
+  
+  # Backup retention policy
+  retention:
+    daily: {{DAILY_BACKUP_RETENTION}}
+    weekly: {{WEEKLY_BACKUP_RETENTION}}
+    monthly: {{MONTHLY_BACKUP_RETENTION}}
+  
+  # Backup destination
+  destination:
+    type: "{{BACKUP_DESTINATION_TYPE}}"  # local, s3, gcs, azure
+    path: "{{BACKUP_DESTINATION_PATH}}"
+
+# Maintenance Configuration
+maintenance:
+  # Scheduled maintenance windows
+  maintenance_windows:
+    - day_of_week: "{{MAINTENANCE_DAY_OF_WEEK}}"
+      start_time: "{{MAINTENANCE_START_TIME}}"
+      duration_hours: {{MAINTENANCE_DURATION_HOURS}}
+  
+  # Automatic update settings
+  auto_updates:
+    enabled: {{AUTO_UPDATES_ENABLED}}
+    schedule: "{{AUTO_UPDATE_SCHEDULE}}"
+    notify_before_update: {{NOTIFY_BEFORE_UPDATE}}
+  
+  # Self-healing configuration
+  self_healing:
+    enabled: {{SELF_HEALING_ENABLED}}
+    restart_on_failure: {{RESTART_ON_FAILURE}}
+    max_restart_attempts: {{MAX_RESTART_ATTEMPTS}}
+
+# Emergency Configuration
+emergency:
+  # Emergency contact information
+  contact:
+    email: "{{EMERGENCY_CONTACT_EMAIL}}"
+    phone: "{{EMERGENCY_CONTACT_PHONE}}"
+    escalation_procedure: "{{ESCALATION_PROCEDURE_URL}}"
+  
+  # Emergency shutdown procedure
+  shutdown_procedures:
+    graceful_shutdown_timeout: {{GRACEFUL_SHUTDOWN_TIMEOUT_SECONDS}}
+    forced_shutdown_after: {{FORCED_SHUTDOWN_AFTER_SECONDS}}
+  
+  # Circuit breaker settings
+  circuit_breaker:
+    enabled: {{CIRCUIT_BREAKER_ENABLED}}
+    failure_threshold: {{CIRCUIT_BREAKER_FAILURE_THRESHOLD}}
+    timeout_seconds: {{CIRCUIT_BREAKER_TIMEOUT_SECONDS}}

@@ -1,0 +1,521 @@
+# Dependency Analysis Templates
+
+## Overview
+This document contains templates for analyzing and managing task dependencies within the Task Priority Optimizer. These templates help identify critical paths, potential bottlenecks, and optimal sequencing for task execution.
+
+## Template 1: Basic Dependency Mapping
+
+### Description
+A simple approach to map task dependencies and calculate basic dependency scores.
+
+### Configuration Template
+```yaml
+dependency_analysis:
+  method: basic_mapping
+  scoring:
+    blocking_bonus: 0.3
+    blocked_penalty: -0.1
+    critical_path_bonus: 0.4
+  dependency_types:
+    requires: 1.0
+    precedes: 0.8
+    parallelizable: 0.2
+    resource_shared: 0.1
+  critical_path_algorithm: topological_sort
+  dependency_validation:
+    check_cycles: true
+    check_completeness: true
+    check_consistency: true
+  output_format:
+    include_direct_deps: true
+    include_transitive_deps: false
+    show_critical_path: true
+    show_bottlenecks: true
+```
+
+### Example Usage
+```python
+# Example of how this configuration would be used
+dependency_analyzer = BasicDependencyAnalyzer(config={
+    "blocking_bonus": 0.3,
+    "blocked_penalty": -0.1,
+    "critical_path_bonus": 0.4,
+    "dependency_types": {
+        "requires": 1.0,
+        "precedes": 0.8,
+        "parallelizable": 0.2,
+        "resource_shared": 0.1
+    }
+})
+
+# Calculate dependency scores for tasks
+dependency_scores = dependency_analyzer.calculate_scores(task_graph)
+```
+
+### Usage Notes
+- Use for simple dependency structures
+- Does not account for transitive dependencies by default
+- Good for initial implementation and testing
+
+## Template 2: Advanced Dependency Graph Analysis
+
+### Description
+A comprehensive approach that considers multiple layers of dependencies and complex relationship types.
+
+### Configuration Template
+```yaml
+dependency_analysis:
+  method: advanced_graph_analysis
+  algorithms:
+    critical_path: 
+      method: longest_path
+      weighted_edges: true
+      resource_constraints: false
+    bottleneck_identification:
+      method: flow_analysis
+      min_cut_algorithm: true
+      capacity_weighting: true
+    cluster_detection:
+      method: community_detection
+      modularity_optimization: true
+      hierarchical_clustering: false
+  scoring_components:
+    direct_dependencies:
+      blocking_coefficient: 0.4
+      blocked_coefficient: -0.1
+    transitive_dependencies:
+      depth_weighting:
+        max_depth: 5
+        decay_factor: 0.7
+      path_count_weighting: 0.2
+    resource_sharing:
+      competition_coefficient: 0.25
+      capacity_constraint_weight: 0.3
+    temporal_alignment:
+      deadline_convergence: 0.2
+      milestone_alignment: 0.15
+  dependency_types_weights:
+    must_finish_before: 1.0
+    must_start_after: 0.8
+    resource_dependency: 0.6
+    information_dependency: 0.5
+    approval_dependency: 0.4
+    sequential_dependency: 0.7
+  analysis_depth:
+    max_transitive_distance: 10
+    include_parallel_paths: true
+    loop_detection: true
+    weak_dependency_threshold: 0.1
+  performance_optimizations:
+    caching_enabled: true
+    incremental_updates: true
+    parallel_processing: true
+    sampling_for_large_graphs: true
+    sample_size_threshold: 1000
+  output_options:
+    include_subgraph_analysis: true
+    show_alternative_paths: true
+    highlight_risk_areas: true
+    suggest_dependency_refactoring: false
+```
+
+### Example Usage
+```python
+# Example of how this configuration would be used
+advanced_analyzer = AdvancedDependencyAnalyzer(config={
+    "critical_path_method": "longest_path",
+    "bottleneck_method": "flow_analysis",
+    "blocking_coefficient": 0.4,
+    "depth_decay_factor": 0.7,
+    "max_transitive_distance": 10
+})
+
+# Perform comprehensive dependency analysis
+analysis_results = advanced_analyzer.analyze(task_graph)
+
+# Extract critical path
+critical_path = analysis_results.critical_path
+
+# Identify bottlenecks
+bottlenecks = analysis_results.bottlenecks
+
+# Get dependency scores for prioritization
+dependency_scores = analysis_results.dependency_scores
+```
+
+### Usage Notes
+- Suitable for complex projects with intricate dependencies
+- Enables detailed analysis of project flow
+- Includes optimizations for large graphs
+- Provides suggestions for dependency structure improvements
+
+## Template 3: Resource-Constrained Dependency Analysis
+
+### Description
+Analyzes dependencies while considering resource constraints and potential conflicts.
+
+### Configuration Template
+```yaml
+dependency_analysis:
+  method: resource_constrained_analysis
+  resource_types:
+    personnel:
+      availability_tracking: true
+      skill_matching: true
+      workload_balancing: true
+    equipment:
+      scheduling_conflicts: true
+      maintenance_windows: true
+      capacity_limits: true
+    facilities:
+      booking_conflicts: true
+      capacity_constraints: true
+      setup_times: true
+    budget:
+      allocation_tracking: true
+      spending_rate_limits: true
+      approval_gates: true
+  constraint_handling:
+    hard_constraints:
+      - resource_unavailability
+      - mandatory_sequencing
+      - regulatory_requirements
+    soft_constraints:
+      - preferred_sequencing
+      - resource_preference
+      - timing_preferences
+  scheduling_integration:
+    timeline_projection: true
+    resource_leveling: true
+    critical_chain_method: true
+    buffer_management: true
+  scoring_with_resources:
+    resource_availability_bonus: 0.3
+    constraint_conflict_penalty: -0.4
+    resource_efficiency_bonus: 0.2
+    bottleneck_severity_penalty: -0.5
+  resource_conflict_resolution:
+    prioritization_method: weighted_shortest_processing_time
+    conflict_buffer_time: 2  # hours
+    resource_allocation_strategy: first_fit_decreasing
+    alternative_resource_consideration: true
+  capacity_modeling:
+    individual_capacity:
+      max_daily_hours: 8
+      max_weekly_hours: 40
+      efficiency_factor: 0.85
+    team_capacity:
+      coordination_overhead: 0.1
+      communication_factor: 0.05
+      synergy_multiplier: 1.1
+  output_extensions:
+    resource_load_chart: true
+    conflict_timeline: true
+    capacity_utilization_report: true
+    alternative_assignment_suggestions: true
+```
+
+### Example Usage
+```python
+# Example of how this configuration would be used
+resource_analyzer = ResourceConstrainedAnalyzer(config={
+    "resource_types": ["personnel", "equipment"],
+    "constraint_handling": {
+        "hard_constraints": ["resource_unavailability"],
+        "soft_constraints": ["preferred_sequencing"]
+    },
+    "resource_availability_bonus": 0.3,
+    "constraint_conflict_penalty": -0.4
+})
+
+# Analyze dependencies with resource constraints
+resource_analysis = resource_analyzer.analyze_with_resources(
+    task_graph, 
+    resource_availability, 
+    team_capacities
+)
+
+# Get resource-aware dependency scores
+resource_aware_scores = resource_analysis.dependency_scores
+
+# Identify resource conflicts
+conflicts = resource_analysis.conflicts
+```
+
+### Usage Notes
+- Essential for projects with tight resource constraints
+- Integrates scheduling and dependency analysis
+- Helps identify resource bottlenecks before they occur
+- Provides alternative resource allocation suggestions
+
+## Template 4: Temporal Dependency Analysis
+
+### Description
+Analyzes dependencies with a focus on timing, deadlines, and temporal relationships between tasks.
+
+### Configuration Template
+```yaml
+dependency_analysis:
+  method: temporal_dependency_analysis
+  time_unit: hours
+  temporal_relationships:
+    fs: { name: "finish-to-start", weight: 1.0, lag_default: 0 }
+    ss: { name: "start-to-start", weight: 0.7, lag_default: 0 }
+    ff: { name: "finish-to-finish", weight: 0.6, lag_default: 0 }
+    sf: { name: "start-to-finish", weight: 0.5, lag_default: 0 }
+  deadline_integration:
+    hard_deadlines: true
+    soft_deadlines: true
+    milestone_dependencies: true
+    interim_deliverables: true
+  time_buffer_calculation:
+    project_buffer: true
+    feeding_buffer: true
+    capacity_buffer: true
+    buffer_size_method: root_square_error
+  critical_path_modifications:
+    critical_chain_method: true
+    constraint_buffering: true
+    resource_smoothing: true
+  temporal_scoring:
+    deadline_proximity_factor: 0.4
+    time_slack_penalty: -0.2
+    milestone_alignment_bonus: 0.3
+    sequential_dependency_weight: 0.6
+  calendar_integration:
+    working_hours: true
+    holidays: true
+    shift_patterns: true
+    regional_calendars: true
+  uncertainty_handling:
+    probabilistic_timing: true
+    monte_carlo_simulation: true
+    contingency_factors: true
+    risk_adjusted_timelines: true
+  temporal_patterns:
+    recurring_dependencies: true
+    cyclical_relationships: true
+    seasonal_variations: true
+    periodic_reviews: true
+  analysis_outputs:
+    gantt_chart_ready: true
+    timeline_conflicts: true
+    critical_path_with_resources: true
+    temporal_risk_assessment: true
+```
+
+### Example Usage
+```python
+# Example of how this configuration would be used
+temporal_analyzer = TemporalDependencyAnalyzer(config={
+    "time_unit": "hours",
+    "temporal_relationships": {
+        "fs": {"weight": 1.0, "lag_default": 0},
+        "ss": {"weight": 0.7, "lag_default": 0}
+    },
+    "deadline_proximity_factor": 0.4,
+    "calendar_integration": True
+})
+
+# Analyze temporal dependencies
+temporal_analysis = temporal_analyzer.analyze_temporal_dependencies(
+    task_graph, 
+    deadlines, 
+    calendars
+)
+
+# Get timeline-aware dependency scores
+timeline_scores = temporal_analysis.dependency_scores
+
+# Identify temporal conflicts
+temporal_conflicts = temporal_analysis.conflicts
+```
+
+### Usage Notes
+- Ideal for projects with strict timing requirements
+- Integrates with calendar and scheduling systems
+- Accounts for different types of temporal relationships
+- Includes buffer management for uncertainty
+
+## Template 5: Risk-Aware Dependency Analysis
+
+### Description
+Analyzes dependencies while evaluating associated risks and potential failure points.
+
+### Configuration Template
+```yaml
+dependency_analysis:
+  method: risk_aware_dependency_analysis
+  risk_dimensions:
+    technical_risk:
+      complexity_factor: 0.4
+      novelty_factor: 0.3
+      dependency_on_external_factors: 0.3
+    resource_risk:
+      key_person_dependency: 0.5
+      vendor_dependency: 0.3
+      equipment_reliability: 0.2
+    schedule_risk:
+      duration_uncertainty: 0.4
+      dependency_density: 0.3
+      critical_path_position: 0.3
+    external_risk:
+      regulatory_change: 0.2
+      market_conditions: 0.2
+      supplier_issues: 0.3
+      environmental_factors: 0.3
+  risk_propagation_models:
+    failure_propagation: true
+    delay_propagation: true
+    quality_issue_propagation: true
+    resource_conflict_propagation: true
+  risk_mitigation_integration:
+    mitigation_task_generation: true
+    contingency_path_planning: true
+    risk_response_prioritization: true
+    fallback_sequence_definition: true
+  risk_scoring:
+    dependency_risk_score: true
+    aggregate_project_risk: true
+    risk_adjusted_dependency_strength: true
+    contingency_required_indicator: true
+  failure_scenario_analysis:
+    single_point_failures: true
+    cascade_failure_simulation: true
+    recovery_path_identification: true
+    impact_assessment: true
+  risk_based_adjustments:
+    risk_aversion_factor: 0.3
+    safety_margin_integration: true
+    conservative_sequencing: true
+    risk_reward_tradeoff: true
+  monitoring_integration:
+    risk_indicator_tracking: true
+    early_warning_system: true
+    risk_mitigation_effectiveness: true
+    adaptive_response_triggers: true
+  visualization_options:
+    risk_heatmap: true
+    failure_scenario_trees: true
+    risk_flow_diagrams: true
+    mitigation_plan_visualization: true
+```
+
+### Example Usage
+```python
+# Example of how this configuration would be used
+risk_analyzer = RiskAwareDependencyAnalyzer(config={
+    "risk_dimensions": {
+        "technical_risk": {"complexity_factor": 0.4, "novelty_factor": 0.3},
+        "resource_risk": {"key_person_dependency": 0.5}
+    },
+    "failure_propagation": True,
+    "risk_aversion_factor": 0.3
+})
+
+# Analyze dependencies with risk considerations
+risk_analysis = risk_analyzer.analyze_with_risks(task_graph, risk_factors)
+
+# Get risk-adjusted dependency scores
+risk_adjusted_scores = risk_analysis.dependency_scores
+
+# Identify high-risk dependencies
+high_risk_deps = risk_analysis.high_risk_dependencies
+```
+
+### Usage Notes
+- Critical for high-stakes projects with significant consequences
+- Identifies potential failure points before they occur
+- Integrates risk mitigation into dependency analysis
+- Provides early warning systems for potential issues
+
+## Template 6: Agile Dependency Analysis
+
+### Description
+Analyzes dependencies in an agile context, considering iterative development and adaptive planning.
+
+### Configuration Template
+```yaml
+dependency_analysis:
+  method: agile_dependency_analysis
+  agile_principles_integration:
+    iterative_development: true
+    adaptive_planning: true
+    customer_collaboration: true
+    responding_to_change: true
+  sprint_integration:
+    sprint_boundary_dependencies: true
+    story_sequencing: true
+    cross_sprint_dependencies: true
+    iteration_planning_support: true
+  backlog_dependencies:
+    epic_dependencies: true
+    feature_dependencies: true
+    user_story_linking: true
+    theme_relationships: true
+  agile_metrics:
+    velocity_impact: true
+    capacity_planning: true
+    burndown_alignment: true
+    team_productivity_factors: true
+  change_management:
+    impact_analysis: true
+    adaptation_readiness: true
+    flexibility_scoring: true
+    change_resistance_factors: true
+  collaboration_dependencies:
+    cross_team_dependencies: true
+    stakeholder_dependencies: true
+    review_dependencies: true
+    integration_points: true
+  agile_scoring:
+    value_stream_alignment: 0.4
+    sprint_feasibility: 0.3
+    impediment_potential: -0.2
+    collaboration_requirement: 0.1
+  adaptive_features:
+    dynamic_reordering: true
+    dependency_relaxation: true
+    parallelization_opportunities: true
+    simplification_paths: true
+  visualization_for_agile:
+    story_map_integration: true
+    sprint_board_ready: true
+    burndown_dependency_tracking: true
+    impediment_flow_diagram: true
+  integration_with_tools:
+    jira_integration: true
+    azure_devops_integration: true
+    trello_integration: true
+    monday_integration: true
+```
+
+### Example Usage
+```python
+# Example of how this configuration would be used
+agile_analyzer = AgileDependencyAnalyzer(config={
+    "iterative_development": True,
+    "sprint_boundary_dependencies": True,
+    "value_stream_alignment": 0.4,
+    "integration_with_tools": ["jira", "azure_devops"]
+})
+
+# Analyze dependencies in agile context
+agile_analysis = agile_analyzer.analyze_agile_dependencies(
+    backlog_items, 
+    sprint_plans, 
+    team_capacity
+)
+
+# Get agile-friendly dependency scores
+agile_scores = agile_analysis.dependency_scores
+
+# Identify sprint-blocking dependencies
+sprint_blocks = agile_analysis.sprint_blocking_dependencies
+```
+
+### Usage Notes
+- Designed specifically for agile methodologies
+- Integrates with common agile tools
+- Considers iterative development cycles
+- Balances dependencies with agility requirements

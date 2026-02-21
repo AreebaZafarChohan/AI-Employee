@@ -1,0 +1,255 @@
+# Loop Monitor Configuration Template
+
+# This template defines the configuration for the Ralph Wiggum Loop Controller's monitoring system.
+
+---
+# Global Monitoring Configuration
+monitoring:
+  # Enable task loop monitoring
+  enabled: {{LOOP_MONITORING_ENABLED}}
+  
+  # Monitoring check interval in seconds
+  check_interval_seconds: {{CHECK_INTERVAL_SECONDS}}
+  
+  # Default task timeout in seconds
+  default_task_timeout_seconds: {{DEFAULT_TASK_TIMEOUT_SECONDS}}
+  
+  # Warning threshold for slow tasks (percentage of timeout)
+  warning_threshold_percentage: {{WARNING_THRESHOLD_PERCENTAGE}}
+  
+  # Enable detailed monitoring metrics
+  metrics_enabled: {{METRICS_ENABLED}}
+  
+  # Metrics collection interval in seconds
+  metrics_interval_seconds: {{METRICS_INTERVAL_SECONDS}}
+
+# Agent Heartbeat Configuration
+agent_heartbeat:
+  # Enable agent heartbeat monitoring
+  enabled: {{AGENT_HEARTBEAT_ENABLED}}
+  
+  # Heartbeat timeout in seconds (after which agent is considered inactive)
+  timeout_seconds: {{HEARTBEAT_TIMEOUT_SECONDS}}
+  
+  # Warning threshold in seconds (after which agent status is warning)
+  warning_threshold_seconds: {{HEARTBEAT_WARNING_THRESHOLD_SECONDS}}
+  
+  # Heartbeat check interval in seconds
+  check_interval_seconds: {{HEARTBEAT_CHECK_INTERVAL_SECONDS}}
+  
+  # Enable heartbeat-based task reassignment
+  reassignment_enabled: {{HEARTBEAT_REASSIGNMENT_ENABLED}}
+
+# Task Monitoring Configuration
+task_monitoring:
+  # Enable individual task monitoring
+  enabled: {{TASK_MONITORING_ENABLED}}
+  
+  # Task state tracking enabled
+  state_tracking_enabled: {{STATE_TRACKING_ENABLED}}
+  
+  # Progress tracking enabled
+  progress_tracking_enabled: {{PROGRESS_TRACKING_ENABLED}}
+  
+  # Enable stuck task detection
+  stuck_detection_enabled: {{STUCK_DETECTION_ENABLED}}
+  
+  # Stuck task detection interval in seconds
+  stuck_detection_interval_seconds: {{STUCK_DETECTION_INTERVAL_SECONDS}}
+  
+  # Enable task activity monitoring
+  activity_monitoring_enabled: {{ACTIVITY_MONITORING_ENABLED}}
+
+# Alerting Configuration
+alerting:
+  # Enable alerting for stuck tasks
+  enabled: {{ALERTING_ENABLED}}
+  
+  # Alert webhook URL
+  webhook_url: "{{ALERT_WEBHOOK_URL}}"
+  
+  # Alert threshold for stuck tasks (number of stuck tasks before alerting)
+  stuck_task_alert_threshold: {{STUCK_TASK_ALERT_THRESHOLD}}
+  
+  # Alert threshold for failed tasks (number of failed tasks before alerting)
+  failed_task_alert_threshold: {{FAILED_TASK_ALERT_THRESHOLD}}
+  
+  # Alert frequency limit (minimum seconds between alerts)
+  alert_frequency_limit_seconds: {{ALERT_FREQUENCY_LIMIT_SECONDS}}
+  
+  # Enable alert deduplication
+  deduplication_enabled: {{ALERT_DEDUPLICATION_ENABLED}}
+  
+  # Alert channels
+  channels:
+    - "{{ALERT_CHANNEL_1}}"
+    - "{{ALERT_CHANNEL_2}}"
+    - "{{ALERT_CHANNEL_3}}"
+
+# Escalation Configuration
+escalation:
+  # Enable escalation procedures
+  enabled: {{ESCALATION_ENABLED}}
+  
+  # Maximum escalation depth
+  max_depth: {{MAX_ESCALATION_DEPTH}}
+  
+  # Escalation timeout in seconds (time before escalating)
+  timeout_seconds: {{ESCALATION_TIMEOUT_SECONDS}}
+  
+  # Enable automatic escalation
+  automatic_enabled: {{AUTOMATIC_ESCALATION_ENABLED}}
+  
+  # Escalation levels configuration
+  levels:
+    level_1:
+      max_attempts: {{LEVEL_1_MAX_ATTEMPTS}}
+      timeout_seconds: {{LEVEL_1_TIMEOUT_SECONDS}}
+      action: "{{LEVEL_1_ACTION}}"
+    level_2:
+      max_attempts: {{LEVEL_2_MAX_ATTEMPTS}}
+      timeout_seconds: {{LEVEL_2_TIMEOUT_SECONDS}}
+      action: "{{LEVEL_2_ACTION}}"
+    level_3:
+      max_attempts: {{LEVEL_3_MAX_ATTEMPTS}}
+      timeout_seconds: {{LEVEL_3_TIMEOUT_SECONDS}}
+      action: "{{LEVEL_3_ACTION}}"
+    level_4:
+      max_attempts: {{LEVEL_4_MAX_ATTEMPTS}}
+      timeout_seconds: {{LEVEL_4_TIMEOUT_SECONDS}}
+      action: "{{LEVEL_4_ACTION}}"
+    level_5:
+      max_attempts: {{LEVEL_5_MAX_ATTEMPTS}}
+      timeout_seconds: {{LEVEL_5_TIMEOUT_SECONDS}}
+      action: "{{LEVEL_5_ACTION}}"
+
+# Retry Configuration (reference to separate template)
+retry:
+  # Reference to retry policy configuration
+  policy_template: "{{RETRY_POLICY_TEMPLATE_PATH}}"
+  
+  # Enable retry after escalation
+  retry_after_escalation: {{RETRY_AFTER_ESCALATION_ENABLED}}
+
+# Task Type-Specific Configuration
+task_types:
+  # Configuration for different task types
+  "{{TASK_TYPE_1}}":
+    timeout_seconds: {{TASK_TYPE_1_TIMEOUT_SECONDS}}
+    max_retries: {{TASK_TYPE_1_MAX_RETRIES}}
+    enable_progress_tracking: {{TASK_TYPE_1_PROGRESS_TRACKING_ENABLED}}
+    alert_on_stuck: {{TASK_TYPE_1_ALERT_ON_STUCK}}
+  
+  "{{TASK_TYPE_2}}":
+    timeout_seconds: {{TASK_TYPE_2_TIMEOUT_SECONDS}}
+    max_retries: {{TASK_TYPE_2_MAX_RETRIES}}
+    enable_progress_tracking: {{TASK_TYPE_2_PROGRESS_TRACKING_ENABLED}}
+    alert_on_stuck: {{TASK_TYPE_2_ALERT_ON_STUCK}}
+  
+  "{{TASK_TYPE_3}}":
+    timeout_seconds: {{TASK_TYPE_3_TIMEOUT_SECONDS}}
+    max_retries: {{TASK_TYPE_3_MAX_RETRIES}}
+    enable_progress_tracking: {{TASK_TYPE_3_PROGRESS_TRACKING_ENABLED}}
+    alert_on_stuck: {{TASK_TYPE_3_ALERT_ON_STUCK}}
+
+# Performance Configuration
+performance:
+  # Maximum number of concurrent monitoring checks
+  max_concurrent_checks: {{MAX_CONCURRENT_CHECKS}}
+  
+  # Monitoring thread pool size
+  thread_pool_size: {{THREAD_POOL_SIZE}}
+  
+  # Enable monitoring result caching
+  caching_enabled: {{CACHING_ENABLED}}
+  
+  # Cache TTL in seconds
+  cache_ttl_seconds: {{CACHE_TTL_SECONDS}}
+  
+  # Enable monitoring query optimization
+  query_optimization_enabled: {{QUERY_OPTIMIZATION_ENABLED}}
+
+# Security Configuration
+security:
+  # Enable monitoring access controls
+  access_controls_enabled: {{ACCESS_CONTROLS_ENABLED}}
+  
+  # Authentication method for monitoring API
+  auth_method: "{{AUTH_METHOD}}"
+  
+  # Enable monitoring data encryption
+  data_encryption_enabled: {{DATA_ENCRYPTION_ENABLED}}
+  
+  # Encryption algorithm
+  encryption_algorithm: "{{ENCRYPTION_ALGORITHM}}"
+  
+  # Enable audit logging for monitoring access
+  audit_logging_enabled: {{AUDIT_LOGGING_ENABLED}}
+
+# Storage Configuration
+storage:
+  # Storage type for monitoring data (local, database, etc.)
+  type: "{{STORAGE_TYPE}}"
+  
+  # Storage path for local storage
+  path: "{{STORAGE_PATH}}"
+  
+  # Database connection string (if using database storage)
+  database_url: "{{DATABASE_URL}}"
+  
+  # Data retention period in days
+  retention_days: {{RETENTION_DAYS}}
+  
+  # Enable data compression
+  compression_enabled: {{COMPRESSION_ENABLED}}
+  
+  # Compression algorithm
+  compression_algorithm: "{{COMPRESSION_ALGORITHM}}"
+
+# Backup Configuration
+backup:
+  # Enable automatic backups of monitoring data
+  enabled: {{BACKUP_ENABLED}}
+  
+  # Backup schedule (cron format)
+  schedule: "{{BACKUP_SCHEDULE_CRON}}"
+  
+  # Backup retention count
+  retention_count: {{BACKUP_RETENTION_COUNT}}
+  
+  # Backup destination
+  destination: "{{BACKUP_DESTINATION}}"
+  
+  # Enable backup encryption
+  encrypt_backup: {{ENCRYPT_BACKUP_ENABLED}}
+
+# Maintenance Configuration
+maintenance:
+  # Enable automatic maintenance tasks
+  enabled: {{MAINTENANCE_ENABLED}}
+  
+  # Maintenance schedule (cron format)
+  schedule: "{{MAINTENANCE_SCHEDULE_CRON}}"
+  
+  # Enable task cleanup
+  cleanup_enabled: {{CLEANUP_ENABLED}}
+  
+  # Cleanup threshold (delete tasks older than this many days)
+  cleanup_threshold_days: {{CLEANUP_THRESHOLD_DAYS}}
+  
+  # Enable monitoring data optimization
+  optimization_enabled: {{OPTIMIZATION_ENABLED}}
+
+# Emergency Configuration
+emergency:
+  # Enable emergency override mode
+  override_enabled: {{EMERGENCY_OVERRIDE_ENABLED}}
+  
+  # Emergency contact information
+  contact: "{{EMERGENCY_CONTACT_INFO}}"
+  
+  # Emergency escalation path
+  escalation_path: "{{EMERGENCY_ESCALATION_PATH}}"
+  
+  # Enable manual intervention mode
+  manual_intervention_enabled: {{MANUAL_INTERVENTION_ENABLED}}

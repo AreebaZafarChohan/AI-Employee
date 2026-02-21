@@ -1,0 +1,217 @@
+{
+  "version": "1.0",
+  "description": "Example configuration file demonstrating various cross-platform notification setups",
+  "channels": {
+    "slack": {
+      "enabled": true,
+      "workspace": "company-workspace",
+      "bot_token": "${EXAMPLE_SLACK_BOT_TOKEN}",
+      "signing_secret": "${EXAMPLE_SLACK_SIGNING_SECRET}",
+      "default_channel": "#announcements",
+      "rate_limit": {
+        "requests_per_minute": 20,
+        "burst_size": 5
+      },
+      "message_format": {
+        "template": "*{{message.priority}}*: {{message.title}}\n{{message.content}}\n\n<{{message.link}}|View Details>",
+        "blocks_supported": true
+      }
+    },
+    "email": {
+      "enabled": true,
+      "smtp": {
+        "host": "${EXAMPLE_EMAIL_SMTP_HOST}",
+        "port": 587,
+        "username": "${EXAMPLE_EMAIL_SMTP_USER}",
+        "password": "${EXAMPLE_EMAIL_SMTP_PASSWORD}",
+        "use_tls": true
+      },
+      "from_address": "notifications@company.com",
+      "rate_limit": {
+        "requests_per_minute": 50,
+        "burst_size": 10
+      },
+      "message_format": {
+        "subject_template": "[{{message.priority}}] {{message.title}}",
+        "html_template": "<div style=\"font-family: Arial, sans-serif;\"><h2 style=\"color: #2c3e50;\">{{message.title}}</h2><p>{{message.content}}</p><div style=\"margin-top: 20px;\"><a href=\"{{message.link}}\" style=\"display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px;\">View Details</a></div></div>",
+        "text_template": "{{message.priority}}: {{message.title}}\n\n{{message.content}}\n\nView Details: {{message.link}}"
+      }
+    },
+    "msteams": {
+      "enabled": true,
+      "webhook_url": "${EXAMPLE_TEAMS_WEBHOOK_URL}",
+      "rate_limit": {
+        "requests_per_minute": 15,
+        "burst_size": 3
+      },
+      "message_format": {
+        "template": {
+          "@type": "MessageCard",
+          "@context": "http://schema.org/extensions",
+          "themeColor": "{{message.color}}",
+          "summary": "{{message.title}}",
+          "sections": [{
+            "activityTitle": "{{message.title}}",
+            "activitySubtitle": "{{message.subtitle}}",
+            "activityText": "{{message.content}}",
+            "markdown": true
+          }],
+          "potentialAction": [{
+            "@type": "OpenUri",
+            "name": "View Details",
+            "targets": [{
+              "os": "default",
+              "uri": "{{message.link}}"
+            }]
+          }]
+        }
+      }
+    },
+    "sms": {
+      "enabled": true,
+      "provider": "twilio",
+      "credentials": {
+        "account_sid": "${EXAMPLE_SMS_TWILIO_ACCOUNT_SID}",
+        "auth_token": "${EXAMPLE_SMS_TWILIO_AUTH_TOKEN}"
+      },
+      "from_number": "+15551234567",
+      "rate_limit": {
+        "requests_per_second": 1,
+        "burst_size": 1
+      },
+      "message_format": {
+        "template": "{{message.title}}: {{message.content}} Link: {{message.link}}",
+        "max_length": 160,
+        "truncate_indicator": "..."
+      }
+    }
+  },
+  "user_preferences": {
+    "store_type": "database",
+    "db_config": {
+      "connection_string": "${EXAMPLE_NOTIFICATION_DB_CONNECTION_STRING}",
+      "table_name": "user_preferences"
+    },
+    "default_channels": ["email", "slack"],
+    "business_hours_only": true,
+    "timezone": "America/Los_Angeles",
+    "opt_out_keywords": ["STOP", "UNSUBSCRIBE", "CANCEL", "OPTOUT"]
+  },
+  "delivery_rules": {
+    "priorities": {
+      "critical": {
+        "channels": ["sms", "phone_call", "slack"],
+        "timeout_minutes": 3,
+        "retries": 5
+      },
+      "high": {
+        "channels": ["slack", "email", "teams"],
+        "timeout_minutes": 5,
+        "retries": 3
+      },
+      "normal": {
+        "channels": ["email", "slack"],
+        "timeout_minutes": 15,
+        "retries": 2
+      },
+      "low": {
+        "channels": ["email"],
+        "timeout_minutes": 60,
+        "retries": 1
+      }
+    },
+    "fallback_rules": {
+      "enabled": true,
+      "sequence": {
+        "critical": ["sms", "phone_call", "slack", "email"],
+        "high": ["slack", "teams", "email"],
+        "normal": ["email", "slack"],
+        "low": ["email"]
+      }
+    },
+    "throttling": {
+      "max_notifications_per_hour_per_user": 25,
+      "notification_burst_limit": 3
+    }
+  },
+  "notification_templates": [
+    {
+      "id": "workflow_completion",
+      "name": "Workflow Completion",
+      "description": "Notification for when a workflow completes",
+      "channels": {
+        "slack": {
+          "template": ":white_check_mark: *Workflow Complete*\n*{{workflow.name}}* has completed successfully.\n\nDuration: {{workflow.duration}}\nResult: {{workflow.result}}"
+        },
+        "email": {
+          "subject": "Workflow Complete: {{workflow.name}}",
+          "html_body": "<h2>Workflow Complete</h2><p><strong>{{workflow.name}}</strong> has completed successfully.</p><p>Duration: {{workflow.duration}}</p><p>Result: {{workflow.result}}</p>"
+        },
+        "sms": {
+          "template": "Workflow {{workflow.name}} completed: {{workflow.result}}"
+        }
+      }
+    },
+    {
+      "id": "system_alert",
+      "name": "System Alert",
+      "description": "Notification for system alerts",
+      "channels": {
+        "slack": {
+          "template": ":warning: *System Alert*\n*{{alert.severity}}*: {{alert.message}}\nAffected: {{alert.component}}\nTime: {{alert.timestamp}}"
+        },
+        "email": {
+          "subject": "[{{alert.severity}}] System Alert: {{alert.message}}",
+          "html_body": "<h2>System Alert</h2><p><strong>{{alert.severity}}:</strong> {{alert.message}}</p><p>Affected Component: {{alert.component}}</p><p>Time: {{alert.timestamp}}</p>"
+        },
+        "sms": {
+          "template": "ALERT {{alert.severity}}: {{alert.message}}"
+        }
+      }
+    },
+    {
+      "id": "daily_digest",
+      "name": "Daily Digest",
+      "description": "Aggregated daily summary notification",
+      "channels": {
+        "email": {
+          "subject": "Daily Summary - {{date.today()}}",
+          "html_body": "<h2>Daily Summary</h2><h3>Notifications Received</h3><ul>{% for item in digest.items %}<li>{{item}}</li>{% endfor %}</ul>"
+        }
+      }
+    }
+  ],
+  "global_settings": {
+    "default_priority": "normal",
+    "max_retries": 3,
+    "retry_delay_seconds": 10,
+    "message_ttl_seconds": 7200,
+    "queue_size": 500,
+    "enable_batching": true,
+    "batch_window_seconds": 60,
+    "enable_interactive_messages": false,
+    "delivery_confirmation_required": false
+  },
+  "monitoring_config": {
+    "metrics_enabled": true,
+    "metrics_backend": "prometheus",
+    "custom_metrics": [
+      "notifications_sent_total",
+      "notifications_by_channel",
+      "delivery_success_rate",
+      "delivery_time_seconds"
+    ],
+    "alerting_rules": [
+      {
+        "name": "high_failure_rate",
+        "condition": "delivery_failure_rate > 0.05",
+        "severity": "critical"
+      },
+      {
+        "name": "slow_delivery",
+        "condition": "avg_delivery_time > 30",
+        "severity": "warning"
+      }
+    ]
+  }
+}

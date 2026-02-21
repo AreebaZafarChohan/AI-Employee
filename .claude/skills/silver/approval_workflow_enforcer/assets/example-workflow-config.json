@@ -1,0 +1,83 @@
+{
+  "version": "1.0",
+  "workflows": [
+    {
+      "id": "code_deployment_prod",
+      "name": "Production Code Deployment Approval",
+      "description": "Workflow for approving code deployments to production environments.",
+      "triggers": ["deployment.prod.request"],
+      "stages": [
+        {
+          "id": "security_review",
+          "name": "Security Review",
+          "type": "any_one",
+          "required_approvers": 1,
+          "approvers_by": {
+            "role": "security-lead",
+            "department": "security"
+          },
+          "timeout_hours": 48,
+          "escalate_to": "security-manager"
+        },
+        {
+          "id": "engineering_lead_signoff",
+          "name": "Engineering Lead Sign-off",
+          "type": "all_required",
+          "required_approvers": "all",
+          "approvers_by": {
+            "role": "eng-lead",
+            "impacted_teams": true
+          },
+          "timeout_hours": 24
+        },
+        {
+          "id": "release_manager_final_approval",
+          "name": "Release Manager Final Approval",
+          "type": "any_one",
+          "required_approvers": 1,
+          "approvers_by": {
+            "role": "release-manager"
+          },
+          "conditional_logic": "context.severity == 'critical' && context.has_p1_bug == false",
+          "timeout_hours": 12,
+          "auto_approve_if_no_p1_bug": true
+        }
+      ],
+      "notifications": {
+        "on_pending": ["slack", "email"],
+        "on_approved": ["slack", "jira_update"],
+        "on_rejected": ["slack", "email", "jira_update"]
+      }
+    },
+    {
+      "id": "budget_request_high_value",
+      "name": "High-Value Budget Request Approval",
+      "description": "Workflow for budget requests exceeding $50,000.",
+      "triggers": ["budget.request"],
+      "conditions": "context.amount > 50000",
+      "stages": [
+        {
+          "id": "finance_review",
+          "name": "Finance Department Review",
+          "type": "any_one",
+          "required_approvers": 1,
+          "approvers_by": {
+            "department": "finance"
+          },
+          "timeout_hours": 72
+        },
+        {
+          "id": "vp_approval",
+          "name": "VP Approval",
+          "type": "any_one",
+          "required_approvers": 1,
+          "approvers_by": {
+            "role": "vp"
+          },
+          "timeout_hours": 48,
+          "escalate_to": "cfo"
+        }
+      ]
+    }
+  ]
+}

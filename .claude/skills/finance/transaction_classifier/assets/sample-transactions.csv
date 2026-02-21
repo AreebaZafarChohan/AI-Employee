@@ -1,0 +1,17 @@
+date,amount,description,merchant,account_id,transaction_id
+2025-02-01,-125.00,WHOLE FOODS MARKET #123,Whole Foods,acct_checking_001,txn_001
+2025-02-01,2500.00,PAYROLL DEPOSIT - ACME CORP,Acme Corp,acct_checking_001,txn_002
+2025-02-02,-19.99,GITHUB.COM - MONTHLY SUBSCRIPTION,GitHub,acct_credit_001,txn_003
+2025-02-03,-45.00,SHELL GAS STATION,Shell,acct_credit_001,txn_004
+2025-02-04,-49.99,NETFLIX.COM - Subscription,Netflix,acct_credit_001,txn_005
+2025-02-05,-12.50,STARBUCKS COFFEE #5678,Starbucks,acct_credit_001,txn_006
+2025-02-06,-1500.00,RENT PAYMENT - FEBRUARY,Property Management LLC,acct_checking_001,txn_007
+2025-02-07,-89.99,AMAZON.COM PURCHASE,Amazon,acct_credit_001,txn_008
+2025-02-08,-67.50,CHIPOTLE MEXICAN GRILL,Chipotle,acct_credit_001,txn_009
+2025-02-09,-15.99,SPOTIFY PREMIUM,Spotify,acct_credit_001,txn_010
+2025-02-10,500.00,FREELANCE PAYMENT - CLIENT A,Client Corp,acct_checking_001,txn_011
+2025-02-11,-85.00,ELECTRIC COMPANY - MONTHLY,Electric Utility Co,acct_checking_001,txn_012
+2025-02-12,-150.00,HEALTH INSURANCE PREMIUM,Blue Cross Blue Shield,acct_checking_001,txn_013
+2025-02-13,-45.00,INTERNET SERVICE - FEBRUARY,Comcast,acct_checking_001,txn_014
+2025-02-14,-250.00,DENTIST APPOINTMENT,Dr. Smith DDS,acct_credit_001,txn_015
+2025-02-15,-9.99,DROPBOX SUBSCRIPTION,Dropbox,acct_credit_001,txn_016

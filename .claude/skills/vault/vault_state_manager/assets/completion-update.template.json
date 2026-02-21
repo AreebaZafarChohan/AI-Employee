@@ -1,0 +1,38 @@
+{
+  "plan_id": "{{PLAN_ID}}",
+  "created_at": "{{ORIGINAL_TIMESTAMP}}",
+  "created_by": "{{CREATOR_AGENT}}",
+  "completed_at": "{{COMPLETION_TIMESTAMP}}",
+  "completed_by": "{{EXECUTOR_AGENT}}",
+  "status": "done",
+  "outcome": "{{SUCCESS|FAILURE}}",
+  "duration_minutes": {{ACTUAL_DURATION}},
+  "log_reference": "{{LOG_FILE_PATH}}",
+  "title": "{{TASK_TITLE}}",
+  "goal": "{{TASK_GOAL}}",
+  "steps": [
+    {
+      "action": "{{ACTION_1}}",
+      "status": "completed",
+      "completed_at": "{{STEP_TIMESTAMP}}"
+    },
+    {
+      "action": "{{ACTION_2}}",
+      "status": "completed",
+      "completed_at": "{{STEP_TIMESTAMP}}"
+    }
+  ],
+  "result": {
+    "summary": "{{OUTCOME_SUMMARY}}",
+    "details": "{{DETAILED_RESULT}}",
+    "side_effects": [
+      "{{SIDE_EFFECT_1}}",
+      "{{SIDE_EFFECT_2}}"
+    ]
+  },
+  "metrics": {
+    "api_calls_made": {{COUNT}},
+    "files_modified": {{COUNT}},
+    "errors_encountered": {{COUNT}}
+  }
+}

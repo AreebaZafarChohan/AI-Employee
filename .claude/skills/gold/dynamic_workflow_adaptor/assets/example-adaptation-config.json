@@ -1,0 +1,217 @@
+{
+  "version": "1.0",
+  "description": "Example configuration file demonstrating various dynamic workflow adaptation patterns",
+  "adaptation_rules": [
+    {
+      "id": "simple_event_handler",
+      "name": "Simple Event Handler",
+      "description": "Basic adaptation rule for handling simple events",
+      "enabled": true,
+      "trigger": {
+        "event_type": "workflow_start",
+        "condition": "event.workflow_type === 'customer_onboarding'"
+      },
+      "actions": [
+        {
+          "type": "set_priority",
+          "target_workflow": "current_workflow",
+          "priority_level": 7
+        }
+      ]
+    },
+    {
+      "id": "time_based_adaptation",
+      "name": "Time-Based Adaptation",
+      "description": "Adjust workflow based on time of day",
+      "enabled": true,
+      "trigger": {
+        "event_type": "time_check",
+        "condition": "current_time.hour >= 18 || current_time.hour < 6"
+      },
+      "actions": [
+        {
+          "type": "reroute_to_batch_processing",
+          "current_path": "realtime_processing",
+          "new_path": "batch_processing",
+          "delay_until": "next_business_hours"
+        }
+      ]
+    },
+    {
+      "id": "resource_optimization",
+      "name": "Resource Optimization",
+      "description": "Optimize resource allocation based on availability",
+      "enabled": true,
+      "trigger": {
+        "event_type": "resource_check",
+        "condition": "resources.gpu_utilization < 0.3 && resources.cpu_utilization > 0.8"
+      },
+      "actions": [
+        {
+          "type": "migrate_computationally_intensive_tasks",
+          "from_resource": "cpu_cluster",
+          "to_resource": "gpu_cluster",
+          "task_filter": "computationally_intensive"
+        }
+      ]
+    },
+    {
+      "id": "customer_tier_adaptation",
+      "name": "Customer Tier Adaptation",
+      "description": "Provide different processing paths based on customer tier",
+      "enabled": true,
+      "trigger": {
+        "event_type": "workflow_initiated",
+        "condition": "event.customer.tier === 'enterprise'"
+      },
+      "actions": [
+        {
+          "type": "assign_dedicated_resources",
+          "resource_pool": "premium",
+          "sla_guarantee": "99.99%"
+        },
+        {
+          "type": "add_quality_checks",
+          "validations": ["security", "compliance", "performance"]
+        },
+        {
+          "type": "set_priority",
+          "priority_level": 10
+        }
+      ]
+    },
+    {
+      "id": "failure_recovery",
+      "name": "Failure Recovery",
+      "description": "Handle workflow failures by switching to recovery path",
+      "enabled": true,
+      "trigger": {
+        "event_type": "task_failure",
+        "condition": "event.failure_count > 2 && event.task.recoverable"
+      },
+      "actions": [
+        {
+          "type": "switch_to_recovery_path",
+          "current_path": "standard_processing",
+          "new_path": "recovery_processing",
+          "backup_data_source": "last_known_good_state"
+        },
+        {
+          "type": "notify_operations",
+          "message": "Workflow switched to recovery mode due to repeated failures",
+          "severity": "warning"
+        }
+      ]
+    },
+    {
+      "id": "load_distribution",
+      "name": "Load Distribution",
+      "description": "Distribute load across available resources",
+      "enabled": true,
+      "trigger": {
+        "event_type": "load_imbalance_detected",
+        "condition": "max(resources.load) - min(resources.load) > 0.3"
+      },
+      "actions": [
+        {
+          "type": "redistribute_workflows",
+          "from_resource": "overloaded_resource",
+          "to_resources": ["underutilized_resource_1", "underutilized_resource_2"],
+          "migration_strategy": "gradual"
+        }
+      ]
+    },
+    {
+      "id": "seasonal_adaptation",
+      "name": "Seasonal Adaptation",
+      "description": "Adjust workflows based on seasonal patterns",
+      "enabled": true,
+      "trigger": {
+        "event_type": "seasonal_check",
+        "condition": "current_date.month === 11 || current_date.month === 12"
+      },
+      "actions": [
+        {
+          "type": "increase_capacity",
+          "resource_type": "web_servers",
+          "scaling_factor": 2.0,
+          "duration_days": 30
+        },
+        {
+          "type": "activate_promotional_workflows",
+          "workflows": ["gift_processing", "bulk_order_handling"]
+        }
+      ]
+    },
+    {
+      "id": "cost_optimization",
+      "name": "Cost Optimization",
+      "description": "Optimize workflows for cost efficiency",
+      "enabled": true,
+      "trigger": {
+        "event_type": "cost_monitoring",
+        "condition": "monthly_costs > 0.8 * budget_allowance"
+      },
+      "actions": [
+        {
+          "type": "switch_to_economy_resources",
+          "resource_types": ["compute", "storage"],
+          "target_cost_reduction": 20
+        },
+        {
+          "type": "optimize_execution_path",
+          "objective": "cost_efficiency",
+          "constraints": ["deadline_still_met"]
+        }
+      ]
+    }
+  ],
+  "global_settings": {
+    "default_rate_limit": {
+      "max_per_minute": 15,
+      "window_seconds": 60
+    },
+    "adaptation_timeout_seconds": 45,
+    "event_buffer_size": 500,
+    "checkpoint_interval_seconds": 180,
+    "rollback_enabled": true,
+    "logging_level": "INFO",
+    "state_storage_backend": "database",
+    "state_storage_config": {
+      "connection_string": "${DYNAMIC_WORKFLOW_DB_CONNECTION_STRING}",
+      "table_name": "adaptation_states"
+    },
+    "event_source_config": {
+      "polling_interval_ms": 2000,
+      "batch_size": 50,
+      "retry_attempts": 5
+    }
+  },
+  "validation_rules": {
+    "prevent_deadlocks": true,
+    "ensure_workflow_continuity": true,
+    "validate_resource_availability": true,
+    "check_circular_dependencies": true
+  },
+  "monitoring_config": {
+    "metrics_enabled": true,
+    "metrics_backend": "prometheus",
+    "custom_metrics": [
+      "adaptation_frequency",
+      "adaptation_success_rate",
+      "resource_utilization_post_adaptation"
+    ],
+    "alerting_rules": [
+      {
+        "name": "high_adaptation_frequency",
+        "condition": "adaptations_per_minute > 50",
+        "severity": "critical"
+      },
+      {
+        "name": "adaptation_failure_spikes",
+        "condition": "adaptation_failure_rate > 0.1",
+        "severity": "warning"
+      }
+    ]
+  }
+}

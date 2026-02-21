@@ -1,0 +1,111 @@
+{
+  "states": {
+    "needs_action": {
+      "description": "Task waiting to be claimed by agent",
+      "folder": "Needs_Action",
+      "transitions": ["planned"]
+    },
+    "planned": {
+      "description": "Task claimed and plan created",
+      "folder": "Plans",
+      "transitions": ["in_progress", "rejected"]
+    },
+    "in_progress": {
+      "description": "Task actively being processed",
+      "folder": "In_Progress",
+      "transitions": ["pending_approval", "rejected", "needs_action"]
+    },
+    "pending_approval": {
+      "description": "Task completed, awaiting human approval",
+      "folder": "Pending_Approval",
+      "transitions": ["approved", "rejected"]
+    },
+    "approved": {
+      "description": "Task approved by human, ready for execution",
+      "folder": "Approved",
+      "transitions": ["in_progress"]
+    },
+    "rejected": {
+      "description": "Task rejected (invalid or failed permanently)",
+      "folder": "Rejected",
+      "transitions": ["archive"]
+    },
+    "done": {
+      "description": "Task completed successfully",
+      "folder": "Done",
+      "transitions": ["archive"]
+    },
+    "archive": {
+      "description": "Old tasks archived",
+      "folder": "Archive",
+      "transitions": []
+    }
+  },
+  "permissions": {
+    "lex": {
+      "can_transition": [
+        "needs_action → planned",
+        "planned → in_progress",
+        "planned → rejected",
+        "in_progress → pending_approval",
+        "in_progress → rejected",
+        "in_progress → needs_action"
+      ],
+      "cannot_transition": [
+        "pending_approval → approved",
+        "pending_approval → rejected",
+        "approved → in_progress"
+      ]
+    },
+    "orch": {
+      "can_transition": [
+        "approved → in_progress",
+        "in_progress → done",
+        "in_progress → rejected",
+        "in_progress → needs_action"
+      ],
+      "cannot_transition": [
+        "needs_action → planned",
+        "pending_approval → approved"
+      ]
+    },
+    "human": {
+      "can_transition": [
+        "pending_approval → approved",
+        "pending_approval → rejected",
+        "done → archive",
+        "rejected → archive"
+      ]
+    },
+    "system": {
+      "can_transition": [
+        "planned → needs_action",
+        "in_progress → needs_action",
+        "rejected → archive"
+      ],
+      "description": "Recovery jobs run as 'system' agent"
+    }
+  },
+  "rules": {
+    "claim": {
+      "description": "Claiming a task moves it atomically",
+      "implementation": "File move is atomic on same filesystem",
+      "conflict_resolution": "First mover wins, second gets FileNotFoundError"
+    },
+    "ownership": {
+      "description": "Only owning agent can update task",
+      "implementation": "Check claimed_by field before writes",
+      "enforcement": "vault_state_manager permission system"
+    },
+    "idempotency": {
+      "description": "All operations safe to retry",
+      "implementation": "State machine enforces valid transitions only",
+      "requirement": "Agents must handle FileNotFoundError gracefully"
+    },
+    "audit": {
+      "description": "All transitions logged",
+      "implementation": "Append to Logs/task-transitions.json",
+      "format": "JSON with timestamp, taskId, from, to, by, reason"
+    }
+  }
+}
