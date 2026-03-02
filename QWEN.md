@@ -212,6 +212,12 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 ## Active Technologies
 - Python 3.8+ (based on target user comfort and file system operations) + watchdog (file system monitoring), Claude Code API, os/pathlib (file operations) (001-ai-employee-foundation)
 - File-based using Obsidian vault structure (Markdown files in directories) (001-ai-employee-foundation)
+- Node.js 20.x LTS, TypeScript 5.x, Express.js, Prisma ORM, PostgreSQL, Zod validation (001-silver-tier-backend)
+- REST API architecture with service-layer pattern (001-silver-tier-backend)
+- Docker containerization for backend deployment (001-silver-tier-backend)
+- TypeScript 5.9+, React 18.3+, Next.js 14.2+ + TanStack Query (for API state management), Zod (client validation), shadcn/ui, Aceternity UI, Tailwind CSS (001-silver-tier-frontend)
+- N/A (frontend only; backend uses PostgreSQL via Prisma) (001-silver-tier-frontend)
 
 ## Recent Changes
 - 001-ai-employee-foundation: Added Python 3.8+ (based on target user comfort and file system operations) + watchdog (file system monitoring), Claude Code API, os/pathlib (file operations)
+- 001-silver-tier-backend: Added Node.js/TypeScript backend stack with Express, Prisma, PostgreSQL, Zod for Silver Tier API implementation

@@ -38,7 +38,7 @@ class Config:
         # Processing Configuration
         self.max_processing_time: int = int(os.getenv("MAX_PROCESSING_TIME", "30"))
         self.retry_attempts: int = int(os.getenv("RETRY_ATTEMPTS", "3"))
-        self.retention_days: int = int(os.getenv("RETENTION_DAYS", "30"))
+        self.retention_days: int = int(os.getenv("RETENTION_DAYS", "90"))))
 
         # Logging Configuration
         self.log_level: str = os.getenv("LOG_LEVEL", "INFO")

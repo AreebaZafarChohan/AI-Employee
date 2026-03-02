@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TaskStatus {
+  Pending
+  InProgress
+  Done
+}
+
+enum PlanStatus {
+  Draft
+  Active
+  Completed
+  Archived
+}
+
+enum SystemStateEnum {
+  Idle
+  Thinking
+  Planning
+}
+
+model Task {
+  id          String      @id @default(uuid())
+  title       String      @db.VarChar(200)
+  description String?
+  status      TaskStatus  @default(Pending)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  completedAt DateTime?
+
+  plan        Plan?
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Plan {
+  id        String     @id @default(uuid())
+  taskId    String     @unique
+  status    PlanStatus @default(Draft)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  task  Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  steps PlanStep[]
+
+  @@index([status])
+}
+
+model PlanStep {
+  id                String   @id @default(uuid())
+  planId            String
+  order             Int
+  title             String   @db.VarChar(200)
+  description       String
+  estimatedDuration Int?
+  completed         Boolean  @default(false)
+  createdAt         DateTime @default(now())
+
+  plan Plan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@index([planId])
+  @@index([order])
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  type        String   @db.VarChar(50)
+  description String   @db.VarChar(500)
+  timestamp   DateTime @default(now())
+  metadata    Json?
+
+  @@index([timestamp])
+  @@index([type])
+}
+
+model SystemState {
+  id           String          @id
+  state        SystemStateEnum
+  lastActivity DateTime
+  updatedAt    DateTime        @updatedAt
+
+  @@map("system_state")
+}

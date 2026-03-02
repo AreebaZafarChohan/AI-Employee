@@ -59,3 +59,24 @@ Thumbs.db
 # Project specific
 *.tmp
 *.bak
+
+# Secrets & credentials
+token.json
+token_mcp.json
+credentials.json
+client_secret_*.json
+.env
+.env.*
+!.env.example
+
+# WhatsApp profile (browser data)
+.whatsapp_profile/
+
+# Images
+image.png
+
+# Node
+node_modules/
+.next/
+frontend/node_modules/
+frontend/.next/

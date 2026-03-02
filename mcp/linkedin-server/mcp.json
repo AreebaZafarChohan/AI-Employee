@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "ai-employee-linkedin": {
+      "command": "node",
+      "args": ["mcp/linkedin-server/src/index.js"],
+      "env": {
+        "LINKEDIN_EMAIL": "${LINKEDIN_EMAIL}",
+        "LINKEDIN_PASSWORD": "${LINKEDIN_PASSWORD}",
+        "DRY_RUN": "${DRY_RUN:-true}",
+        "LOG_LEVEL": "${LOG_LEVEL:-INFO}",
+        "RATE_LIMIT_POSTS": "${RATE_LIMIT_POSTS:-3}"
+      }
+    }
+  }
+}

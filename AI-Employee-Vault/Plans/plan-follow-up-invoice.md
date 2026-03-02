@@ -1,7 +1,7 @@
 ---
 source: "follow-up-invoice.md"
 created_at: "2026-02-21T19:53:56Z"
-status: pending
+status: done
 ---
 
 # Plan: Follow Up Invoice

@@ -3,7 +3,16 @@
     "allow": [
       "Bash(wc:*)",
       "Bash(python3 -m pip install:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(pip3 show:*)",
+      "Bash(python3 -c \"\nimport json, os, pathlib\n\ncreds_path = pathlib.Path\\(os.getenv\\(''GMAIL_CREDENTIALS_FILE'', ''/mnt/d/Gemini_Cli/hackathon/hackathon_0/AI-Employee/credentials.json''\\)\\)\nprint\\(''=== File being loaded ===''\\)\nprint\\(''Path:'', creds_path\\)\nprint\\(''Exists:'', creds_path.exists\\(\\)\\)\n\nif creds_path.exists\\(\\):\n    d = json.load\\(open\\(creds_path\\)\\)\n    key = list\\(d.keys\\(\\)\\)[0]\n    inner = d[key]\n    print\\(\\)\n    print\\(''=== Structure ===''\\)\n    print\\(''Top-level key:'', key, ''  <-- must be: installed''\\)\n    print\\(''client_id    :'', inner.get\\(''client_id'', ''MISSING''\\)\\)\n    print\\(''project_id   :'', inner.get\\(''project_id'', ''MISSING''\\)\\)\n    print\\(''auth_uri     :'', inner.get\\(''auth_uri'', ''MISSING''\\)\\)\n    print\\(''token_uri    :'', inner.get\\(''token_uri'', ''MISSING''\\)\\)\n    print\\(''client_secret:'', ''present'' if inner.get\\(''client_secret''\\) else ''MISSING''\\)\n    print\\(''redirect_uris:'', inner.get\\(''redirect_uris'', []\\)\\)\n\")",
+      "Bash(PYTHONPATH=/tmp/gapi python3:*)",
+      "Bash(PYTHONPATH=/tmp/gapi LOG_LEVEL=DEBUG python3:*)",
+      "Bash(python3.14 -c \"import playwright; print\\('OK'\\)\" 2>&1)",
+      "Bash(ss -tlnp 2>/dev/null | grep -E \"8000|3000|3002\"; echo \"exit: $?\")",
+      "Bash(python3 -c \"\nfrom pathlib import Path\nROOT = Path\\('approval_orchestrator.py'\\).resolve\\(\\).parent\nVAULT = ROOT / 'AI-Employee-Vault'\nprint\\('ROOT:', ROOT\\)\nprint\\('VAULT:', VAULT\\)\nprint\\('VAULT exists:', VAULT.exists\\(\\)\\)\n\")",
+      "Bash(cd /mnt/d/Gemini_Cli/hackathon/hackathon_0/AI-Employee/backend && npm run build 2>&1)",
+      "Bash(git -C /mnt/d/Gemini_Cli/hackathon/hackathon_0/AI-Employee add -A && git -C /mnt/d/Gemini_Cli/hackathon/hackathon_0/AI-Employee status --short | head -10)"
     ]
   }
 }

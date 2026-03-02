@@ -1,7 +1,7 @@
 ---
 source: "onboard-new-client.md"
 created_at: "2026-02-21T19:53:57Z"
-status: pending
+status: done
 ---
 
 # Plan: Onboard New Client: Acme Corp

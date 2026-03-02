@@ -1,0 +1,136 @@
+openapi: 3.0.0
+info:
+  title: Plans API
+  version: 1.0.0
+  description: API for generating AI-powered plans for tasks
+servers:
+  - url: /api/v1
+    description: Production server
+paths:
+  /plans:
+    post:
+      operationId: generatePlan
+      summary: Generate AI plan for specified tasks
+      tags:
+        - Plans
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneratePlanInput'
+      responses:
+        '200':
+          description: Plan generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plan'
+        '202':
+          description: Plan generation in progress
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanGenerationStatus'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Plan:
+      type: object
+      required:
+        - id
+        - taskId
+        - sections
+        - summary
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        taskId:
+          type: string
+          format: uuid
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlanSection'
+          minItems: 1
+          maxItems: 10
+        summary:
+          type: string
+          minLength: 1
+          maxLength: 500
+        createdAt:
+          type: string
+          format: date-time
+
+    PlanSection:
+      type: object
+      required:
+        - title
+        - steps
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 100
+        steps:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 500
+          minItems: 1
+          maxItems: 20
+
+    GeneratePlanInput:
+      type: object
+      required:
+        - taskIds
+      properties:
+        taskIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    PlanGenerationStatus:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            - processing
+        estimatedCompletion:
+          type: string
+          format: date-time
+
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+              additionalProperties: true

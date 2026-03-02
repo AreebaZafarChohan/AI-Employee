@@ -1,0 +1,77 @@
+openapi: 3.0.0
+info:
+  title: System State API
+  version: 1.0.0
+  description: API for monitoring AI agent status and activity
+servers:
+  - url: /api/v1
+    description: Production server
+paths:
+  /system/state:
+    get:
+      operationId: getSystemState
+      summary: Get current agent status
+      tags:
+        - System
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemState'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    SystemState:
+      type: object
+      required:
+        - status
+        - lastActivityAt
+      properties:
+        status:
+          $ref: '#/components/schemas/AgentStatus'
+        lastActivityAt:
+          type: string
+          format: date-time
+        currentTaskId:
+          type: string
+          format: uuid
+          nullable: true
+          description: ID of the task currently being processed, or null if idle
+
+    AgentStatus:
+      type: string
+      enum:
+        - idle
+        - processing
+        - working
+        - error
+      description: |
+        Current operational state of the AI agent:
+        - idle: Not actively working on any task
+        - processing: Analyzing tasks or generating plans
+        - working: Actively executing task-related operations
+        - error: Encountered an error and not operational
+
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+              additionalProperties: true

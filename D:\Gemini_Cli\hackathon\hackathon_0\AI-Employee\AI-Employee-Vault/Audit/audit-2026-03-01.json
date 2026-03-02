@@ -1,0 +1,205 @@
+[
+  {
+    "approval_id": "test-approval",
+    "file": "test-approval.md",
+    "stage": "validation_failed",
+    "timestamp": "2026-03-01T15:02:21.006670Z",
+    "metadata": {
+      "action_type": "send_email",
+      "risk_level": "low",
+      "plan_file": "Plans/test-plan.md"
+    },
+    "error": "Field requested_at has wrong type (expected str); Invalid requested_at format: 'str' object cannot be interpreted as an integer",
+    "orchestrator": "approval_orchestrator"
+  },
+  {
+    "approval_id": "test-approval",
+    "file": "test-approval.md",
+    "stage": "validation_failed",
+    "timestamp": "2026-03-01T15:02:21.053764Z",
+    "metadata": {
+      "action_type": null,
+      "risk_level": null,
+      "plan_file": null
+    },
+    "error": "Missing required field: plan_file; Missing required field: source_file; Missing required field: risk_level; Missing required field: requested_at; Missing required field: status; Missing required field: action_type",
+    "orchestrator": "approval_orchestrator"
+  },
+  {
+    "approval_id": "test-approval",
+    "file": "test-approval.md",
+    "stage": "validation_failed",
+    "timestamp": "2026-03-01T15:02:21.080698Z",
+    "metadata": {
+      "action_type": "send_email",
+      "risk_level": "low",
+      "plan_file": "Plans/test-plan.md"
+    },
+    "error": "Field requested_at has wrong type (expected str); Invalid requested_at format: 'str' object cannot be interpreted as an integer",
+    "orchestrator": "approval_orchestrator"
+  },
+  {
+    "approval_id": "test-approval",
+    "file": "test-approval.md",
+    "stage": "validation_failed",
+    "timestamp": "2026-03-01T15:03:31.478414Z",
+    "metadata": {
+      "action_type": "send_email",
+      "risk_level": "low",
+      "plan_file": "Plans/test-plan.md"
+    },
+    "error": "Field requested_at has wrong type (expected str); Invalid requested_at format: 'str' object cannot be interpreted as an integer",
+    "orchestrator": "approval_orchestrator"
+  },
+  {
+    "approval_id": "test-approval",
+    "file": "test-approval.md",
+    "stage": "validation_failed",
+    "timestamp": "2026-03-01T15:03:32.085629Z",
+    "metadata": {
+      "action_type": null,
+      "risk_level": null,
+      "plan_file": null
+    },
+    "error": "Missing required field: plan_file; Missing required field: source_file; Missing required field: risk_level; Missing required field: requested_at; Missing required field: status; Missing required field: action_type",
+    "orchestrator": "approval_orchestrator"
+  },
+  {
+    "approval_id": "test-approval",
+    "file": "test-approval.md",
+    "stage": "validation_failed",
+    "timestamp": "2026-03-01T15:03:32.187548Z",
+    "metadata": {
+      "action_type": "send_email",
+      "risk_level": "low",
+      "plan_file": "Plans/test-plan.md"
+    },
+    "error": "Field requested_at has wrong type (expected str); Invalid requested_at format: 'str' object cannot be interpreted as an integer",
+    "orchestrator": "approval_orchestrator"
+  },
+  {
+    "approval_id": "test-approval",
+    "file": "test-approval.md",
+    "stage": "validation_failed",
+    "timestamp": "2026-03-01T15:04:31.685131Z",
+    "metadata": {
+      "action_type": "send_email",
+      "risk_level": "low",
+      "plan_file": "Plans/test-plan.md"
+    },
+    "error": "Field requested_at has wrong type (expected str); Invalid requested_at format: 'str' object cannot be interpreted as an integer",
+    "orchestrator": "approval_orchestrator"
+  },
+  {
+    "approval_id": "test-approval",
+    "file": "test-approval.md",
+    "stage": "validation_failed",
+    "timestamp": "2026-03-01T15:04:31.785171Z",
+    "metadata": {
+      "action_type": null,
+      "risk_level": null,
+      "plan_file": null
+    },
+    "error": "Missing required field: plan_file; Missing required field: source_file; Missing required field: risk_level; Missing required field: requested_at; Missing required field: status; Missing required field: action_type",
+    "orchestrator": "approval_orchestrator"
+  },
+  {
+    "approval_id": "test-approval",
+    "file": "test-approval.md",
+    "stage": "validation_failed",
+    "timestamp": "2026-03-01T15:04:31.814897Z",
+    "metadata": {
+      "action_type": "send_email",
+      "risk_level": "low",
+      "plan_file": "Plans/test-plan.md"
+    },
+    "error": "Field requested_at has wrong type (expected str); Invalid requested_at format: 'str' object cannot be interpreted as an integer",
+    "orchestrator": "approval_orchestrator"
+  },
+  {
+    "approval_id": "test-approval",
+    "file": "test-approval.md",
+    "stage": "executing",
+    "timestamp": "2026-03-01T15:04:51.670194Z",
+    "metadata": {
+      "action_type": "send_email",
+      "risk_level": "low",
+      "plan_file": "Plans/test-plan.md"
+    },
+    "orchestrator": "approval_orchestrator"
+  },
+  {
+    "approval_id": "test-approval",
+    "file": "test-approval.md",
+    "stage": "completed",
+    "timestamp": "2026-03-01T15:04:51.670194Z",
+    "metadata": {
+      "action_type": "send_email",
+      "risk_level": "low",
+      "plan_file": "Plans/test-plan.md"
+    },
+    "orchestrator": "approval_orchestrator",
+    "result": {
+      "status": "success",
+      "action_type": "email_draft",
+      "tool": "draft_email"
+    },
+    "done_file": "test-approval.md"
+  },
+  {
+    "approval_id": "test-approval",
+    "file": "test-approval.md",
+    "stage": "executing",
+    "timestamp": "2026-03-01T15:05:13.913887Z",
+    "metadata": {
+      "action_type": "send_email",
+      "risk_level": "low",
+      "plan_file": "Plans/test-plan.md"
+    },
+    "orchestrator": "approval_orchestrator"
+  },
+  {
+    "approval_id": "test-approval",
+    "file": "test-approval.md",
+    "stage": "completed",
+    "timestamp": "2026-03-01T15:05:13.913887Z",
+    "metadata": {
+      "action_type": "send_email",
+      "risk_level": "low",
+      "plan_file": "Plans/test-plan.md"
+    },
+    "orchestrator": "approval_orchestrator",
+    "result": {
+      "status": "success",
+      "action_type": "email_draft",
+      "tool": "draft_email"
+    },
+    "done_file": "test-approval.md"
+  },
+  {
+    "approval_id": "test-approval",
+    "file": "test-approval.md",
+    "stage": "validation_failed",
+    "timestamp": "2026-03-01T15:05:14.070020Z",
+    "metadata": {
+      "action_type": null,
+      "risk_level": null,
+      "plan_file": null
+    },
+    "error": "Missing required field: plan_file; Missing required field: source_file; Missing required field: risk_level; Missing required field: requested_at; Missing required field: status; Missing required field: action_type",
+    "orchestrator": "approval_orchestrator"
+  },
+  {
+    "approval_id": "test-approval",
+    "file": "test-approval.md",
+    "stage": "plan_not_found",
+    "timestamp": "2026-03-01T15:05:14.112776Z",
+    "metadata": {
+      "action_type": "send_email",
+      "risk_level": "low",
+      "plan_file": "Plans/test-plan.md"
+    },
+    "error": "Plan file not found: /tmp/tmpgbbkgqx9/Plans/test-plan.md",
+    "orchestrator": "approval_orchestrator"
+  }
+]

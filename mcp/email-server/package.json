@@ -1,0 +1,25 @@
+{
+  "name": "@ai-employee/mcp-email-server",
+  "version": "2.0.0",
+  "description": "MCP server exposing send_email, draft_email, schedule_email, and search_inbox tools via Gmail API",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "lint": "node --check src/index.js",
+    "test": "node --test test/**/*.test.js"
+  },
+  "keywords": ["mcp", "email", "gmail", "ai-employee"],
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "googleapis": "^144.0.0",
+    "google-auth-library": "^9.0.0",
+    "dotenv": "^16.0.0",
+    "zod": "^3.22.4"
+  }
+}

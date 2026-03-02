@@ -1,0 +1,131 @@
+openapi: 3.0.0
+info:
+  title: Activity Log API
+  version: 1.0.0
+  description: API for retrieving system activity logs
+servers:
+  - url: /api/v1
+    description: Production server
+paths:
+  /activity:
+    get:
+      operationId: getActivityLogs
+      summary: Get activity logs with pagination
+      tags:
+        - Activity
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Number of logs to retrieve
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+            maximum: 100
+        - name: offset
+          in: query
+          required: false
+          description: Number of logs to skip
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityLogResponse'
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    ActivityLogResponse:
+      type: object
+      required:
+        - data
+        - total
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityLog'
+        total:
+          type: integer
+          description: Total number of logs available
+        limit:
+          type: integer
+          description: Requested limit
+        offset:
+          type: integer
+          description: Requested offset
+
+    ActivityLog:
+      type: object
+      required:
+        - id
+        - timestamp
+        - eventType
+        - message
+      properties:
+        id:
+          type: string
+          format: uuid
+        timestamp:
+          type: string
+          format: date-time
+        eventType:
+          $ref: '#/components/schemas/ActivityEventType'
+        message:
+          type: string
+          minLength: 1
+          maxLength: 500
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Optional structured data related to the event
+
+    ActivityEventType:
+      type: string
+      enum:
+        - task_created
+        - task_updated
+        - plan_generated
+        - system_started
+        - system_error
+      description: |
+        Type of activity event:
+        - task_created: New task was created by user or system
+        - task_updated: Task status or details were modified
+        - plan_generated
+        - system_started: AI agent was initialized
+        - system_error: System encountered an error
+
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+              additionalProperties: true

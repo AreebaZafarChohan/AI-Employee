@@ -23,6 +23,10 @@ LIMIT 5
 
 > Shows the 5 most recently completed items.
 
+## Daily Briefings
+
+- [[2026-02-25_Daily.md]]
+
 ## Quick Links
 - [[Company_Handbook]]
 - [[Inbox/]]
