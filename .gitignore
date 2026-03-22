@@ -103,6 +103,14 @@ AI-Employee-Vault/Needs_Action/whatsapp-*overtide*
 # Watch folder
 watch_folder/
 
+# Browser session data (sensitive - cookies, login data)
+.twitter_sessions_persistent/
+mcp/twitter-server/.twitter_sessions_persistent/
+mcp/linkedin-server/*.png
+
+# Ralph loop state
+.ralph_loop_state.json
+
 # Node
 node_modules/
 .next/
