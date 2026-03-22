@@ -1,0 +1,119 @@
+# Gold Tier Backend - Development Docker Compose
+version: '3.8'
+
+services:
+  # PostgreSQL Database with pgvector
+  postgres:
+    image: ankane/pgvector:v0.5.1
+    container_name: gold_tier_postgres
+    environment:
+      POSTGRES_DB: gold_tier
+      POSTGRES_USER: golduser
+      POSTGRES_PASSWORD: goldpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U golduser -d gold_tier"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gold_tier_network
+
+  # Redis Message Broker
+  redis:
+    image: redis:7-alpine
+    container_name: gold_tier_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gold_tier_network
+
+  # FastAPI Application
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: gold_tier_api
+    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://golduser:goldpass@postgres:5432/gold_tier
+      REDIS_URL: redis://redis:6379/0
+      LOG_LEVEL: DEBUG
+      JWT_SECRET_KEY: dev-secret-key-change-in-production
+      JWT_ALGORITHM: HS256
+      JWT_EXPIRATION_HOURS: 24
+      CORS_ORIGINS: '["http://localhost:3000"]'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ..:/app
+    networks:
+      - gold_tier_network
+
+  # Celery Worker
+  worker:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: gold_tier_worker
+    command: celery -A src.workers.celery_app worker --loglevel=debug --pool=solo
+    environment:
+      DATABASE_URL: postgresql://golduser:goldpass@postgres:5432/gold_tier
+      REDIS_URL: redis://redis:6379/0
+      LOG_LEVEL: DEBUG
+      JWT_SECRET_KEY: dev-secret-key-change-in-production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      api:
+        condition: service_started
+    volumes:
+      - ..:/app
+    networks:
+      - gold_tier_network
+
+  # Celery Beat (Scheduled Tasks)
+  worker_beat:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: gold_tier_beat
+    command: celery -A src.workers.celery_app beat --loglevel=info
+    environment:
+      DATABASE_URL: postgresql://golduser:goldpass@postgres:5432/gold_tier
+      REDIS_URL: redis://redis:6379/0
+      LOG_LEVEL: INFO
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - gold_tier_network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  gold_tier_network:
+    driver: bridge

@@ -1,0 +1,20 @@
+[
+  {
+    "timestamp": "2026-02-27T16:01:31.949966Z",
+    "action_type": "whatsapp_received",
+    "target": "whatsapp-elite-pathfinders---quarter-4-20260227160131.md",
+    "result": "success | sender='Elite Pathfinders - Quarter 4' | risk=high"
+  },
+  {
+    "timestamp": "2026-02-27T16:01:45.889895Z",
+    "action_type": "whatsapp_received",
+    "target": "whatsapp-giaic-future-girls-leaders-20260227160145.md",
+    "result": "success | sender='GIAIC FUTURE GIRLS LEADERS' | risk=high"
+  },
+  {
+    "timestamp": "2026-02-27T16:18:51.714772Z",
+    "action_type": "whatsapp_send_failed",
+    "target": "Areeba Jazz",
+    "result": "contact not found"
+  }
+]

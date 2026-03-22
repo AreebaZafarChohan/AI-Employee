@@ -3,7 +3,10 @@
 import json
 import logging
 import os
-import fcntl
+try:
+    import fcntl
+except ImportError:
+    fcntl = None
 from pathlib import Path
 from datetime import datetime, timezone
 from typing import Optional
@@ -201,28 +204,33 @@ def log_action(
 
 
 def _append_json_entry(log_file: Path, entry: dict) -> None:
-    """Read-modify-write a JSON array file under an exclusive lock."""
+    """Read-modify-write a JSON array file under an exclusive lock if available."""
+    # On Windows, fcntl is None. We'll skip locking for now or use msvcrt
+    if not fcntl:
+        # Fallback for Windows: No locking or basic open/write
+        # In a real app, use msvcrt.locking or a lock file
+        if log_file.exists():
+            try:
+                content = log_file.read_text(encoding="utf-8").strip()
+                entries = json.loads(content) if content else []
+            except (json.JSONDecodeError, FileNotFoundError):
+                entries = []
+        else:
+            entries = []
+            
+        entries.append(entry)
+        log_file.write_text(json.dumps(entries, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        return
+
     with open(log_file, "a+", encoding="utf-8") as fh:
         try:
             fcntl.flock(fh, fcntl.LOCK_EX)
-
-            # Read existing entries
             fh.seek(0)
             raw = fh.read().strip()
-            if raw:
-                try:
-                    entries = json.loads(raw)
-                except json.JSONDecodeError:
-                    entries = []
-            else:
-                entries = []
-
+            entries = json.loads(raw) if raw else []
             entries.append(entry)
-
-            # Rewrite the whole file
             fh.seek(0)
             fh.truncate()
-            fh.write(json.dumps(entries, indent=2, ensure_ascii=False))
-            fh.write("\n")
+            fh.write(json.dumps(entries, indent=2, ensure_ascii=False) + "\n")
         finally:
             fcntl.flock(fh, fcntl.LOCK_UN)

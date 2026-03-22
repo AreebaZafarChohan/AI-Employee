@@ -3,9 +3,10 @@
  * TypeScript types for SystemState entity
  */
 
-import { SystemState, SystemStateEnum } from '@prisma/client';
+import { SystemState } from '@prisma/client';
 
-export type { SystemState, SystemStateEnum };
+export type SystemStateEnum = 'Idle' | 'Thinking' | 'Planning' | string;
+export type { SystemState };
 
 export interface SystemStateUpdateInput {
   state?: SystemStateEnum;

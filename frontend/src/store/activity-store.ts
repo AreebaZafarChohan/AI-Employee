@@ -4,6 +4,7 @@
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { API_BASE_URL } from '@/lib/api-config';
 
 export type ActivityType =
   | 'email_received'
@@ -60,6 +61,57 @@ const initialState: ActivityState = {
   lastUpdate: null,
 };
 
+// Map backend log sources to frontend activity types
+const mapBackendLogToActivity = (log: any): Activity => {
+  const source = log.source || log.agent || 'system';
+  const action = log.action || log.event_type || 'activity';
+  const status = log.status || 'success';
+  
+  // Determine type and severity based on source and action
+  let type: ActivityType = 'system';
+  let severity: ActivitySeverity = 'info';
+  let service: 'gmail' | 'whatsapp' | 'linkedin' | 'filesystem' | 'system' = 'system';
+  
+  if (source.includes('gmail') || log.agent === 'gmail_watcher') {
+    service = 'gmail';
+    type = action.includes('send') ? 'email_sent' : 'email_received';
+  } else if (source.includes('whatsapp') || log.agent === 'whatsapp_watcher') {
+    service = 'whatsapp';
+    type = 'whatsapp_received';
+  } else if (source.includes('linkedin')) {
+    service = 'linkedin';
+    type = 'linkedin_connection';
+  } else if (source.includes('orchestrator')) {
+    type = 'task_completed';
+    severity = status === 'success' ? 'success' : 'error';
+  } else if (source.includes('lex')) {
+    type = 'system';
+  }
+  
+  if (status === 'error' || status === 'failure') {
+    severity = 'error';
+  } else if (status === 'success' && type === 'task_completed') {
+    severity = 'success';
+  } else if (action.includes('approval') || action.includes('pending')) {
+    severity = 'warning';
+    type = 'approval_created';
+  }
+
+  // Generate unique ID with better uniqueness guarantee
+  const uniqueSuffix = `${Date.now()}-${Math.random().toString(36).substr(2, 11)}`;
+  return {
+    id: log.id || `log-${log.timestamp}-${uniqueSuffix}`,
+    type,
+    severity,
+    title: `${service.charAt(0).toUpperCase() + service.slice(1)} ${action}`,
+    description: log.details ? JSON.stringify(log.details) : `${action} - ${status}`,
+    service,
+    timestamp: log.timestamp,
+    metadata: log,
+    read: false,
+  };
+};
+
 export const useActivityStore = create<ActivityState & ActivityActions>()(
   devtools(
     (set, get) => ({
@@ -103,70 +155,24 @@ export const useActivityStore = create<ActivityState & ActivityActions>()(
       fetchActivities: async () => {
         set({ isLoading: true });
         try {
-          // API call will be added later
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          
-          // Mock activities for demo
-          const mockActivities: Activity[] = [
-            {
-              id: 'act-1',
-              type: 'email_received',
-              severity: 'info',
-              title: 'New Email Received',
-              description: 'Invoice #2026-001 from Client',
-              service: 'gmail',
-              timestamp: new Date(Date.now() - 60000).toISOString(),
-              read: false,
-            },
-            {
-              id: 'act-2',
-              type: 'approval_created',
-              severity: 'warning',
-              title: 'Approval Required',
-              description: 'Payment approval needed for $500',
-              service: 'gmail',
-              timestamp: new Date(Date.now() - 300000).toISOString(),
-              read: false,
-            },
-            {
-              id: 'act-3',
-              type: 'whatsapp_received',
-              severity: 'info',
-              title: 'WhatsApp Message',
-              description: 'New message from Contact',
-              service: 'whatsapp',
-              timestamp: new Date(Date.now() - 600000).toISOString(),
-              read: true,
-            },
-            {
-              id: 'act-4',
-              type: 'task_completed',
-              severity: 'success',
-              title: 'Task Completed',
-              description: 'Email draft sent successfully',
-              service: 'gmail',
-              timestamp: new Date(Date.now() - 900000).toISOString(),
-              read: true,
-            },
-            {
-              id: 'act-5',
-              type: 'linkedin_connection',
-              severity: 'success',
-              title: 'New Connection',
-              description: 'John Doe accepted your connection request',
-              service: 'linkedin',
-              timestamp: new Date(Date.now() - 1800000).toISOString(),
-              read: true,
-            },
-          ];
-
-          set({
-            activities: mockActivities,
-            unreadCount: mockActivities.filter((a) => !a.read).length,
-            isLoading: false,
-            lastUpdate: new Date().toISOString(),
-          });
+          const response = await fetch(`${API_BASE_URL}/audit-logs/activity?limit=50`);
+          if (response.ok) {
+            const json = await response.json();
+            const logs = json.data || [];
+            const activities = logs.map(mapBackendLogToActivity);
+            
+            set({
+              activities,
+              unreadCount: activities.filter((a) => !a.read).length,
+              isLoading: false,
+              lastUpdate: new Date().toISOString(),
+              isConnected: true,
+            });
+          } else {
+            throw new Error('Failed to fetch activities');
+          }
         } catch (error) {
+          console.error('Failed to fetch activities:', error);
           set({
             isLoading: false,
             isConnected: false,

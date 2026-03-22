@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
+  # PostgreSQL Database with pgvector
   postgres:
-    image: postgres:15-alpine
+    image: ankane/pgvector:v0.5.1
     container_name: ai-employee-db
     restart: unless-stopped
     environment:
@@ -20,6 +20,19 @@ services:
       timeout: 5s
       retries: 5
 
+  # Redis for BullMQ
+  redis:
+    image: redis:7-alpine
+    container_name: ai-employee-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   # Backend API
   backend:
     build:
@@ -32,6 +45,7 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: 3000
       DATABASE_URL: postgresql://${DB_USER:-ai_employee_user}:${DB_PASSWORD:-ai_employee_password}@postgres:5432/${DB_NAME:-ai_employee}?schema=public
+      REDIS_URL: redis://redis:6379
       AI_PROVIDER: ${AI_PROVIDER:-anthropic}
       AI_API_KEY: ${AI_API_KEY:-}
       CORS_ORIGIN: ${CORS_ORIGIN:-*}
@@ -39,6 +53,8 @@ services:
       - "${APP_PORT:-3000}:3000"
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     volumes:
       - ./logs:/app/logs

@@ -1,14 +1,7 @@
-/**
- * Main Navigation Sidebar
- * Left sidebar navigation for all services
- */
-
-'use client';
-
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
   Mail,
@@ -17,6 +10,17 @@ import {
   FileText,
   Settings,
   ChevronRight,
+  Target,
+  Zap,
+  Bot,
+  Goal,
+  Brain,
+  DollarSign,
+  Wrench,
+  Activity,
+  Eye,
+  Sparkles,
+  ScrollText,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useApprovalStore } from '@/store/approval-store';
@@ -27,30 +31,112 @@ const navigation = [
     href: '/dashboard',
     icon: LayoutDashboard,
     description: 'Command Center',
+    color: 'text-blue-500',
+  },
+  {
+    name: 'AI Employee',
+    href: '/ai-employee',
+    icon: Bot,
+    description: 'Autonomous Control',
+    color: 'text-cyan-500',
   },
   {
     name: 'Gmail',
     href: '/gmail',
     icon: Mail,
     description: 'Email Management',
+    color: 'text-red-500',
   },
   {
     name: 'WhatsApp',
     href: '/whatsapp',
     icon: MessageSquare,
     description: 'Messaging',
+    color: 'text-green-500',
   },
   {
     name: 'LinkedIn',
     href: '/linkedin',
     icon: Linkedin,
     description: 'Professional Network',
+    color: 'text-blue-600',
+  },
+  {
+    name: 'Sales',
+    href: '/sales',
+    icon: Target,
+    description: 'AI Sales Pipeline',
+    color: 'text-purple-500',
   },
   {
     name: 'Files',
     href: '/files',
     icon: FileText,
     description: 'Document Manager',
+    color: 'text-orange-500',
+  },
+  {
+    name: 'AI Agent',
+    href: '/ai-agent',
+    icon: Sparkles,
+    description: 'Generate & Post Content',
+    color: 'text-violet-500',
+  },
+  {
+    name: 'Watchers',
+    href: '/watchers',
+    icon: Eye,
+    description: 'Service Monitoring',
+    color: 'text-teal-500',
+  },
+  {
+    name: 'Live Logs',
+    href: '/live-logs',
+    icon: ScrollText,
+    description: 'Real-time Activity',
+    color: 'text-pink-500',
+  },
+  {
+    name: 'Agents',
+    href: '/agents',
+    icon: Bot,
+    description: 'AI Agent Control',
+    color: 'text-cyan-500',
+  },
+  {
+    name: 'Goals',
+    href: '/goals',
+    icon: Goal,
+    description: 'Strategic Goals',
+    color: 'text-amber-500',
+  },
+  {
+    name: 'Memory',
+    href: '/memory',
+    icon: Brain,
+    description: 'AI Memory Explorer',
+    color: 'text-pink-500',
+  },
+  {
+    name: 'Costs',
+    href: '/costs',
+    icon: DollarSign,
+    description: 'Usage & Costs',
+    color: 'text-emerald-500',
+  },
+  {
+    name: 'Tools',
+    href: '/tools',
+    icon: Wrench,
+    description: 'Tool Monitor',
+    color: 'text-indigo-500',
+  },
+  {
+    name: 'Intelligence',
+    href: '/intelligence',
+    icon: Activity,
+    description: 'System Intelligence',
+    color: 'text-rose-500',
   },
 ];
 
@@ -59,6 +145,7 @@ const bottomNavigation = [
     name: 'Settings',
     href: '/settings',
     icon: Settings,
+    color: 'text-slate-500',
   },
 ];
 
@@ -67,125 +154,105 @@ export function Sidebar() {
   const { stats } = useApprovalStore();
 
   return (
-    <div className="fixed left-0 top-0 h-screen w-72 border-r bg-gradient-to-b from-slate-900 to-slate-800 text-white z-50 shadow-2xl">
+    <motion.aside 
+      initial={{ x: -100, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      className="fixed left-4 top-4 bottom-4 w-64 glass rounded-3xl z-50 overflow-hidden flex flex-col shadow-2xl border-white/10 dark:bg-black/40 bg-white/40"
+    >
       <div className="flex h-full flex-col">
         {/* Logo Section */}
-        <div className="flex h-20 items-center gap-3 border-b border-slate-700 px-6 bg-slate-800/50">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 shadow-lg">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-5 w-5 text-white"
-            >
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-            </svg>
-          </div>
-          <div>
-            <h1 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-              AI Employee
-            </h1>
-            <p className="text-xs text-slate-400">Orchestration Dashboard</p>
-          </div>
+        <div className="p-6">
+          <Link href="/dashboard" className="flex items-center gap-3 group">
+            <div className="relative">
+              <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full group-hover:bg-primary/40 transition-colors" />
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Zap className="h-5 w-5 text-white animate-pulse" />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-lg font-bold tracking-tight">AI Employee</h1>
+              <div className="flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Active Agent</p>
+              </div>
+            </div>
+          </Link>
         </div>
 
         {/* Main Navigation */}
-        <nav className="flex-1 space-y-1 px-3 py-6 overflow-y-auto">
+        <nav className="flex-1 px-4 space-y-1 overflow-y-auto py-2 custom-scrollbar">
           {navigation.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
 
             return (
-              <Link key={item.name} href={item.href} passHref>
+              <Link key={item.name} href={item.href}>
                 <div
                   className={cn(
-                    'group flex items-center justify-between rounded-lg px-3 py-3 text-sm font-medium transition-all mb-1 cursor-pointer',
+                    'group relative flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-300 mb-1 cursor-pointer overflow-hidden',
                     isActive
-                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md'
-                      : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                      ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-[1.02]'
+                      : 'text-muted-foreground hover:bg-white/10 hover:text-foreground'
                   )}
                 >
-                  <div className="flex items-center gap-3">
-                    <Icon className={cn('h-5 w-5', isActive ? 'text-white' : 'text-slate-400 group-hover:text-white')} />
-                    <div>
-                      <p className="font-medium">{item.name}</p>
-                      <p className={cn('text-xs', isActive ? 'text-white/70' : 'text-slate-500')}>
-                        {item.description}
-                      </p>
-                    </div>
+                  <Icon className={cn('h-5 w-5 relative z-10 transition-transform duration-300 group-hover:scale-110', !isActive && item.color)} />
+                  <div className="relative z-10">
+                    <p className="font-semibold leading-none">{item.name}</p>
+                    <p className={cn('text-[10px] mt-0.5 opacity-70', isActive ? 'text-white' : 'text-muted-foreground')}>
+                      {item.description}
+                    </p>
                   </div>
-                  {isActive && <ChevronRight className="h-4 w-4 opacity-70" />}
+                  {isActive && (
+                    <motion.div 
+                      layoutId="sidebar-active"
+                      className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-90"
+                    />
+                  )}
                 </div>
               </Link>
             );
           })}
         </nav>
 
-        {/* Pending Approvals Widget */}
-        <div className="mx-3 mb-4 rounded-lg border border-slate-700 bg-slate-800/50 p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <p className="text-sm font-semibold text-white">Approvals</p>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-purple-400"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </svg>
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400">Pending</span>
-              <Badge className="bg-yellow-600 text-white hover:bg-yellow-700">
-                {stats.pending}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400">Approved</span>
-              <Badge className="bg-green-600 text-white hover:bg-green-700">
-                {stats.approved}
-              </Badge>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400">Rejected</span>
-              <Badge className="bg-red-600 text-white hover:bg-red-700">
-                {stats.rejected}
-              </Badge>
+        {/* Stats Panel */}
+        <div className="px-4 mb-4">
+          <div className="rounded-2xl bg-black/5 dark:bg-white/5 p-4 border border-white/5">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3 px-1">Vault Status</p>
+            <div className="space-y-2.5">
+              {[
+                { label: 'Pending', count: stats.pending, color: 'bg-orange-500' },
+                { label: 'Approved', count: stats.approved, color: 'bg-green-500' },
+                { label: 'Rejected', count: stats.rejected, color: 'bg-red-500' },
+              ].map((s) => (
+                <div key={s.label} className="flex items-center justify-between px-1">
+                  <div className="flex items-center gap-2">
+                    <div className={cn('h-1.5 w-1.5 rounded-full', s.color)} />
+                    <span className="text-xs font-medium text-muted-foreground">{s.label}</span>
+                  </div>
+                  <span className="text-xs font-bold">{s.count}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Bottom Navigation */}
-        <div className="border-t border-slate-700 px-3 py-4 bg-slate-800/30">
+        {/* Footer Navigation */}
+        <div className="p-4 border-t border-white/5">
           {bottomNavigation.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
 
             return (
-              <Link key={item.name} href={item.href} passHref>
+              <Link key={item.name} href={item.href}>
                 <div
                   className={cn(
-                    'group flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-all cursor-pointer',
+                    'group flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all cursor-pointer',
                     isActive
-                      ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md'
-                      : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:bg-white/10 hover:text-foreground'
                   )}
                 >
-                  <Icon className={cn('h-5 w-5', isActive ? 'text-white' : 'text-slate-400 group-hover:text-white')} />
+                  <Icon className="h-5 w-5" />
                   <span>{item.name}</span>
                 </div>
               </Link>
@@ -193,6 +260,6 @@ export function Sidebar() {
           })}
         </div>
       </div>
-    </div>
+    </motion.aside>
   );
 }

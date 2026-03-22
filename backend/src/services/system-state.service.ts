@@ -4,7 +4,8 @@
  */
 
 import { prisma } from '../models';
-import { SystemState, SystemStateEnum } from '@prisma/client';
+import type { SystemState } from '@prisma/client';
+import type { SystemStateEnum } from '../models/system-state.model';
 import { STATE_TRANSITIONS } from '../models/system-state.model';
 import { ConflictError } from '../utils/errors';
 import logger from '../utils/logger';
@@ -140,7 +141,7 @@ export class SystemStateService {
         data: {
           type: 'state.changed',
           description: `System state changed from ${from} to ${to}`,
-          metadata: { from, to },
+          metadata: JSON.stringify({ from, to }),
         },
       });
     } catch (error) {

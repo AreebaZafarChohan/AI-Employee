@@ -1,14 +1,8 @@
-/**
- * Stats Card Component
- * Displays statistics with icons and trends
- */
-
-'use client';
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
+import { Card3D } from '@/components/shared/card-3d';
 
 interface StatsCardProps {
   title: string;
@@ -24,31 +18,11 @@ interface StatsCardProps {
 }
 
 const COLOR_VARIANTS = {
-  purple: {
-    bg: 'bg-purple-100 dark:bg-purple-900/30',
-    text: 'text-purple-600 dark:text-purple-400',
-    border: 'border-purple-200 dark:border-purple-800',
-  },
-  blue: {
-    bg: 'bg-blue-100 dark:bg-blue-900/30',
-    text: 'text-blue-600 dark:text-blue-400',
-    border: 'border-blue-200 dark:border-blue-800',
-  },
-  green: {
-    bg: 'bg-green-100 dark:bg-green-900/30',
-    text: 'text-green-600 dark:text-green-400',
-    border: 'border-green-200 dark:border-green-800',
-  },
-  orange: {
-    bg: 'bg-orange-100 dark:bg-orange-900/30',
-    text: 'text-orange-600 dark:text-orange-400',
-    border: 'border-orange-200 dark:border-orange-800',
-  },
-  red: {
-    bg: 'bg-red-100 dark:bg-red-900/30',
-    text: 'text-red-600 dark:text-red-400',
-    border: 'border-red-200 dark:border-red-800',
-  },
+  purple: 'from-purple-500/20 to-indigo-500/20 text-purple-500 border-purple-500/20',
+  blue: 'from-blue-500/20 to-cyan-500/20 text-blue-500 border-blue-500/20',
+  green: 'from-green-500/20 to-emerald-500/20 text-green-500 border-green-500/20',
+  orange: 'from-orange-500/20 to-amber-500/20 text-orange-500 border-orange-500/20',
+  red: 'from-red-500/20 to-rose-500/20 text-red-500 border-red-500/20',
 };
 
 export function StatsCard({
@@ -59,35 +33,55 @@ export function StatsCard({
   color,
   className,
 }: StatsCardProps) {
-  const variant = COLOR_VARIANTS[color];
+  const colorClass = COLOR_VARIANTS[color];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <Card className={cn('overflow-hidden transition-all duration-300 hover:shadow-lg', className)}>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">
+    <Card3D>
+      <Card className={cn(
+        'relative overflow-hidden border-white/10 bg-background/50 backdrop-blur-md transition-all duration-300 group hover:border-primary/50',
+        className
+      )}>
+        {/* Background Gradient Glow */}
+        <div className={cn(
+          'absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br blur-3xl opacity-20 group-hover:opacity-40 transition-opacity',
+          colorClass
+        )} />
+        
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+          <CardTitle className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
             {title}
           </CardTitle>
-          <div className={cn('p-2 rounded-lg', variant.bg)}>
-            <Icon className={cn('h-4 w-4', variant.text)} />
+          <div className={cn(
+            'p-2.5 rounded-xl bg-gradient-to-br border shadow-inner transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6',
+            colorClass
+          )}>
+            <Icon className="h-4 w-4" />
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{value}</div>
+        
+        <CardContent className="relative z-10">
+          <motion.div 
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            className="text-3xl font-bold tracking-tight"
+          >
+            {value}
+          </motion.div>
           {trend && (
-            <p className="text-xs text-muted-foreground mt-1">
-              <span className={cn(trend.isPositive ? 'text-green-600' : 'text-red-600')}>
+            <div className="flex items-center gap-1.5 mt-2">
+              <span className={cn(
+                'flex items-center text-xs font-bold px-1.5 py-0.5 rounded-full',
+                trend.isPositive ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'
+              )}>
                 {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}%
-              </span>{' '}
-              {trend.label}
-            </p>
+              </span>
+              <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                {trend.label}
+              </span>
+            </div>
           )}
         </CardContent>
       </Card>
-    </motion.div>
+    </Card3D>
   );
 }

@@ -4,6 +4,12 @@
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { 
+  approveFile, 
+  rejectFile, 
+  getPending, 
+  getNeedsAction 
+} from '@/lib/vault-api';
 
 export type ApprovalType = 'gmail' | 'whatsapp' | 'linkedin' | 'file' | 'payment' | 'post';
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected';
@@ -111,31 +117,43 @@ export const useApprovalStore = create<ApprovalState & ApprovalActions>()(
         }),
 
       approveItem: async (id) => {
-        set((state) => ({
-          items: state.items.map((item) =>
-            item.id === id ? { ...item, status: 'approved' } : item
-          ),
-          stats: {
-            ...state.stats,
-            pending: state.stats.pending - 1,
-            approved: state.stats.approved + 1,
-          },
-        }));
-        // API call will be added later
+        try {
+          await approveFile(id);
+
+          set((state) => ({
+            items: state.items.map((item) =>
+              item.id === id ? { ...item, status: 'approved' } : item
+            ),
+            stats: {
+              ...state.stats,
+              pending: state.stats.pending - 1,
+              approved: state.stats.approved + 1,
+            },
+          }));
+        } catch (error) {
+          console.error('Approval failed:', error);
+          throw error;
+        }
       },
 
       rejectItem: async (id, reason) => {
-        set((state) => ({
-          items: state.items.map((item) =>
-            item.id === id ? { ...item, status: 'rejected', metadata: { ...item.metadata, rejectReason: reason } } : item
-          ),
-          stats: {
-            ...state.stats,
-            pending: state.stats.pending - 1,
-            rejected: state.stats.rejected + 1,
-          },
-        }));
-        // API call will be added later
+        try {
+          await rejectFile(id);
+
+          set((state) => ({
+            items: state.items.map((item) =>
+              item.id === id ? { ...item, status: 'rejected', metadata: { ...item.metadata, rejectReason: reason } } : item
+            ),
+            stats: {
+              ...state.stats,
+              pending: state.stats.pending - 1,
+              rejected: state.stats.rejected + 1,
+            },
+          }));
+        } catch (error) {
+          console.error('Rejection failed:', error);
+          throw error;
+        }
       },
 
       clearExpired: () => {
@@ -160,10 +178,36 @@ export const useApprovalStore = create<ApprovalState & ApprovalActions>()(
       fetchPending: async () => {
         set({ isLoading: true, error: null });
         try {
-          // API call will be added later
-          // Mock data for now
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          set({ isLoading: false });
+          const [pendingItems, needsActionItems] = await Promise.all([
+            getPending(),
+            getNeedsAction()
+          ]);
+
+          const allItems = [...(pendingItems || []), ...(needsActionItems || [])];
+
+          const mappedItems: ApprovalItem[] = allItems.map((item: any) => ({
+            id: item.filename,
+            type: (item.channel === 'plan' ? 'file' : item.channel) as ApprovalType,
+            status: 'pending',
+            riskLevel: item.risk_level || 'medium',
+            title: item.title,
+            description: item.body_preview,
+            sender: item.metadata?.from || item.metadata?.sender,
+            subject: item.metadata?.subject,
+            createdAt: item.created_at,
+            metadata: item.metadata,
+          }));
+
+          set({
+            items: mappedItems,
+            isLoading: false,
+            stats: {
+              pending: mappedItems.length,
+              approved: get().stats.approved,
+              rejected: get().stats.rejected,
+              expired: 0,
+            },
+          });
         } catch (error) {
           set({
             isLoading: false,

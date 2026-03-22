@@ -1,0 +1,123 @@
+openapi: 3.0.0
+info:
+  title: Platinum Tier Backend API
+  description: API for autonomous multi-agent platform and goal management.
+  version: 1.0.0
+paths:
+  /api/goals:
+    post:
+      summary: Submit a new high-level goal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, description]
+              properties:
+                title: { type: string }
+                description: { type: string }
+                priority: { type: integer, minimum: 1, maximum: 10 }
+      responses:
+        '202':
+          description: Goal accepted and decomposition started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  goal_id: { type: string, format: uuid }
+                  status: { type: string }
+  /api/goals/{goal_id}/plan:
+    get:
+      summary: Retrieve the autonomous plan (decomposed tasks) for a goal
+      parameters:
+        - name: goal_id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Returns the plan (list of tasks)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: string, format: uuid }
+                        title: { type: string }
+                        description: { type: string }
+                        status: { type: string }
+    post:
+      summary: Approve or reject the autonomous plan
+      parameters:
+        - name: goal_id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action]
+              properties:
+                action: { type: string, enum: [APPROVE, REJECT] }
+                modifications: { type: string }
+      responses:
+        '200':
+          description: Plan status updated
+  /api/cost/threshold:
+    get:
+      summary: Get current cost threshold settings
+      responses:
+        '200':
+          description: Returns threshold settings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  threshold_usd: { type: number }
+                  current_period_cost: { type: number }
+    post:
+      summary: Set a cost threshold for AI usage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [threshold_usd]
+              properties:
+                threshold_usd: { type: number }
+      responses:
+        '200':
+          description: Threshold updated successfully
+  /api/tools/approvals:
+    get:
+      summary: List tool invocations awaiting human approval
+      responses:
+        '200':
+          description: Returns a list of pending tool invocations
+    post:
+      summary: Approve or reject a pending tool invocation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [invocation_id, action]
+              properties:
+                invocation_id: { type: string, format: uuid }
+                action: { type: string, enum: [APPROVE, REJECT] }
+      responses:
+        '200':
+          description: Invocation status updated

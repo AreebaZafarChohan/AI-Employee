@@ -27,6 +27,9 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { McpHealthPanel } from '@/components/dashboard/mcp-health-panel';
+import { DataFreshness } from '@/components/dashboard/data-freshness';
+import { AuditLogViewer } from '@/components/dashboard/audit-log-viewer';
 
 export default function DashboardPage() {
   const { services, status: watcherStatus } = useWatcherStore();
@@ -64,9 +67,12 @@ export default function DashboardPage() {
               <h1 className="text-4xl font-bold gradient-text mb-2">
                 Welcome Back
               </h1>
-              <p className="text-muted-foreground text-lg">
-                Here's what's happening with your AI Employee today.
-              </p>
+              <div className="flex items-center gap-4">
+                <p className="text-muted-foreground text-lg">
+                  Here's what's happening with your AI Employee today.
+                </p>
+                <DataFreshness />
+              </div>
             </motion.div>
 
             {/* Stats Grid */}
@@ -135,6 +141,8 @@ export default function DashboardPage() {
               {/* Right Column - Activity Feed */}
               <div className="space-y-6">
                 <ActivityFeed limit={20} />
+                <McpHealthPanel />
+                <AuditLogViewer />
 
                 {/* Service Status Cards */}
                 <Card>

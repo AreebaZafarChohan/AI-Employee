@@ -73,7 +73,35 @@ client_secret_*.json
 .whatsapp_profile/
 
 # Images
-image.png
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Database files
+*.db
+*.db-journal
+dashboard.db
+
+# Test files with credentials
+test_gemini_api.py
+
+# WhatsApp Needs_Action files (keep only 2 for demo)
+AI-Employee-Vault/Needs_Action/whatsapp-agent-factory-*
+AI-Employee-Vault/Needs_Action/whatsapp-agentic-ai-*
+AI-Employee-Vault/Needs_Action/whatsapp-aispec-*
+AI-Employee-Vault/Needs_Action/whatsapp-areeba-*
+AI-Employee-Vault/Needs_Action/whatsapp-elite-*
+AI-Employee-Vault/Needs_Action/whatsapp-giaic-*
+AI-Employee-Vault/Needs_Action/whatsapp-pana-*
+AI-Employee-Vault/Needs_Action/whatsapp-the-*
+AI-Employee-Vault/Needs_Action/whatsapp-*coordinators*
+AI-Employee-Vault/Needs_Action/whatsapp-*pinnacle*
+AI-Employee-Vault/Needs_Action/whatsapp-*Code*
+AI-Employee-Vault/Needs_Action/whatsapp-*overtide*
+
+# Watch folder
+watch_folder/
 
 # Node
 node_modules/

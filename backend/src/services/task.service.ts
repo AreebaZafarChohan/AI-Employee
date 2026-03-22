@@ -4,7 +4,8 @@
  */
 
 import { prisma } from '../models';
-import { Task, TaskStatus } from '@prisma/client';
+import type { Task } from '@prisma/client';
+import type { TaskStatus } from '../models/task.model';
 import { TaskCreateInput, TaskUpdateInput, VALID_STATUS_TRANSITIONS } from '../models/task.model';
 import { NotFoundError, ConflictError } from '../utils/errors';
 import logger from '../utils/logger';
@@ -163,7 +164,7 @@ export class TaskService {
         data: {
           type: 'task.deleted',
           description: `Task ${id} deleted`,
-          metadata: { taskId: id },
+          metadata: JSON.stringify({ taskId: id }),
         },
       });
     } catch (error) {

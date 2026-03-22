@@ -1,0 +1,32 @@
+[
+  {
+    "timestamp": "2026-02-24T19:11:29.417457Z",
+    "action_type": "email_received",
+    "target": "email-no-subject-576f57dd.md",
+    "result": "success | from='Areeba Zafar <areebazafar715@gmail.com>' | priority=high"
+  },
+  {
+    "timestamp": "2026-02-24T19:25:08.124322Z",
+    "action_type": "email_received",
+    "target": "email-no-subject-53c75fd5.md",
+    "result": "success | from='Areeba Zafar <areebazafar715@gmail.com>' | priority=low"
+  },
+  {
+    "timestamp": "2026-02-24T19:32:25.825206Z",
+    "action_type": "process_engine",
+    "target": "email-no-subject-53c75fd5.md",
+    "result": "success | type=email | risk=low | plan=no-subject-b5d57df2-plan.md"
+  },
+  {
+    "timestamp": "2026-02-24T19:32:25.907417Z",
+    "action_type": "process_engine",
+    "target": "email-no-subject-576f57dd.md",
+    "result": "success | type=email | risk=high | plan=no-subject-69ee8d56-plan.md"
+  },
+  {
+    "timestamp": "2026-02-24T19:45:55.883230Z",
+    "action_type": "linkedin_draft_created",
+    "target": "LinkedIn_Draft_2026-02-24.md",
+    "result": "words=36 | requires_approval=true"
+  }
+]

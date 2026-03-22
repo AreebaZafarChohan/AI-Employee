@@ -81,7 +81,7 @@ export function PlansList({ plans = [], className }: PlansListProps) {
       <EmptyState
         title="No Plans Yet"
         description="Plans will appear here as they are created by the AI Employee."
-        icon={<FileText className="h-12 w-12 text-muted-foreground" />}
+        icon={FileText}
       />
     );
   }

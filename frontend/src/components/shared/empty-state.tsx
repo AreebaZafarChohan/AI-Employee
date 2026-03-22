@@ -1,42 +1,32 @@
-'use client';
+import { type LucideIcon } from 'lucide-react';
+import { type ComponentType } from 'react';
 
-import { motion } from 'framer-motion';
-import { Inbox } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-
-interface EmptyStateProps {
+export interface EmptyStateProps {
+  icon: LucideIcon | ComponentType<{ className?: string }>;
   title: string;
-  description?: string;
+  description: string;
   action?: {
     label: string;
     onClick: () => void;
   };
-  icon?: React.ReactNode;
 }
 
-export function EmptyState({
-  title,
-  description,
-  action,
-  icon = <Inbox className="h-12 w-12 text-muted-foreground" />,
-}: EmptyStateProps) {
+export function EmptyState({ icon: Icon, title, description, action }: EmptyStateProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="flex flex-col items-center justify-center py-12 text-center"
-    >
-      <div className="mb-4 rounded-full bg-muted p-6">{icon}</div>
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      {description && (
-        <p className="text-sm text-muted-foreground mb-4 max-w-md">
-          {description}
-        </p>
-      )}
+    <div className="flex flex-col items-center justify-center py-16 text-center">
+      <div className="rounded-full bg-muted/50 p-4 mb-4">
+        <Icon className="h-8 w-8 text-muted-foreground" />
+      </div>
+      <h3 className="text-lg font-semibold mb-1">{title}</h3>
+      <p className="text-sm text-muted-foreground max-w-sm mb-4">{description}</p>
       {action && (
-        <Button onClick={action.onClick}>{action.label}</Button>
+        <button
+          onClick={action.onClick}
+          className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
+        >
+          {action.label}
+        </button>
       )}
-    </motion.div>
+    </div>
   );
 }

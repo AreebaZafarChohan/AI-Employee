@@ -1,26 +1,85 @@
-# Core dependencies
+# =============================================================================
+# Gold Tier AI Employee - Dependencies
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Core Dependencies (Foundation)
+# -----------------------------------------------------------------------------
 watchdog>=3.0.0
 python-dotenv>=1.0.0
 google-genai>=1.0.0
 
-# Gmail API (Silver Tier — gmail_watcher.py)
+# -----------------------------------------------------------------------------
+# Gmail API (Silver Tier - gmail_watcher.py)
+# -----------------------------------------------------------------------------
 google-auth>=2.0.0
 google-auth-oauthlib>=1.0.0
 google-auth-httplib2>=0.1.0
 google-api-python-client>=2.0.0
 
-# Browser automation (Silver Tier)
+# -----------------------------------------------------------------------------
+# Browser Automation (Silver Tier)
+# -----------------------------------------------------------------------------
 playwright>=1.40.0
 
-# HTTP client (for MCP server integration)
-httpx>=0.24.0
+# -----------------------------------------------------------------------------
+# HTTP Client (for MCP server integration)
+# -----------------------------------------------------------------------------
+httpx>=0.27.0
 
-# YAML parsing (for approval orchestrator)
+# -----------------------------------------------------------------------------
+# YAML Parsing (for approval orchestrator)
+# -----------------------------------------------------------------------------
 pyyaml>=6.0
+
+# -----------------------------------------------------------------------------
+# Odoo Integration (Gold Tier - NEW)
+# -----------------------------------------------------------------------------
+odoo-rpc>=0.8.0
+
+# -----------------------------------------------------------------------------
+# Facebook Graph API (Gold Tier - NEW)
+# -----------------------------------------------------------------------------
+facebook-business>=18.0.0
+
+# -----------------------------------------------------------------------------
+# Twitter API v2 (Gold Tier - NEW)
+# -----------------------------------------------------------------------------
+tweepy>=4.14.0
+
+# -----------------------------------------------------------------------------
+# LinkedIn API (Gold Tier - NEW)
+# -----------------------------------------------------------------------------
+linkedin-api>=2.0.0
+
+# Gold Tier - API Framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+websockets>=12.0
+
+# Gold Tier - Background Processing
+celery[redis]>=5.3.0
+redis>=5.0.0
+
+# Gold Tier - Database
+sqlalchemy>=2.0.0
+psycopg2-binary>=2.9.0
+alembic>=1.13.0
+
+# Gold Tier - Auth & Validation
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.0
+
+# Gold Tier - Vector Memory
+chromadb>=0.4.0
 
 # Testing
 pytest>=7.0.0
 pytest-cov>=4.0.0
+pytest-asyncio>=0.23.0
+httpx>=0.24.0
 
 # Utilities
 pathlib>=1.0.1

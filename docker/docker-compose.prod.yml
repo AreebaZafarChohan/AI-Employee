@@ -1,0 +1,153 @@
+# Gold Tier Backend - Production Docker Compose
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: gold_tier_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-gold_tier}
+      POSTGRES_USER: ${POSTGRES_USER:-golduser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-golduser} -d ${POSTGRES_DB:-gold_tier}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gold_tier_network
+    restart: unless-stopped
+
+  # Redis Message Broker
+  redis:
+    image: redis:7-alpine
+    container_name: gold_tier_redis
+    command: redis-server --requirepass ${REDIS_PASSWORD:-changeme}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-changeme}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - gold_tier_network
+    restart: unless-stopped
+
+  # FastAPI Application
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: gold_tier_api
+    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --workers 4
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-golduser}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/${POSTGRES_DB:-gold_tier}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-changeme}@redis:6379/0
+      LOG_LEVEL: INFO
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ALGORITHM: HS256
+      JWT_EXPIRATION_HOURS: 24
+      CORS_ORIGINS: '${CORS_ORIGINS:-["http://localhost:3000"]}'
+      RATE_LIMIT_PER_MINUTE: 100
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - gold_tier_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # Celery Worker (Default Pool)
+  worker:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: gold_tier_worker
+    command: celery -A src.workers.celery_app worker --loglevel=info --concurrency=4
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-golduser}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/${POSTGRES_DB:-gold_tier}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-changeme}@redis:6379/0
+      LOG_LEVEL: INFO
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - gold_tier_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # Celery Worker (Risk Assessment Pool)
+  worker_risk:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: gold_tier_worker_risk
+    command: celery -A src.workers.celery_app worker --loglevel=info --concurrency=2 -Q risk
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-golduser}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/${POSTGRES_DB:-gold_tier}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-changeme}@redis:6379/0
+      LOG_LEVEL: INFO
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - gold_tier_network
+    restart: unless-stopped
+
+  # Celery Beat (Scheduled Tasks)
+  worker_beat:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: gold_tier_beat
+    command: celery -A src.workers.celery_app beat --loglevel=info
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-golduser}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/${POSTGRES_DB:-gold_tier}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-changeme}@redis:6379/0
+      LOG_LEVEL: INFO
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - gold_tier_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  gold_tier_network:
+    driver: bridge

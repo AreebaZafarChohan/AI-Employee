@@ -72,7 +72,7 @@ WA_PROFILE_DIR = Path(
 ).resolve()
 
 POLL_INTERVAL = int(os.getenv("POLL_INTERVAL_SECONDS", "60"))
-DRY_RUN: bool = os.getenv("DRY_RUN", "true").lower() in ("true", "1", "yes")
+DRY_RUN: bool = os.getenv("DRY_RUN", "false").lower() in ("true", "1", "yes")
 WA_HEADLESS: bool = os.getenv("WA_HEADLESS", "false").lower() in ("true", "1", "yes")
 BACKEND_API_URL = os.getenv("BACKEND_API_URL", "http://localhost:8000/api/v1")
 
@@ -649,9 +649,11 @@ def _render_markdown(sender: str, message: str, timestamp: str, risk: str) -> st
     frontmatter = (
         "---\n"
         "type: whatsapp\n"
+        "source: whatsapp\n"
         f'sender: "{_esc_yaml(sender)}"\n'
         f'message: "{_esc_yaml(message)}"\n'
         f'received: "{_esc_yaml(timestamp)}"\n'
+        f"status: received\n"
         f"risk_level: {risk}\n"
         "requires_approval: false\n"
         f'created_at: "{now_iso}"\n'
@@ -871,11 +873,7 @@ async def run_poll(page) -> dict:
                 "%Y-%m-%dT%H:%M:%SZ"
             )
 
-            if not _matches_keywords(message_text):
-                logger.debug("Chat with %r has no keyword match — skipping.", sender)
-                summary["skipped"] += 1
-                continue
-
+            # Capture ALL messages (no keyword filter) — risk is still auto-detected
             risk = _detect_risk(message_text)
             dest = _write_needs_action(sender, message_text, timestamp, risk)
 

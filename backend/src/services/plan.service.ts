@@ -4,8 +4,8 @@
  */
 
 import { prisma } from '../models';
-import { PlanStatus } from '@prisma/client';
-import { PlanWithSteps } from '../models/plan.model';
+import type { PlanWithSteps } from '../models/plan.model';
+import type { PlanStatus } from '../models/plan.model';
 import { NotFoundError, ServiceUnavailableError } from '../utils/errors';
 import logger from '../utils/logger';
 import { createAIProvider, TaskContext } from '../ai';

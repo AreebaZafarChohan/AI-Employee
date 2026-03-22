@@ -1,6 +1,84 @@
-# AI Employee - Silver Tier
+# AI Employee - Gold Tier (Production Ready)
 
-**Personal AI Employee Silver Tier** - A sophisticated, local-first AI automation system with Gmail integration, MCP servers, approval workflows, and daily briefing generation.
+**Personal AI Employee Gold Tier** - A sophisticated, local-first, **Production-Ready** AI automation system. Now with a modular architecture and a unified entry point.
+
+---
+
+## 🚀 Getting Started
+
+### ⚡ Quick Start (Recommended for First-Time Users)
+
+**Start ALL services with one command:**
+
+**Windows:**
+```bash
+start_all.bat
+# or
+python start_all.py start
+```
+
+**Linux/Mac:**
+```bash
+./start_all.sh
+# or
+python start_all.py start
+```
+
+This will start:
+- ✅ Backend API (FastAPI on port 8000)
+- ✅ Frontend (Next.js on port 3000)
+- ✅ Gmail Watcher
+- ✅ LinkedIn Watcher
+- ✅ WhatsApp Watcher
+- ✅ Task Orchestrator
+- ✅ AI Agent (Ralph reasoning loop)
+
+**Access the system:**
+- Frontend Dashboard: http://localhost:3000
+- Backend API: http://localhost:8000
+- API Docs: http://localhost:8000/docs
+
+**Stop all services:**
+```bash
+python start_all.py stop
+```
+
+📖 **See:** [START_ALL_GUIDE.md](./START_ALL_GUIDE.md) | [QUICK_START.md](./QUICK_START.md)
+
+---
+
+## 🎯 Alternative: Modular Start (Advanced)
+
+You can also start individual components via `run.py`:
+
+### 1. Start the Vault Orchestrator
+The orchestrator manages the entire task lifecycle (Inbox -> Plans -> Approved -> Done).
+```bash
+python run.py orchestrator
+```
+
+### 2. Start Input Watchers
+Watchers monitor external channels and inject tasks into the vault.
+```bash
+python run.py watcher gmail --watch
+python run.py watcher linkedin --watch
+python run.py watcher whatsapp --watch
+```
+
+### 3. Start Everything (All-in-One)
+```bash
+python run.py all
+```
+
+---
+
+## 🏗️ New Modular Architecture
+
+- **`src/orchestration/`**: Core task lifecycle and state management (`VaultOrchestrator`).
+- **`src/watcher/`**: Input channel monitors (`BaseWatcher`, `GmailWatcher`, etc.).
+- **`src/utils/`**: Shared utilities (Logging, Retry handling, Error tracking).
+- **`src/skills/`**: Specific AI action engines (LinkedIn posting, Social Media).
+- **`AI-Employee-Vault/`**: The "brain" of the system where all task states are stored.
 
 ---
 

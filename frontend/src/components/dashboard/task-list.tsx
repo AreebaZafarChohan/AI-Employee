@@ -7,6 +7,7 @@ import { EmptyState } from '@/components/shared/empty-state';
 import { useToast } from '@/components/ui/use-toast';
 import type { TaskStatus } from '@/types/task';
 import { cn } from '@/lib/utils';
+import { AlertCircle, Inbox } from 'lucide-react';
 
 interface TaskListProps {
   className?: string;
@@ -44,6 +45,7 @@ export function TaskList({ className }: TaskListProps) {
   if (error) {
     return (
       <EmptyState
+        icon={AlertCircle}
         title="Failed to load tasks"
         description={error.message}
         action={{
@@ -57,6 +59,7 @@ export function TaskList({ className }: TaskListProps) {
   if (tasks.length === 0) {
     return (
       <EmptyState
+        icon={Inbox}
         title="No tasks yet"
         description="Create your first task to get started"
       />

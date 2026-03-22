@@ -3,64 +3,106 @@
 
 import sys
 import shutil
+import time
 from pathlib import Path
 from datetime import datetime, timezone
 
+# Add project root to path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from src.utils.logger import log_action, set_default_logs_dir
+# Import logger
+try:
+    from src.utils.logger import log_action, set_default_logs_dir
+except ImportError:
+    # Fallback logger if src.utils not found
+    def log_action(action, file, status):
+        print(f"[{datetime.now()}] {action}: {file} ({status})")
+    def set_default_logs_dir(path):
+        pass
 
-vault = Path(__file__).resolve().parent / "AI-Employee-Vault"
-na = vault / "Needs_Action"
-plans = vault / "Plans"
-done = vault / "Done"
-logs = vault / "Logs"
+# Configuration
+VAULT_DIR = Path("AI-Employee-Vault")
+NEEDS_ACTION_DIR = VAULT_DIR / "Needs_Action"
+PLANS_DIR = VAULT_DIR / "Plans"
+DONE_DIR = VAULT_DIR / "Done"
+LOGS_DIR = VAULT_DIR / "Logs"
 
-set_default_logs_dir(logs)
-plans.mkdir(exist_ok=True)
-done.mkdir(exist_ok=True)
+def process_needs_action():
+    """Scan and process files in Needs_Action."""
+    count = 0
+    # Ensure directories exist
+    NEEDS_ACTION_DIR.mkdir(parents=True, exist_ok=True)
+    PLANS_DIR.mkdir(parents=True, exist_ok=True)
+    DONE_DIR.mkdir(parents=True, exist_ok=True)
+    LOGS_DIR.mkdir(parents=True, exist_ok=True)
+    
+    set_default_logs_dir(LOGS_DIR)
 
-count = 0
-for f in sorted(na.glob("*.md")):
-    if f.name.startswith(".") or f.stem.endswith(".meta"):
-        continue
+    # Process files
+    for f in sorted(NEEDS_ACTION_DIR.glob("*.md")):
+        if f.name.startswith(".") or f.stem.endswith(".meta"):
+            continue
 
-    content = f.read_text(encoding="utf-8")
-    lines = [l.strip() for l in content.splitlines() if l.strip()]
+        try:
+            content = f.read_text(encoding="utf-8")
+            lines = [l.strip() for l in content.splitlines() if l.strip()]
 
-    obj = f.stem
-    steps = []
-    for l in lines:
-        if l.startswith("# "):
-            obj = l.lstrip("# ")
-        s = l.lstrip("-*0123456789.) ")
-        if l != s and s:
-            steps.append(s)
-    if not steps:
-        steps = ["Review content", "Identify actions", "Execute", "Verify"]
+            obj = f.stem
+            steps = []
+            
+            # Simple parsing logic (can be replaced with AI calls later)
+            for l in lines:
+                if l.startswith("# "):
+                    obj = l.lstrip("# ")
+                # Extract potential steps
+                s = l.lstrip("-*0123456789.) ")
+                if len(s) > 5 and l != s: 
+                    steps.append(s)
+            
+            if not steps:
+                steps = ["Review content", "Identify actions", "Execute", "Verify"]
 
-    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    step_lines = "\n".join(f"- [ ] {s}" for s in steps)
-    plan_content = (
-        f'---\nsource: "{f.name}"\ncreated_at: "{ts}"\nstatus: pending\n---\n\n'
-        f"# Plan: {obj}\n\n## Steps\n\n{step_lines}\n\n"
-        f"## Status\n\n**pending**\n"
-    )
+            ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            step_lines = "\n".join(f"- [ ] {s}" for s in steps)
+            plan_content = (
+                f'---\nsource: "{f.name}"\ncreated_at: "{ts}"\nstatus: pending\n---\n\n'
+                f"# Plan: {obj}\n\n## Steps\n\n{step_lines}\n\n"
+                f"## Status\n\n**pending**\n"
+            )
 
-    (plans / f"plan-{f.stem}.md").write_text(plan_content, encoding="utf-8")
-    log_action("plan_created", f"plan-{f.stem}.md", "success")
+            # Create Plan
+            plan_file = PLANS_DIR / f"plan-{f.stem}.md"
+            plan_file.write_text(plan_content, encoding="utf-8")
+            log_action("plan_created", plan_file.name, "success")
 
-    shutil.move(str(f), str(done / f.name))
-    log_action("file_moved", f.name, "success")
+            # Move Original to Done
+            shutil.move(str(f), str(DONE_DIR / f.name))
+            log_action("file_moved", f.name, "success")
 
-    meta = na / f"{f.stem}.meta.md"
-    if meta.exists():
-        shutil.move(str(meta), str(done / meta.name))
+            # Move Metadata if exists
+            meta = NEEDS_ACTION_DIR / f"{f.stem}.meta.md"
+            if meta.exists():
+                shutil.move(str(meta), str(DONE_DIR / meta.name))
 
-    count += 1
-    print(f"  Done: {f.name} -> plan + archived")
+            count += 1
+            print(f"[{datetime.now().strftime('%H:%M:%S')}] Processed: {f.name} -> Plan created.")
+            
+        except Exception as e:
+            print(f"Error processing {f.name}: {e}")
+            log_action("process_error", f.name, f"failed: {str(e)}")
 
-if count == 0:
-    print("Needs_Action is empty — nothing to process.")
-else:
-    print(f"\nProcessed {count} file(s).")
+    return count
+
+def main_loop():
+    print(f"Orchestrator Service started. Watching {NEEDS_ACTION_DIR}...")
+    try:
+        while True:
+            processed = process_needs_action()
+            if processed > 0:
+                pass # Already printed output
+            time.sleep(5) # Wait 5 seconds before next scan
+    except KeyboardInterrupt:
+        print("Orchestrator stopped.")
+
+if __name__ == "__main__":
+    main_loop()

@@ -1,23 +1,7 @@
-# Dependencies
 node_modules/
-
-# Build output
 dist/
 build/
-*.tsbuildinfo
-
-# Generated files
-prisma/generated/
-
-# Coverage
 coverage/
-
-# Logs
-logs/
-*.log
-
-# Environment
-.env*
-
-# Misc
-.cache/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

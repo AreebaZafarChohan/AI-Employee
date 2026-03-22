@@ -61,7 +61,7 @@ export function AgentStatus({ className }: AgentStatusProps) {
       <Card className={cn('overflow-hidden border-destructive/50', className)}>
         <CardContent className="pt-6">
           <EmptyState
-            icon={<WifiOff className="h-8 w-8 text-muted-foreground" />}
+            icon={WifiOff}
             title="Connection Issue"
             description="Unable to fetch agent status"
           />

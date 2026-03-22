@@ -1,15 +1,5 @@
-# Dependencies
 node_modules/
-
-# Build output
 dist/
 build/
-
-# Generated files
-prisma/generated/
-
-# Coverage
 coverage/
-
-# Config files
-jest.config.js
+*.min.js

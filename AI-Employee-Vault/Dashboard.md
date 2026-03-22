@@ -27,6 +27,9 @@ LIMIT 5
 
 - [[2026-02-25_Daily.md]]
 
+## Weekly Briefings
+- [[2026-03-08_Monday_Briefing.md]]
+
 ## Quick Links
 - [[Company_Handbook]]
 - [[Inbox/]]

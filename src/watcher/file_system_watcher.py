@@ -4,12 +4,16 @@ Monitors the Inbox/ folder for new files. When a file arrives it is:
 1. Copied to Needs_Action/ (original stays in Inbox).
 2. Accompanied by a metadata markdown sidecar with type, name, timestamp, status.
 3. Logged to Logs/ inside the vault.
+4. Notifies the backend API of the new file.
 
 Duplicate processing is prevented by a persistent ledger file that survives restarts.
 """
 
 import json
 import time
+import os
+import requests
+import logging
 from pathlib import Path
 from datetime import datetime, timezone
 from typing import List, Optional, Set
@@ -105,6 +109,7 @@ class InboxHandler(FileSystemEventHandler):
         self.patterns = patterns
         self.debounce_time = debounce_time
         self.logger = get_logger("watcher")
+        self.backend_url = os.getenv("BACKEND_URL", "http://localhost:8000/api/v1")
 
         # Persistent ledger lives next to the vault
         self._ledger_path = vault_path / _LEDGER_NAME
@@ -183,10 +188,22 @@ class InboxHandler(FileSystemEventHandler):
 
             # Vault log
             _log_to_vault(self.logs_path, f"Copied **{name}** → Needs_Action/")
+            
+            # Backend notification
+            self._notify_backend(dest_path.name)
 
         except Exception as exc:
             self.logger.error(f"Failed to process {name}: {exc}")
             _log_to_vault(self.logs_path, f"ERROR processing **{name}**: {exc}")
+
+    def _notify_backend(self, filename: str):
+        try:
+            requests.post(f"{self.backend_url}/events/new", json={
+                "source": "filesystem_watcher",
+                "file": filename
+            }, timeout=5)
+        except Exception as e:
+            self.logger.error(f"Failed to notify backend: {e}")
 
 
 # ---------------------------------------------------------------------------
@@ -290,6 +307,7 @@ class FileSystemWatcher:
         needs_action = self.vault_path / "Needs_Action"
         logs_dir = self.vault_path / "Logs"
         FileUtils.ensure_directory(needs_action)
+        backend_url = os.getenv("BACKEND_URL", "http://localhost:8000/api/v1")
 
         for file_path in files:
             name = file_path.name
@@ -314,6 +332,15 @@ class FileSystemWatcher:
                 result["processed"] += 1
                 self.logger.info(f"Scan: processed {name}")
                 _log_to_vault(logs_dir, f"Copied **{name}** → Needs_Action/ (scan)")
+                
+                # Notify backend
+                try:
+                    requests.post(f"{backend_url}/events/new", json={
+                        "source": "filesystem_watcher",
+                        "file": dest.name
+                    }, timeout=5)
+                except:
+                    pass
 
             except Exception as exc:
                 result["errors"].append(f"{name}: {exc}")

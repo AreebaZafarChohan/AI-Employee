@@ -1,0 +1,98 @@
+[
+  {
+    "timestamp": "2026-03-12T20:55:12.498652Z",
+    "action_type": "plan_created",
+    "target": "plan-accounting-large-expense-5-20260312_203730.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-03-12T20:55:12.499733Z",
+    "action_type": "file_moved",
+    "target": "accounting-large-expense-5-20260312_203730.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-03-12T20:55:12.515268Z",
+    "action_type": "plan_created",
+    "target": "plan-accounting-large-expense-6-20260312_203730.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-03-12T20:55:12.526884Z",
+    "action_type": "file_moved",
+    "target": "accounting-large-expense-6-20260312_203730.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-03-12T20:55:12.540480Z",
+    "action_type": "plan_created",
+    "target": "plan-accounting-large-expense-7-20260312_203730.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-03-12T20:55:12.552370Z",
+    "action_type": "file_moved",
+    "target": "accounting-large-expense-7-20260312_203730.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-03-12T20:55:12.564019Z",
+    "action_type": "plan_created",
+    "target": "plan-accounting-large-expense-8-20260312_203729.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-03-12T20:55:12.575996Z",
+    "action_type": "file_moved",
+    "target": "accounting-large-expense-8-20260312_203729.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-03-12T20:55:12.589000Z",
+    "action_type": "plan_created",
+    "target": "plan-accounting-overdue-invoice-1-20260312_203729.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-03-12T20:55:12.601367Z",
+    "action_type": "file_moved",
+    "target": "accounting-overdue-invoice-1-20260312_203729.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-03-12T20:55:12.614807Z",
+    "action_type": "plan_created",
+    "target": "plan-accounting-overdue-invoice-2-20260312_203729.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-03-12T20:55:12.627908Z",
+    "action_type": "file_moved",
+    "target": "accounting-overdue-invoice-2-20260312_203729.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-03-12T20:55:12.642048Z",
+    "action_type": "plan_created",
+    "target": "plan-accounting-overdue-invoice-3-20260312_203729.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-03-12T20:55:12.656095Z",
+    "action_type": "file_moved",
+    "target": "accounting-overdue-invoice-3-20260312_203729.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-03-12T20:55:12.671051Z",
+    "action_type": "plan_created",
+    "target": "plan-test_task.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-03-12T20:55:12.683270Z",
+    "action_type": "file_moved",
+    "target": "test_task.md",
+    "result": "success"
+  }
+]

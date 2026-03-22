@@ -212,7 +212,7 @@ export function ApprovalCard({ approval, className }: ApprovalCardProps) {
               </p>
               {approval.status === 'rejected' && (
                 <p className="text-sm mt-1">
-                  {approval.metadata?.rejectReason || 'No reason provided'}
+                  {(approval.metadata?.rejectReason as string) || 'No reason provided'}
                 </p>
               )}
             </div>

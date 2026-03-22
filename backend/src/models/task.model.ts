@@ -3,9 +3,10 @@
  * TypeScript types for Task entity
  */
 
-import { Task, TaskStatus } from '@prisma/client';
+import { Task } from '@prisma/client';
 
-export type { Task, TaskStatus };
+export type TaskStatus = 'Pending' | 'InProgress' | 'Done' | 'Failed' | 'Skipped' | string;
+export type { Task };
 
 export interface TaskCreateInput {
   title: string;

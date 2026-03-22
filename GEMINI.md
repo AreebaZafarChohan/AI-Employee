@@ -208,3 +208,11 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 
 ## Code Standards
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+
+## Recent Changes
+- 001-platinum-tier-backend: Added Node.js v20 LTS + TypeScript + Prisma, BullMQ, `js-tiktoken`, `pgvector`
+- 001-platinum-tier-backend: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
+
+## Active Technologies
+- Node.js v20 LTS + TypeScript + Prisma, BullMQ, `js-tiktoken`, `pgvector` (001-platinum-tier-backend)
+- PostgreSQL (with `pgvector` extension), Redis (001-platinum-tier-backend)

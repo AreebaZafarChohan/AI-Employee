@@ -1,0 +1,827 @@
+openapi: 3.0.3
+info:
+  title: Gold Tier Backend - AI Orchestration Engine
+  description: |
+    REST API for the Gold Tier AI Orchestration Backend.
+    
+    Features:
+    - Asynchronous job submission and processing
+    - Multi-stage AI pipeline (Task Analysis → Plan Creation → Risk Assessment → Final Output)
+    - Human approval workflow with role-based access
+    - Real-time progress tracking via WebSocket
+    - Complete audit trail
+    
+    ## Roles
+    - **Submitter**: Can create tasks, view own jobs
+    - **Approver**: Can submit + approve/reject plans
+    
+    ## Authentication
+    All endpoints require JWT Bearer token authentication.
+    
+    ```
+    Authorization: Bearer <JWT_TOKEN>
+    ```
+  version: 1.0.0
+  contact:
+    name: Gold Tier API Support
+    email: support@goldtier.local
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local development server
+  - url: https://api.goldtier.local/api/v1
+    description: Production server
+
+tags:
+  - name: Jobs
+    description: Task submission and job management
+  - name: Plans
+    description: Plan review and approval workflow
+  - name: Audit
+    description: Audit trail and history queries
+  - name: Metrics
+    description: Queue monitoring and system metrics
+  - name: WebSocket
+    description: Real-time job progress updates
+
+paths:
+  /jobs:
+    post:
+      tags:
+        - Jobs
+      summary: Submit a new task for AI processing
+      description: |
+        Submit a task description to be processed through the 4-stage AI pipeline.
+        
+        Returns immediately with a job ID for tracking progress.
+        Processing happens asynchronously in the background.
+      operationId: submitJob
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobSubmission'
+            examples:
+              sales_analysis:
+                summary: Sales data analysis task
+                value:
+                  task_description: "Analyze Q4 2025 sales data for the North American region. Identify top 3 growth opportunities and recommend action items for Q1 2026."
+              email_draft:
+                summary: Email drafting task
+                value:
+                  task_description: "Draft a follow-up email to the prospect who attended yesterday's product demo. Highlight the key features they showed interest in and propose a next meeting."
+      responses:
+        '200':
+          description: Job successfully queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobQueuedResponse'
+              examples:
+                success:
+                  value:
+                    job_id: "550e8400-e29b-41d4-a716-446655440000"
+                    status: "queued"
+                    submitted_at: "2026-03-02T10:00:00Z"
+                    message: "Job queued successfully. Use the job_id to track progress."
+        '400':
+          description: Invalid request (missing or too short task description)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized (missing or invalid JWT)
+        '403':
+          description: Forbidden (user role not permitted to submit jobs)
+    
+    get:
+      tags:
+        - Jobs
+      summary: List user's jobs
+      description: |
+        Retrieve a paginated list of jobs submitted by the current user.
+        
+        Supports filtering by status and date range.
+      operationId: listJobs
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          description: Filter by job status
+          schema:
+            $ref: '#/components/schemas/JobStatus'
+        - name: limit
+          in: query
+          description: Maximum number of results (default 20, max 100)
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+        - name: offset
+          in: query
+          description: Pagination offset
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+      responses:
+        '200':
+          description: List of jobs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobListResponse'
+        '401':
+          description: Unauthorized
+
+  /jobs/{job_id}:
+    get:
+      tags:
+        - Jobs
+      summary: Get job status and details
+      description: |
+        Retrieve the current status and details of a specific job.
+        
+        Includes:
+        - Current processing stage
+        - Progress percentage
+        - Stage outputs (if completed)
+      operationId: getJob
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          description: Unique job identifier
+          schema:
+            type: string
+            format: uuid
+            example: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        '200':
+          description: Job details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobDetail'
+        '404':
+          description: Job not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden (job belongs to another user)
+
+  /jobs/{job_id}/history:
+    get:
+      tags:
+        - Audit
+      summary: Get complete job audit trail
+      description: |
+        Retrieve the complete history and audit trail for a job.
+        
+        Includes:
+        - All pipeline stages with inputs/outputs
+        - All agent execution logs
+        - All approval events (if applicable)
+        - State transitions
+      operationId: getJobHistory
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Complete job history
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobHistory'
+        '404':
+          description: Job not found
+
+  /plans/{plan_id}:
+    get:
+      tags:
+        - Plans
+      summary: Get plan details
+      description: |
+        Retrieve the full plan including task analysis, recommended actions, and risk assessment.
+        
+        Only Approvers can view plans with PENDING_APPROVAL status.
+      operationId: getPlan
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: plan_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Plan details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanDetail'
+        '404':
+          description: Plan not found
+        '403':
+          description: Forbidden (Submitter cannot view pending plans)
+
+  /plans/{plan_id}/approve:
+    post:
+      tags:
+        - Plans
+      summary: Approve a plan
+      description: |
+        Approve a plan that is pending approval.
+        
+        **Requires Approver role.**
+        
+        Once approved, the plan can proceed to execution.
+      operationId: approvePlan
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: plan_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalRequest'
+            examples:
+              with_comments:
+                summary: Approval with comments
+                value:
+                  comments: "Looks good. Proceed with implementation."
+              without_comments:
+                summary: Approval without comments
+                value: {}
+      responses:
+        '200':
+          description: Plan approved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalResponse'
+        '403':
+          description: Forbidden (Submitter role cannot approve)
+        '404':
+          description: Plan not found
+        '409':
+          description: Conflict (plan not in PENDING_APPROVAL status)
+
+  /plans/{plan_id}/reject:
+    post:
+      tags:
+        - Plans
+      summary: Reject a plan
+      description: |
+        Reject a plan that is pending approval.
+        
+        **Requires Approver role.**
+        
+        Rejection requires comments explaining the reason.
+        A new regeneration job will be automatically created with the feedback.
+      operationId: rejectPlan
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: plan_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectionRequest'
+            examples:
+              missing_details:
+                summary: Missing required details
+                value:
+                  comments: "The plan lacks sufficient detail in the risk assessment section. Please include specific mitigation strategies for each identified risk."
+              scope_change:
+                summary: Scope adjustment needed
+                value:
+                  comments: "The recommended actions exceed the Q1 budget. Please prioritize top 3 actions only and defer the rest to Q2."
+      responses:
+        '200':
+          description: Plan rejected, regeneration job created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RejectionResponse'
+        '400':
+          description: Bad request (comments required)
+        '403':
+          description: Forbidden (Submitter role cannot reject)
+        '404':
+          description: Plan not found
+        '409':
+          description: Conflict (plan not in PENDING_APPROVAL status)
+
+  /metrics/queue:
+    get:
+      tags:
+        - Metrics
+      summary: Get queue metrics
+      description: |
+        Retrieve current queue status and processing metrics.
+        
+        **Requires Approver role.**
+      operationId: getQueueMetrics
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Queue metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueueMetrics'
+        '403':
+          description: Forbidden (Submitter role cannot access metrics)
+
+  /ws/jobs:
+    get:
+      tags:
+        - WebSocket
+      summary: WebSocket endpoint for real-time job updates
+      description: |
+        Establish a WebSocket connection to receive real-time job progress updates.
+        
+        **Connection Handshake**:
+        ```
+        GET ws://localhost:8000/api/v1/ws/jobs
+        Authorization: Bearer <JWT_TOKEN>
+        ```
+        
+        **Event Messages** (server → client):
+        ```json
+        {
+          "event_type": "stage_completed",
+          "job_id": "550e8400-e29b-41d4-a716-446655440000",
+          "data": {
+            "stage_type": "task_analysis",
+            "progress_percentage": 25,
+            "timestamp": "2026-03-02T10:00:05Z"
+          }
+        }
+        ```
+        
+        **Event Types**:
+        - `job_queued`: Job entered the queue
+        - `stage_started`: Pipeline stage began execution
+        - `stage_completed`: Pipeline stage finished successfully
+        - `stage_failed`: Pipeline stage failed (includes retry info)
+        - `job_completed`: All stages complete
+        - `job_failed`: Job permanently failed after retries
+        - `plan_pending_approval`: Plan ready for human review
+      operationId: websocketJobs
+      security:
+        - BearerAuth: []
+      responses:
+        '101':
+          description: Switching Protocols (WebSocket established)
+        '401':
+          description: Unauthorized (invalid or missing JWT)
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from authentication endpoint
+
+  schemas:
+    # Request Schemas
+    JobSubmission:
+      type: object
+      required:
+        - task_description
+      properties:
+        task_description:
+          type: string
+          minLength: 10
+          maxLength: 10000
+          description: Clear description of the task to be processed
+          example: "Analyze Q4 2025 sales data for the North American region. Identify top 3 growth opportunities."
+    
+    ApprovalRequest:
+      type: object
+      properties:
+        comments:
+          type: string
+          maxLength: 1000
+          description: Optional comments for the approval decision
+          example: "Approved. Excellent analysis and actionable recommendations."
+    
+    RejectionRequest:
+      type: object
+      required:
+        - comments
+      properties:
+        comments:
+          type: string
+          minLength: 20
+          maxLength: 2000
+          description: Required feedback explaining why the plan was rejected
+          example: "The risk assessment is incomplete. Please add mitigation strategies for the top 3 identified risks."
+    
+    # Response Schemas
+    JobQueuedResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        submitted_at:
+          type: string
+          format: date-time
+        message:
+          type: string
+    
+    JobListResponse:
+      type: object
+      properties:
+        jobs:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobSummary'
+        total:
+          type: integer
+          description: Total count of jobs matching filters
+        limit:
+          type: integer
+        offset:
+          type: integer
+    
+    JobSummary:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        task_description:
+          type: string
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        progress_percentage:
+          type: integer
+          minimum: 0
+          maximum: 100
+        submitted_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+    
+    JobDetail:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        task_description:
+          type: string
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        current_stage:
+          type: object
+          nullable: true
+          properties:
+            stage_id:
+              type: string
+              format: uuid
+            stage_type:
+              $ref: '#/components/schemas/PipelineStageType'
+            status:
+              $ref: '#/components/schemas/PipelineStageStatus'
+        progress_percentage:
+          type: integer
+        submitted_by:
+          type: string
+          format: uuid
+        submitted_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        stages:
+          type: array
+          items:
+            $ref: '#/components/schemas/PipelineStageSummary'
+    
+    JobHistory:
+      type: object
+      properties:
+        job:
+          $ref: '#/components/schemas/JobDetail'
+        stages:
+          type: array
+          items:
+            $ref: '#/components/schemas/PipelineStageDetail'
+        agent_logs:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgentExecutionLog'
+        approval_events:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApprovalEvent'
+        parent_job_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: If set, this job was regenerated from a rejected plan
+    
+    PlanDetail:
+      type: object
+      properties:
+        plan_id:
+          type: string
+          format: uuid
+        job_id:
+          type: string
+          format: uuid
+        version:
+          type: integer
+          minimum: 1
+        task_analysis:
+          type: object
+          description: Output from Task Analysis stage
+        recommended_actions:
+          type: object
+          description: Structured list of recommended actions with priorities
+        risk_assessment:
+          type: object
+          description: Identified risks with severity scores and mitigations
+        approval_status:
+          $ref: '#/components/schemas/ApprovalStatus'
+        created_at:
+          type: string
+          format: date-time
+        approval_event:
+          $ref: '#/components/schemas/ApprovalEvent'
+          nullable: true
+          description: Present if plan has been approved or rejected
+    
+    ApprovalResponse:
+      type: object
+      properties:
+        plan_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [approved]
+        approved_at:
+          type: string
+          format: date-time
+        message:
+          type: string
+    
+    RejectionResponse:
+      type: object
+      properties:
+        plan_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [rejected]
+        rejected_at:
+          type: string
+          format: date-time
+        regeneration_job_id:
+          type: string
+          format: uuid
+          description: ID of the new job created to regenerate the plan
+        message:
+          type: string
+    
+    QueueMetrics:
+      type: object
+      properties:
+        queued_count:
+          type: integer
+          description: Jobs waiting to be processed
+        processing_count:
+          type: integer
+          description: Jobs currently being processed
+        completed_today:
+          type: integer
+          description: Jobs completed today
+        failed_today:
+          type: integer
+          description: Jobs failed today
+        avg_completion_time_seconds:
+          type: number
+          format: float
+          description: Average time from queued to completed
+        pending_approval_count:
+          type: integer
+          description: Plans awaiting human approval
+        retry_queue_depth:
+          type: integer
+          description: Jobs waiting for retry
+    
+    # Supporting Schemas
+    JobStatus:
+      type: string
+      enum:
+        - queued
+        - processing
+        - completed
+        - failed
+    
+    PipelineStageType:
+      type: string
+      enum:
+        - task_analysis
+        - plan_creation
+        - risk_assessment
+        - final_output
+    
+    PipelineStageStatus:
+      type: string
+      enum:
+        - pending
+        - running
+        - completed
+        - failed
+        - retried
+    
+    ApprovalStatus:
+      type: string
+      enum:
+        - draft
+        - pending_approval
+        - approved
+        - rejected
+    
+    PipelineStageSummary:
+      type: object
+      properties:
+        stage_id:
+          type: string
+          format: uuid
+        stage_type:
+          $ref: '#/components/schemas/PipelineStageType'
+        status:
+          $ref: '#/components/schemas/PipelineStageStatus'
+        started_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+    
+    PipelineStageDetail:
+      type: object
+      properties:
+        stage_id:
+          type: string
+          format: uuid
+        stage_type:
+          $ref: '#/components/schemas/PipelineStageType'
+        status:
+          $ref: '#/components/schemas/PipelineStageStatus'
+        input_data:
+          type: object
+          nullable: true
+        output_data:
+          type: object
+          nullable: true
+        started_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        error_message:
+          type: string
+          nullable: true
+        retry_count:
+          type: integer
+        timeout_seconds:
+          type: integer
+    
+    AgentExecutionLog:
+      type: object
+      properties:
+        log_id:
+          type: string
+          format: uuid
+        agent_type:
+          $ref: '#/components/schemas/AgentType'
+        stage_id:
+          type: string
+          format: uuid
+        input_provided:
+          type: object
+          nullable: true
+        output_generated:
+          type: object
+          nullable: true
+        execution_duration_ms:
+          type: integer
+        status:
+          $ref: '#/components/schemas/AgentExecutionStatus'
+        executed_at:
+          type: string
+          format: date-time
+    
+    AgentType:
+      type: string
+      enum:
+        - task_analyzer
+        - planner_agent
+        - risk_agent
+    
+    AgentExecutionStatus:
+      type: string
+      enum:
+        - success
+        - failure
+        - timeout
+    
+    ApprovalEvent:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        plan_id:
+          type: string
+          format: uuid
+        decision:
+          $ref: '#/components/schemas/ApprovalDecision'
+        approver_id:
+          type: string
+          format: uuid
+        decided_at:
+          type: string
+          format: date-time
+        comments:
+          type: string
+          nullable: true
+    
+    ApprovalDecision:
+      type: string
+      enum:
+        - approve
+        - reject
+    
+    Error:
+      type: object
+      properties:
+        error_code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          nullable: true
+      example:
+        error_code: "VALIDATION_ERROR"
+        message: "task_description must be at least 10 characters"
+        details:
+          field: "task_description"
+          constraint: "min_length"
+          value: "test"
+
+```

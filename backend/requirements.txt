@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pydantic-settings
+pyyaml
+httpx
+google-genai
+python-multipart
+python-jose[cryptography]
+passlib[bcrypt]
+requests
+watchdog
+google-api-python-client
+google-auth-oauthlib
+google-auth-httplib2
+twilio
+playwright

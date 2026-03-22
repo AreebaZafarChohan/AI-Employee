@@ -1,0 +1,18 @@
+{
+  "name": "@ai-employee/social-mcp",
+  "version": "2.0.0",
+  "description": "Unified social media MCP servers for Facebook, Instagram, Twitter, LinkedIn",
+  "type": "module",
+  "scripts": {
+    "start:facebook":  "node facebook/index.js",
+    "start:instagram": "node instagram/index.js",
+    "start:twitter":   "node twitter/index.js",
+    "start:linkedin":  "node linkedin/index.js",
+    "test":            "node test-all.js"
+  },
+  "engines": { "node": ">=20.0.0" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.22.4"
+  }
+}

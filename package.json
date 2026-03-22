@@ -1,0 +1,19 @@
+{
+  "name": "ai-employee-system",
+  "version": "1.0.0",
+  "scripts": {
+    "dev:backend": "bash scripts/start_backend.sh",
+    "dev:frontend": "bash scripts/start_frontend.sh",
+    "dev:watchers": "bash scripts/start_watchers.sh",
+    "dev:agent": "bash scripts/start_agent.sh",
+    "dev:ai-employee": "npx concurrently --names \"BACKEND,FRONTEND,WATCHER,AGENT\" --prefix-colors \"blue,green,yellow,magenta\" \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:watchers\" \"npm run dev:agent\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "ws": "^8.19.0"
+  }
+}

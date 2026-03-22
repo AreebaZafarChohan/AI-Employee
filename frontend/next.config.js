@@ -6,8 +6,15 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // For development: use default server-side rendering
-  // For production static export, set output: 'export' in next.config.prod.js
+  // Proxy API requests to backend during development
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:8000/api/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

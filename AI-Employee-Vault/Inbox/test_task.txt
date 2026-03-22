@@ -1,0 +1,2 @@
+This is a test file for the AI Employee system.
+The system should detect this file in Inbox, move it to Needs_Action, and create a plan.

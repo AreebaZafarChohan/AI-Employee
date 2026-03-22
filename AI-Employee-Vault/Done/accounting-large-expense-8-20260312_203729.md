@@ -1,0 +1,37 @@
+---
+type: accounting_alert
+source: odoo_watcher
+alert_type: large_expense
+expense_id: BILL/2026/03/0004
+vendor: "DevTools Supplies"
+amount: 8000.00
+currency: PKR
+category: "Vendor Bill"
+created_at: "2026-03-12T20:37:29.982576Z"
+domain: business
+risk_level: high
+requires_approval: true
+threshold_exceeded: 5000.00
+---
+
+# Large Expense Alert
+
+**Expense:** BILL/2026/03/0004  
+**Vendor:** DevTools Supplies  
+**Amount:** $8000.00  
+**Category:** Vendor Bill  
+**Threshold:** $5000.00
+
+---
+
+## Approval Required
+
+This expense exceeds the $5000.00 threshold and requires human approval.
+
+---
+
+## Actions
+
+- [ ] Review and approve
+- [ ] Reject expense
+- [ ] Request more information

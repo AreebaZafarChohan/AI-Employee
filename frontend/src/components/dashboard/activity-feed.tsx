@@ -16,6 +16,7 @@ import {
   Clock,
   MessageCircle,
   Mail,
+  AlertCircle,
 } from 'lucide-react';
 import type { ActivityEventType } from '@/types/activity';
 
@@ -101,6 +102,7 @@ export function ActivityFeed({ className }: ActivityFeedProps) {
         </CardHeader>
         <CardContent>
           <EmptyState
+            icon={AlertCircle}
             title="Failed to load activity"
             description={error.message}
           />
@@ -120,6 +122,7 @@ export function ActivityFeed({ className }: ActivityFeedProps) {
         </CardHeader>
         <CardContent>
           <EmptyState
+            icon={Clock}
             title="No activity yet"
             description="System activity will appear here"
           />

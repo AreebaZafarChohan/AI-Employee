@@ -1,0 +1,176 @@
+[
+  {
+    "timestamp": "2026-02-21T19:33:07.844507Z",
+    "action_type": "plan_created",
+    "target": "plan-onboard-new-client.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:33:08.261443Z",
+    "action_type": "file_moved",
+    "target": "onboard-new-client.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:33:08.433558Z",
+    "action_type": "sidecar_moved",
+    "target": "onboard-new-client.meta.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:41:00.082088Z",
+    "action_type": "plan_created",
+    "target": "plan-follow-up-invoice.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:41:00.102765Z",
+    "action_type": "file_moved",
+    "target": "follow-up-invoice.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:51:30.124727Z",
+    "action_type": "file_copied",
+    "target": "buy-groceries.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:51:30.185540Z",
+    "action_type": "plan_created",
+    "target": "plan-buy-groceries.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:51:30.213134Z",
+    "action_type": "file_archived",
+    "target": "buy-groceries.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:53:55.107774Z",
+    "action_type": "file_copied",
+    "target": "buy-groceries.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:53:55.323381Z",
+    "action_type": "file_copied",
+    "target": "content.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:53:55.503067Z",
+    "action_type": "file_copied",
+    "target": "follow-up-invoice.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:53:55.653316Z",
+    "action_type": "file_copied",
+    "target": "onboard-new-client.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:53:55.789404Z",
+    "action_type": "plan_created",
+    "target": "plan-buy-groceries.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:53:55.889750Z",
+    "action_type": "file_archived",
+    "target": "buy-groceries.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:53:55.995550Z",
+    "action_type": "plan_created",
+    "target": "plan-content.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:53:56.021310Z",
+    "action_type": "file_archived",
+    "target": "content.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:53:56.067559Z",
+    "action_type": "plan_created",
+    "target": "plan-follow-up-invoice.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:53:56.103776Z",
+    "action_type": "file_archived",
+    "target": "follow-up-invoice.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:53:57.561416Z",
+    "action_type": "plan_created",
+    "target": "plan-onboard-new-client.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:53:57.864336Z",
+    "action_type": "file_archived",
+    "target": "onboard-new-client.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:54:01.016167Z",
+    "action_type": "file_copied",
+    "target": "send-weekly-report.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:54:01.066321Z",
+    "action_type": "plan_created",
+    "target": "plan-send-weekly-report.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:54:01.108429Z",
+    "action_type": "file_archived",
+    "target": "send-weekly-report.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:54:04.496891Z",
+    "action_type": "file_copied",
+    "target": "fix-login-bug.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:54:04.533310Z",
+    "action_type": "plan_created",
+    "target": "plan-fix-login-bug.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:54:04.568205Z",
+    "action_type": "file_archived",
+    "target": "fix-login-bug.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:55:07.655449Z",
+    "action_type": "file_copied",
+    "target": "writing-task.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:55:08.099125Z",
+    "action_type": "plan_created",
+    "target": "plan-writing-task.md",
+    "result": "success"
+  },
+  {
+    "timestamp": "2026-02-21T19:55:08.150850Z",
+    "action_type": "file_archived",
+    "target": "writing-task.md",
+    "result": "success"
+  }
+]

@@ -1,0 +1,12 @@
+class EventType:
+    JOB_QUEUED = "job.queued"
+    JOB_COMPLETED = "job.completed"
+    JOB_FAILED = "job.failed"
+    STAGE_STARTED = "stage.started"
+    STAGE_COMPLETED = "stage.completed"
+    STAGE_FAILED = "stage.failed"
+    PLAN_PENDING_APPROVAL = "plan.pending_approval"
+    PLAN_APPROVED = "plan.approved"
+    PLAN_REJECTED = "plan.rejected"
+    APPROVAL_TIMEOUT = "approval.timeout"
+    PROGRESS_UPDATE = "progress.update"

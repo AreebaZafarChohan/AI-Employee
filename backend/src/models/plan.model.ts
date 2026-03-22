@@ -3,9 +3,10 @@
  * TypeScript types for Plan and PlanStep entities
  */
 
-import { Plan, PlanStatus, PlanStep } from '@prisma/client';
+import { Plan, PlanStep } from '@prisma/client';
 
-export type { Plan, PlanStatus, PlanStep };
+export type PlanStatus = 'Draft' | 'Approved' | 'InProgress' | 'Completed' | 'Rejected' | string;
+export type { Plan, PlanStep };
 
 export interface PlanStepCreateInput {
   order: number;

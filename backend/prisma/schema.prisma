@@ -1,50 +1,117 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgvector]
 }
 
-enum TaskStatus {
-  Pending
-  InProgress
-  Done
-}
+model Goal {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  state       String   @default("PENDING_PLAN") // Enum (PENDING_PLAN, PENDING_APPROVAL, ACTIVE, COMPLETED, FAILED, PAUSED)
+  priority    Int      @default(1)
+  userId      String?  // Foreign Key to User
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  metadata    Json?
 
-enum PlanStatus {
-  Draft
-  Active
-  Completed
-  Archived
-}
+  tasks       Task[]
 
-enum SystemStateEnum {
-  Idle
-  Thinking
-  Planning
+  @@index([state])
+  @@index([createdAt])
 }
 
 model Task {
-  id          String      @id @default(uuid())
-  title       String      @db.VarChar(200)
-  description String?
-  status      TaskStatus  @default(Pending)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  completedAt DateTime?
+  id            String   @id @default(uuid())
+  goalId        String?
+  title         String
+  description   String?
+  status        String   @default("PENDING") // Enum (PENDING, RUNNING, COMPLETED, FAILED, SKIPPED)
+  order         Int      @default(0)
+  assignedAgent String?
+  dependsOn     String[] // List of task IDs this task depends on
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  completedAt   DateTime?
 
-  plan        Plan?
+  goal        Goal?    @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  executions  AgentExecution[]
+  plan        Plan?    // Legacy Silver Tier support
 
   @@index([status])
   @@index([createdAt])
 }
 
+model AgentExecution {
+  id          String   @id @default(uuid())
+  taskId      String
+  agentName   String
+  reasoning   String?
+  toolCalls   Json?
+  output      String?
+  status      String   @default("SUCCESS") // Enum (SUCCESS, FAILURE)
+  createdAt   DateTime @default(now())
+
+  task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  costLogs    CostLog[]
+  toolInvocations ToolInvocation[]
+
+  @@index([taskId])
+  @@index([agentName])
+}
+
+model MemoryRecord {
+  id          String   @id @default(uuid())
+  content     String
+  embedding   Unsupported("vector(1536)")? // pgvector
+  goalId      String?
+  taskId      String?
+  userId      String?
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model CostLog {
+  id                String   @id @default(uuid())
+  agentExecutionId  String?
+  modelName         String
+  tokensIn          Int
+  tokensOut         Int
+  estimatedCostUsd  Decimal  @db.Decimal(10, 6)
+  createdAt         DateTime @default(now())
+
+  execution         AgentExecution? @relation(fields: [agentExecutionId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+}
+
+model ToolInvocation {
+  id                String   @id @default(uuid())
+  agentExecutionId  String
+  toolName          String
+  arguments         Json?
+  result            Json?
+  riskScore         Float?
+  status            String   @default("PENDING_APPROVAL") // Enum (PENDING_APPROVAL, EXECUTED, REJECTED, FAILED)
+  createdAt         DateTime @default(now())
+
+  execution         AgentExecution @relation(fields: [agentExecutionId], references: [id], onDelete: Cascade)
+
+  @@index([toolName])
+  @@index([status])
+}
+
+// Legacy Silver Tier models
 model Plan {
   id        String     @id @default(uuid())
   taskId    String     @unique
-  status    PlanStatus @default(Draft)
+  status    String     @default("Draft")
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
@@ -58,7 +125,7 @@ model PlanStep {
   id                String   @id @default(uuid())
   planId            String
   order             Int
-  title             String   @db.VarChar(200)
+  title             String
   description       String
   estimatedDuration Int?
   completed         Boolean  @default(false)
@@ -72,10 +139,10 @@ model PlanStep {
 
 model ActivityLog {
   id          String   @id @default(uuid())
-  type        String   @db.VarChar(50)
-  description String   @db.VarChar(500)
+  type        String
+  description String
   timestamp   DateTime @default(now())
-  metadata    Json?
+  metadata    String?
 
   @@index([timestamp])
   @@index([type])
@@ -83,7 +150,7 @@ model ActivityLog {
 
 model SystemState {
   id           String          @id
-  state        SystemStateEnum
+  state        String
   lastActivity DateTime
   updatedAt    DateTime        @updatedAt
 

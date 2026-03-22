@@ -11,7 +11,7 @@ dotenv.config();
 // Define environment schema
 const EnvSchema = z.object({
   // Database - optional for tests
-  DATABASE_URL: z.string().url().startsWith('postgresql://').optional().default('postgresql://test:test@localhost:5432/test'),
+  DATABASE_URL: z.string().optional().default('file:./dev.db'),
 
   // AI Provider
   AI_PROVIDER: z.enum(['anthropic', 'openai', 'google', 'mock']).default('mock'),
@@ -32,6 +32,15 @@ const EnvSchema = z.object({
     if (['error', 'warn', 'info', 'debug'].includes(val)) return val as 'error' | 'warn' | 'info' | 'debug';
     return 'info';
   }).default('info'),
+
+  // External APIs & Vault
+  GEMINI_API_KEY: z.string().optional(),
+  GROK_API_KEY: z.string().optional(),
+  TWITTER_API_KEY: z.string().optional(),
+  TWITTER_API_SECRET: z.string().optional(),
+  TWITTER_ACCESS_TOKEN: z.string().optional(),
+  TWITTER_ACCESS_TOKEN_SECRET: z.string().optional(),
+  VAULT_PATH: z.string().optional(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
