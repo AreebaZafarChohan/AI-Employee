@@ -59,18 +59,19 @@ Thumbs.db
 # Project specific
 *.tmp
 *.bak
+.claude/settings.local.json
+.whatsapp_profile/
+.env.example
 
 # Secrets & credentials
 token.json
 token_mcp.json
 credentials.json
 client_secret_*.json
-.env
-.env.*
-!.env.example
-
-# WhatsApp profile (browser data)
-.whatsapp_profile/
+token.json
+token_mcp.json
+credentials.json
+client_secret_818880108904-s3vp7021g35cj56873bi6ffnk94fch0t.apps.googleusercontent.com.json
 
 # Images
 *.png
