@@ -61,16 +61,15 @@ Thumbs.db
 *.bak
 .claude/settings.local.json
 .whatsapp_profile/
-.env.example
 
 # Secrets & credentials
+.env
+.env.*
+.env.example
 token.json
 token_mcp.json
 credentials.json
 client_secret_*.json
-token.json
-token_mcp.json
-credentials.json
 client_secret_818880108904-s3vp7021g35cj56873bi6ffnk94fch0t.apps.googleusercontent.com.json
 
 # Images
