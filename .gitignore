@@ -104,8 +104,10 @@ AI-Employee-Vault/Needs_Action/whatsapp-*overtide*
 watch_folder/
 
 # Browser session data (sensitive - cookies, login data)
-.twitter_sessions*/
-mcp/twitter-server/.twitter_sessions*/
+mcp/twitter-server/.twitter_sessions/
+mcp/twitter-server/.twitter_sessions_*/
+**/.twitter_sessions/
+**/.twitter_sessions_*/
 mcp/linkedin-server/*.png
 
 # Accidental path-based artifacts
